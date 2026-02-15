@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Instrument_Serif } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
+import { RefineProvider } from "@/components/providers/refine-provider";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -40,7 +41,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <RefineProvider>{children}</RefineProvider>
         </ThemeProvider>
       </body>
     </html>

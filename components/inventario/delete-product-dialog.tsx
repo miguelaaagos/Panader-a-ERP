@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { Loader2, AlertTriangle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { deleteProduct, hardDeleteProduct } from "@/actions/inventory"
 
 interface DeleteProductDialogProps {
     open: boolean
@@ -47,14 +48,11 @@ export function DeleteProductDialog({ open, onOpenChange, producto, onSuccess }:
 
         setLoading(true)
         try {
-            const supabase = createClient()
+            const result = await hardDeleteProduct(producto.id)
 
-            const { error } = await supabase
-                .from("productos")
-                .delete()
-                .eq("id", producto.id)
-
-            if (error) throw error
+            if (!result.success) {
+                throw new Error(result.error)
+            }
 
             toast.success("Producto eliminado correctamente")
             onSuccess()
@@ -74,14 +72,11 @@ export function DeleteProductDialog({ open, onOpenChange, producto, onSuccess }:
 
         setLoading(true)
         try {
-            const supabase = createClient()
+            const result = await deleteProduct(producto.id)
 
-            const { error } = await supabase
-                .from("productos")
-                .update({ activo: false })
-                .eq("id", producto.id)
-
-            if (error) throw error
+            if (!result.success) {
+                throw new Error(result.error)
+            }
 
             toast.success("Producto desactivado correctamente", {
                 description: "El producto ya no aparecerá en el POS pero se mantendrá el historial de ventas."

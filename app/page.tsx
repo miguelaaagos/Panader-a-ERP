@@ -27,7 +27,7 @@ export default function Home() {
           </p>
           <div className="flex gap-4 pt-4">
             <Link
-              href="/auth/login"
+              href="/login"
               className="px-10 py-4 bg-primary text-primary-foreground rounded-full text-xl font-medium hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 hover:scale-105"
             >
               Comenzar ahora

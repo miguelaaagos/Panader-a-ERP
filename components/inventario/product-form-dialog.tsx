@@ -11,22 +11,25 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 import { Loader2, AlertCircle } from "lucide-react"
+import { createProduct, updateProduct, type ProductFormData } from "@/actions/inventory"
 
 interface Categoria {
     id: string
     nombre: string
 }
 
-interface ProductFormData {
+interface ProductFormDataUI {
     nombre: string
-    codigo_barras: string
+    codigo: string
     categoria_id: string
     precio_venta: string
-    precio_costo: string
-    stock_cantidad: string
+    costo_unitario: string
+    stock_actual: string
     stock_minimo: string
-    es_pesable: boolean
+    unidad_medida: "kg" | "g" | "L" | "ml" | "unidades"
     activo: boolean
+    tipo: "ingrediente" | "producto_terminado" | "ambos"
+    margen_deseado: string
 }
 
 interface ProductFormDialogProps {
@@ -39,16 +42,18 @@ interface ProductFormDialogProps {
 export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: ProductFormDialogProps) {
     const [categorias, setCategorias] = useState<Categoria[]>([])
     const [loading, setLoading] = useState(false)
-    const [formData, setFormData] = useState<ProductFormData>({
+    const [formData, setFormData] = useState<ProductFormDataUI>({
         nombre: "",
-        codigo_barras: "",
+        codigo: "",
         categoria_id: "",
         precio_venta: "",
-        precio_costo: "",
-        stock_cantidad: "0",
+        costo_unitario: "",
+        stock_actual: "0",
         stock_minimo: "5",
-        es_pesable: false,
-        activo: true
+        unidad_medida: "unidades",
+        activo: true,
+        tipo: "producto_terminado",
+        margen_deseado: "0"
     })
 
     const isEditing = !!producto
@@ -60,27 +65,31 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                 // Pre-llenar formulario si estamos editando
                 setFormData({
                     nombre: producto.nombre || "",
-                    codigo_barras: producto.codigo_barras || "",
+                    codigo: producto.codigo || "",
                     categoria_id: producto.categoria_id || "",
                     precio_venta: producto.precio_venta?.toString() || "",
-                    precio_costo: producto.precio_costo?.toString() || "",
-                    stock_cantidad: producto.stock_cantidad?.toString() || "0",
+                    costo_unitario: producto.costo_unitario?.toString() || "",
+                    stock_actual: producto.stock_actual?.toString() || "0",
                     stock_minimo: producto.stock_minimo?.toString() || "5",
-                    es_pesable: producto.es_pesable || false,
-                    activo: producto.activo !== undefined ? producto.activo : true
+                    unidad_medida: (producto.unidad_medida as any) || "unidades",
+                    activo: producto.activo !== undefined ? producto.activo : true,
+                    tipo: producto.tipo || "producto_terminado",
+                    margen_deseado: producto.margen_deseado?.toString() || "0"
                 })
             } else {
                 // Resetear formulario si estamos creando
                 setFormData({
                     nombre: "",
-                    codigo_barras: "",
+                    codigo: "",
                     categoria_id: "",
                     precio_venta: "",
-                    precio_costo: "",
-                    stock_cantidad: "0",
+                    costo_unitario: "",
+                    stock_actual: "0",
                     stock_minimo: "5",
-                    es_pesable: false,
-                    activo: true
+                    unidad_medida: "unidades",
+                    activo: true,
+                    tipo: "producto_terminado",
+                    margen_deseado: "0"
                 })
             }
         }
@@ -107,73 +116,32 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
         setLoading(true)
 
         try {
-            // Validaciones
-            if (!formData.nombre.trim()) {
-                toast.error("El nombre es requerido")
-                return
-            }
-
-            const precioVenta = parseFloat(formData.precio_venta)
-            const precioCosto = parseFloat(formData.precio_costo)
-
-            if (isNaN(precioVenta) || precioVenta <= 0) {
-                toast.error("El precio de venta debe ser mayor a 0")
-                return
-            }
-
-            if (isNaN(precioCosto) || precioCosto < 0) {
-                toast.error("El precio de costo debe ser mayor o igual a 0")
-                return
-            }
-
-            const stockCantidad = parseFloat(formData.stock_cantidad)
-            const stockMinimo = parseFloat(formData.stock_minimo)
-
-            if (!formData.es_pesable && (isNaN(stockCantidad) || stockCantidad < 0)) {
-                toast.error("El stock debe ser mayor o igual a 0")
-                return
-            }
-
-            if (!formData.es_pesable && (isNaN(stockMinimo) || stockMinimo < 0)) {
-                toast.error("El stock mínimo debe ser mayor o igual a 0")
-                return
-            }
-
-            const supabase = createClient()
-
-            const productoData = {
+            const dataToSubmit: ProductFormData = {
                 nombre: formData.nombre.trim(),
-                codigo_barras: formData.codigo_barras.trim() || null,
+                codigo: formData.codigo.trim() || null,
                 categoria_id: formData.categoria_id || null,
-                precio_venta: precioVenta,
-                precio_costo: precioCosto,
-                stock_cantidad: formData.es_pesable ? 0 : stockCantidad,
-                stock_minimo: formData.es_pesable ? 0 : stockMinimo,
-                es_pesable: formData.es_pesable,
-                activo: formData.activo
+                precio_venta: parseFloat(formData.precio_venta),
+                costo_unitario: parseFloat(formData.costo_unitario),
+                stock_actual: parseFloat(formData.stock_actual),
+                stock_minimo: parseFloat(formData.stock_minimo),
+                unidad_medida: formData.unidad_medida,
+                activo: formData.activo,
+                tipo: formData.tipo,
+                margen_deseado: parseFloat(formData.margen_deseado) || 0
             }
 
+            let result
             if (isEditing) {
-                // Actualizar producto existente
-                const { error } = await supabase
-                    .from("productos")
-                    .update(productoData)
-                    .eq("id", producto.id)
-
-                if (error) throw error
-
-                toast.success("Producto actualizado correctamente")
+                result = await updateProduct(producto.id, dataToSubmit)
             } else {
-                // Crear nuevo producto
-                const { error } = await supabase
-                    .from("productos")
-                    .insert([productoData])
-
-                if (error) throw error
-
-                toast.success("Producto creado correctamente")
+                result = await createProduct(dataToSubmit)
             }
 
+            if (!result.success) {
+                throw new Error(result.error)
+            }
+
+            toast.success(isEditing ? "Producto actualizado correctamente" : "Producto creado correctamente")
             onSuccess()
             onOpenChange(false)
         } catch (error: any) {
@@ -209,14 +177,14 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                         />
                     </div>
 
-                    {/* Código de Barras */}
+                    {/* Código */}
                     <div className="space-y-2">
-                        <Label htmlFor="codigo_barras">Código de Barras</Label>
+                        <Label htmlFor="codigo">Código</Label>
                         <Input
-                            id="codigo_barras"
-                            value={formData.codigo_barras}
-                            onChange={(e) => setFormData({ ...formData, codigo_barras: e.target.value })}
-                            placeholder="Ej: 7891234567890"
+                            id="codigo"
+                            value={formData.codigo}
+                            onChange={(e) => setFormData({ ...formData, codigo: e.target.value })}
+                            placeholder="Ej: ABC-123"
                         />
                     </div>
 
@@ -240,26 +208,42 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                         </Select>
                     </div>
 
-                    {/* Tipo de Producto */}
+                    {/* Tipo de Producto (Uso) */}
                     <div className="space-y-2">
-                        <Label>Tipo de Producto *</Label>
-                        <RadioGroup
-                            value={formData.es_pesable ? "pesable" : "unitario"}
-                            onValueChange={(value) => setFormData({ ...formData, es_pesable: value === "pesable" })}
+                        <Label htmlFor="tipo">Uso del Producto *</Label>
+                        <Select
+                            value={formData.tipo}
+                            onValueChange={(value: any) => setFormData({ ...formData, tipo: value })}
                         >
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="unitario" id="unitario" />
-                                <Label htmlFor="unitario" className="font-normal cursor-pointer">
-                                    Unitario (se vende por unidad)
-                                </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="pesable" id="pesable" />
-                                <Label htmlFor="pesable" className="font-normal cursor-pointer">
-                                    Pesable (se vende por peso/kg)
-                                </Label>
-                            </div>
-                        </RadioGroup>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Seleccionar uso" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="producto_terminado">Producto Terminado (Venta)</SelectItem>
+                                <SelectItem value="ingrediente">Ingrediente (Producción)</SelectItem>
+                                <SelectItem value="ambos">Ambos (Venta y Producción)</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Unidad de Medida */}
+                    <div className="space-y-2">
+                        <Label htmlFor="unidad_medida">Unidad de Medida *</Label>
+                        <Select
+                            value={formData.unidad_medida}
+                            onValueChange={(value: any) => setFormData({ ...formData, unidad_medida: value })}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Seleccionar unidad" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="unidades">Unidades (uds)</SelectItem>
+                                <SelectItem value="kg">Kilogramos (kg)</SelectItem>
+                                <SelectItem value="g">Gramos (g)</SelectItem>
+                                <SelectItem value="L">Litros (L)</SelectItem>
+                                <SelectItem value="ml">Mililitros (ml)</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     {/* Estado Activo/Inactivo */}
@@ -287,67 +271,126 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                         )}
                     </div>
 
-                    {/* Precios */}
+                    {/* Precios y Margen */}
+                    <div className="space-y-4 pt-2 border-t">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="costo_unitario">Costo Unitario *</Label>
+                                <Input
+                                    id="costo_unitario"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={formData.costo_unitario}
+                                    onChange={(e) => setFormData({ ...formData, costo_unitario: e.target.value })}
+                                    placeholder="0.00"
+                                    required
+                                />
+                                {producto?.tiene_receta && (
+                                    <p className="text-[10px] text-muted-foreground italic">
+                                        Basado en costo de receta: ${Number(producto.costo_receta || 0).toLocaleString()}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="margen_deseado">Margen Deseado (%)</Label>
+                                <div className="flex gap-2">
+                                    <Input
+                                        id="margen_deseado"
+                                        type="number"
+                                        min="0"
+                                        max="99"
+                                        value={formData.margen_deseado}
+                                        onChange={(e) => setFormData({ ...formData, margen_deseado: e.target.value })}
+                                        className="w-24"
+                                    />
+                                    <div className="flex-1 text-right self-center">
+                                        <span className="text-xs text-muted-foreground mr-1">Sugerido:</span>
+                                        <span className="text-sm font-bold text-green-600">
+                                            ${(() => {
+                                                const costo = parseFloat(formData.costo_unitario) || 0
+                                                const margin = parseFloat(formData.margen_deseado) || 0
+                                                const sugerido = margin < 100
+                                                    ? Math.round(costo / (1 - margin / 100))
+                                                    : Math.round(costo * 2)
+                                                return sugerido.toLocaleString()
+                                            })()}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="precio_venta">Precio de Venta *</Label>
+                                <div className="flex gap-2">
+                                    <Input
+                                        id="precio_venta"
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        value={formData.precio_venta}
+                                        onChange={(e) => setFormData({ ...formData, precio_venta: e.target.value })}
+                                        placeholder="0.00"
+                                        className="flex-1"
+                                        required
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-10 text-[10px] px-2"
+                                        onClick={() => {
+                                            const costo = parseFloat(formData.costo_unitario) || 0
+                                            const margin = parseFloat(formData.margen_deseado) || 0
+                                            const sugerido = margin < 100
+                                                ? Math.round(costo / (1 - margin / 100))
+                                                : Math.round(costo * 2)
+                                            setFormData({ ...formData, precio_venta: sugerido.toString() })
+                                        }}
+                                    >
+                                        Aplicar Sugerido
+                                    </Button>
+                                </div>
+                                {producto?.tiene_receta && (
+                                    <p className="text-[10px] text-amber-600 italic">
+                                        ⚠️ Este producto tiene una receta vinculada.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Stock */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="precio_venta">Precio de Venta *</Label>
+                            <Label htmlFor="stock_actual">Stock Inicial / Actual *</Label>
                             <Input
-                                id="precio_venta"
+                                id="stock_actual"
                                 type="number"
                                 step="0.01"
                                 min="0"
-                                value={formData.precio_venta}
-                                onChange={(e) => setFormData({ ...formData, precio_venta: e.target.value })}
+                                value={formData.stock_actual}
+                                onChange={(e) => setFormData({ ...formData, stock_actual: e.target.value })}
                                 placeholder="0.00"
                                 required
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="precio_costo">Precio de Costo *</Label>
+                            <Label htmlFor="stock_minimo">Stock Mínimo *</Label>
                             <Input
-                                id="precio_costo"
+                                id="stock_minimo"
                                 type="number"
                                 step="0.01"
                                 min="0"
-                                value={formData.precio_costo}
-                                onChange={(e) => setFormData({ ...formData, precio_costo: e.target.value })}
-                                placeholder="0.00"
+                                value={formData.stock_minimo}
+                                onChange={(e) => setFormData({ ...formData, stock_minimo: e.target.value })}
+                                placeholder="5.00"
                                 required
                             />
                         </div>
                     </div>
-
-                    {/* Stock (solo para unitarios) */}
-                    {!formData.es_pesable && (
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="stock_cantidad">Stock Inicial *</Label>
-                                <Input
-                                    id="stock_cantidad"
-                                    type="number"
-                                    step="1"
-                                    min="0"
-                                    value={formData.stock_cantidad}
-                                    onChange={(e) => setFormData({ ...formData, stock_cantidad: e.target.value })}
-                                    placeholder="0"
-                                    required
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="stock_minimo">Stock Mínimo *</Label>
-                                <Input
-                                    id="stock_minimo"
-                                    type="number"
-                                    step="1"
-                                    min="0"
-                                    value={formData.stock_minimo}
-                                    onChange={(e) => setFormData({ ...formData, stock_minimo: e.target.value })}
-                                    placeholder="5"
-                                    required
-                                />
-                            </div>
-                        </div>
-                    )}
 
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>

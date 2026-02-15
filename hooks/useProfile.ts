@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Database } from "@/types/supabase";
 
-type Perfil = Database["public"]["Tables"]["perfiles"]["Row"];
+type Usuario = Database["public"]["Tables"]["usuarios"]["Row"];
 
 export function useProfile() {
-    const [perfil, setPerfil] = useState<Perfil | null>(null);
+    const [perfil, setPerfil] = useState<Usuario | null>(null);
     const [loading, setLoading] = useState(true);
     const supabase = createClient();
 
@@ -21,7 +21,7 @@ export function useProfile() {
                 }
 
                 const { data, error } = await supabase
-                    .from("perfiles")
+                    .from("usuarios")
                     .select("*")
                     .eq("id", user.id)
                     .single();

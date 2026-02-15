@@ -9,7 +9,7 @@ export async function UserListWrapper() {
 
     // Fetch users (profiles)
     const { data: profiles, error } = await supabase
-        .from("perfiles")
+        .from("usuarios")
         .select("*")
         .order("created_at", { ascending: false })
 

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { Package, Plus, Minus, Loader2 } from "lucide-react"
+import { adjustStock } from "@/actions/inventory"
 
 interface StockAdjusterProps {
     producto: any
@@ -21,17 +22,13 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
     const handleAdjust = async (delta: number) => {
         setLoading(true)
         try {
-            const supabase = createClient()
-            const newStock = Math.max(0, producto.stock_cantidad + delta)
+            const result = await adjustStock(producto.id, delta)
 
-            const { error } = await supabase
-                .from("productos")
-                .update({ stock_cantidad: newStock })
-                .eq("id", producto.id)
+            if (!result.success) {
+                throw new Error(result.error)
+            }
 
-            if (error) throw error
-
-            toast.success(`Stock actualizado a ${newStock} unidades`)
+            toast.success(`Stock actualizado a ${result.newStock} unidades`)
             onSuccess()
             setOpen(false)
             setAdjustment("")
@@ -66,7 +63,7 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
                     <div>
                         <h4 className="font-medium text-sm mb-1">Ajustar Stock</h4>
                         <p className="text-xs text-muted-foreground">
-                            Stock actual: <strong>{producto.stock_cantidad} uds</strong>
+                            Stock actual: <strong>{(producto.stock_actual || 0)} uds</strong>
                         </p>
                     </div>
 
@@ -75,7 +72,7 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
                             variant="outline"
                             size="sm"
                             onClick={() => handleAdjust(-1)}
-                            disabled={loading || producto.stock_cantidad === 0}
+                            disabled={loading || (producto.stock_actual || 0) === 0}
                             className="flex-1"
                         >
                             <Minus className="w-4 h-4 mr-1" />
@@ -98,7 +95,7 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
                             variant="outline"
                             size="sm"
                             onClick={() => handleAdjust(-10)}
-                            disabled={loading || producto.stock_cantidad === 0}
+                            disabled={loading || (producto.stock_actual || 0) === 0}
                             className="flex-1"
                         >
                             -10

@@ -1,7 +1,9 @@
 "use client";
 
+import { useLogin } from "@refinedev/core";
+
 import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
+// import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,27 +25,20 @@ export function LoginForm({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { mutate: login, isLoading } = useLogin();
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-      router.push("/protected");
-    } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "Ocurrió un error al iniciar sesión");
-    } finally {
-      setIsLoading(false);
-    }
+    login({ email, password }, {
+      onError: (error: any) => {
+        setError(error?.message || "Error al iniciar sesión");
+      },
+      onSuccess: () => {
+        // Redirect is handled by authProvider or we can force it here if needed
+        // But refines useLogin usually handles redirection if authProvider returns redirectTo
+      }
+    });
   };
 
   return (
@@ -74,7 +69,7 @@ export function LoginForm({
                 <div className="flex items-center">
                   <Label htmlFor="password">Contraseña</Label>
                   <Link
-                    href="/auth/forgot-password"
+                    href="/forgot-password"
                     className="ml-auto inline-block text-xs text-primary/80 hover:text-primary underline-offset-4 hover:underline"
                   >
                     ¿Olvidaste tu contraseña?
@@ -101,7 +96,7 @@ export function LoginForm({
             <div className="mt-6 text-center text-sm text-muted-foreground">
               ¿No tienes una cuenta?{" "}
               <Link
-                href="/auth/sign-up"
+                href="/register"
                 className="text-primary font-medium underline underline-offset-4 hover:text-primary/80"
               >
                 Regístrate

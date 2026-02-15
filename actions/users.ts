@@ -1,7 +1,7 @@
 "use server"
 
 import { createClient } from "@supabase/supabase-js"
-import { createClient as createServerClient } from "@/lib/supabase/server"
+import { validateRequest } from "@/lib/server/auth"
 import { revalidatePath } from "next/cache"
 
 // Admin client to bypass RLS and create users
@@ -18,6 +18,9 @@ const supabaseAdmin = createClient(
 
 export async function createUser(data: any) {
     try {
+        // Validar permisos antes de usar el cliente admin
+        await validateRequest('users.manage')
+
         // Enforce 'cajero' role for new users created via this action
         const rol = "cajero"
 
@@ -34,14 +37,14 @@ export async function createUser(data: any) {
         if (authData.user) {
             // Check if profile exists (created by trigger)
             const { data: existingProfile } = await supabaseAdmin
-                .from("perfiles")
+                .from("usuarios")
                 .select("id")
                 .eq("id", authData.user.id)
                 .single()
 
             if (existingProfile) {
                 const { error: profileError } = await supabaseAdmin
-                    .from("perfiles")
+                    .from("usuarios")
                     .update({
                         nombre_completo: data.nombre_completo,
                         rol: rol,
@@ -53,7 +56,7 @@ export async function createUser(data: any) {
             } else {
                 // If no trigger, create manually
                 const { error: profileError } = await supabaseAdmin
-                    .from("perfiles")
+                    .from("usuarios")
                     .insert({
                         id: authData.user.id,
                         nombre_completo: data.nombre_completo,
@@ -65,7 +68,7 @@ export async function createUser(data: any) {
             }
         }
 
-        revalidatePath("/protected/usuarios")
+        revalidatePath("/dashboard/usuarios")
         return { success: true }
     } catch (error: any) {
         console.error("Error creating user:", error)
@@ -74,11 +77,11 @@ export async function createUser(data: any) {
 }
 
 export async function updateUser(id: string, data: any) {
-    const supabase = await createServerClient()
-
     try {
+        const { supabase } = await validateRequest('users.manage')
+
         const { error } = await supabase
-            .from("perfiles")
+            .from("usuarios")
             .update({
                 nombre_completo: data.nombre_completo,
                 // We keep role update optional or restricted. For now, we trust the input but could restrict if needed.
@@ -89,7 +92,7 @@ export async function updateUser(id: string, data: any) {
             .eq("id", id)
 
         if (error) throw error
-        revalidatePath("/protected/usuarios")
+        revalidatePath("/dashboard/usuarios")
         return { success: true }
     } catch (error: any) {
         return { success: false, error: error.message }
@@ -97,22 +100,21 @@ export async function updateUser(id: string, data: any) {
 }
 
 export async function toggleUserStatus(id: string, currentStatus: boolean) {
-    const supabase = await createServerClient()
-
     try {
+        const { supabase, user } = await validateRequest('users.manage')
+
         // Prevent self-deactivation
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user && user.id === id) {
+        if (user.id === id) {
             return { success: false, error: "No puedes desactivar tu propia cuenta" }
         }
 
         const { error } = await supabase
-            .from("perfiles")
+            .from("usuarios")
             .update({ activo: !currentStatus })
             .eq("id", id)
 
         if (error) throw error
-        revalidatePath("/protected/usuarios")
+        revalidatePath("/dashboard/usuarios")
         return { success: true }
     } catch (error: any) {
         return { success: false, error: error.message }

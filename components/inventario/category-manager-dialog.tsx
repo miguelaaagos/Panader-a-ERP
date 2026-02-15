@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { toast } from "sonner"
 import { Loader2, Plus, Pencil, Trash2, FolderOpen } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { createCategory, updateCategory, deleteCategory } from "@/actions/inventory"
 
 interface Categoria {
     id: string
@@ -83,12 +84,11 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
 
         setLoading(true)
         try {
-            const supabase = createClient()
-            const { error } = await supabase
-                .from("categorias")
-                .insert([{ nombre: newCategoryName.trim() }])
+            const result = await createCategory(newCategoryName.trim())
 
-            if (error) throw error
+            if (!result.success) {
+                throw new Error(result.error)
+            }
 
             toast.success("Categoría creada correctamente")
             setNewCategoryName("")
@@ -112,13 +112,11 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
 
         setLoading(true)
         try {
-            const supabase = createClient()
-            const { error } = await supabase
-                .from("categorias")
-                .update({ nombre: editCategoryName.trim() })
-                .eq("id", id)
+            const result = await updateCategory(id, editCategoryName.trim())
 
-            if (error) throw error
+            if (!result.success) {
+                throw new Error(result.error)
+            }
 
             toast.success("Categoría actualizada correctamente")
             setEditingId(null)
@@ -149,13 +147,11 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
 
         setLoading(true)
         try {
-            const supabase = createClient()
-            const { error } = await supabase
-                .from("categorias")
-                .delete()
-                .eq("id", categoria.id)
+            const result = await deleteCategory(categoria.id)
 
-            if (error) throw error
+            if (!result.success) {
+                throw new Error(result.error)
+            }
 
             toast.success("Categoría eliminada correctamente")
             fetchCategorias()
