@@ -84,3 +84,48 @@ export async function closeCashSession(montoFinalReal: number, observaciones?: s
         return { success: false, error: error.message }
     }
 }
+
+export async function getSessionSummary(sessionId: string) {
+    try {
+        const { supabase } = await validateRequest()
+
+        // Obtener totales por método de pago
+        const { data, error } = await supabase
+            .from("ventas")
+            .select("total, metodo_pago")
+            .eq("arqueo_id", sessionId) // Asumiendo que las ventas guardan el arqueo_id
+            .eq("estado", "completada")
+
+        if (error) throw error
+
+        const summary = (data || []).reduce((acc: any, sale: any) => {
+            const metodo = sale.metodo_pago
+            acc[metodo] = (acc[metodo] || 0) + Number(sale.total)
+            acc.total = (acc.total || 0) + Number(sale.total)
+            return acc
+        }, { efectivo: 0, tarjeta_debito: 0, tarjeta_credito: 0, transferencia: 0, total: 0 })
+
+        return { success: true, summary }
+    } catch (error: any) {
+        return { success: false, error: error.message }
+    }
+}
+
+export async function getRecentShiftSales(sessionId: string, limit = 5) {
+    try {
+        const { supabase } = await validateRequest()
+
+        const { data, error } = await supabase
+            .from("ventas")
+            .select("*")
+            .eq("arqueo_id", sessionId)
+            .order("fecha", { ascending: false })
+            .limit(limit)
+
+        if (error) throw error
+
+        return { success: true, data }
+    } catch (error: any) {
+        return { success: false, error: error.message }
+    }
+}

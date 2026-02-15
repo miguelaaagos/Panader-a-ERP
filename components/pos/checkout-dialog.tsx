@@ -21,6 +21,7 @@ export interface CheckoutData {
     cliente_nombre?: string
     cliente_rut?: string
     notas?: string
+    tipo_documento?: "Boleta" | "Factura" | "Ticket"
 }
 
 export function CheckoutDialog({ open, onOpenChange, total, onConfirm, submitting }: CheckoutDialogProps) {
@@ -28,6 +29,7 @@ export function CheckoutDialog({ open, onOpenChange, total, onConfirm, submittin
     const [clienteNombre, setClienteNombre] = useState("")
     const [clienteRut, setClienteRut] = useState("")
     const [notas, setNotas] = useState("")
+    const [tipoDocumento, setTipoDocumento] = useState<CheckoutData["tipo_documento"]>("Boleta")
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -35,7 +37,8 @@ export function CheckoutDialog({ open, onOpenChange, total, onConfirm, submittin
             metodo_pago: metodoPago,
             cliente_nombre: clienteNombre.trim() || undefined,
             cliente_rut: clienteRut.trim() || undefined,
-            notas: notas.trim() || undefined
+            notas: notas.trim() || undefined,
+            tipo_documento: tipoDocumento
         })
     }
 
@@ -64,6 +67,20 @@ export function CheckoutDialog({ open, onOpenChange, total, onConfirm, submittin
                     </div>
 
                     <div className="space-y-3">
+                        <Label className="text-base">Documento</Label>
+                        <Select value={tipoDocumento} onValueChange={(v: any) => setTipoDocumento(v)}>
+                            <SelectTrigger className="w-full h-11">
+                                <SelectValue placeholder="Tipo de Documento" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Boleta">Boleta</SelectItem>
+                                <SelectItem value="Factura">Factura</SelectItem>
+                                <SelectItem value="Ticket">Ticket Interno</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="space-y-3">
                         <Label className="text-base">Médodo de Pago</Label>
                         <div className="grid grid-cols-2 gap-2">
                             {paymentOptions.map((opt) => {
@@ -75,8 +92,8 @@ export function CheckoutDialog({ open, onOpenChange, total, onConfirm, submittin
                                         type="button"
                                         onClick={() => setMetodoPago(opt.id as any)}
                                         className={`flex items-center gap-3 p-3 rounded-lg border text-sm font-medium transition-all ${isActive
-                                                ? "border-primary bg-primary/10 text-primary shadow-sm ring-1 ring-primary"
-                                                : "hover:bg-muted border-input"
+                                            ? "border-primary bg-primary/10 text-primary shadow-sm ring-1 ring-primary"
+                                            : "hover:bg-muted border-input"
                                             }`}
                                     >
                                         <Icon className={`h-4 w-4 ${isActive ? "text-primary" : "text-muted-foreground"}`} />

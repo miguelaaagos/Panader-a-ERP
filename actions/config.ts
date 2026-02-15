@@ -11,8 +11,6 @@ const configSchema = z.object({
     direccion: z.string().optional().nullable(),
     telefono: z.string().optional().nullable(),
     email: z.string().email("Email inválido").optional().nullable().or(z.literal("")),
-    encabezado_boleta: z.string().optional().nullable(),
-    pie_boleta: z.string().optional().nullable(),
     umbral_stock_bajo: z.number().min(0, "El umbral debe ser mayor o igual a 0").default(10),
     simbolo_moneda: z.string().default("$"),
 })

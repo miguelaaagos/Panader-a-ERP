@@ -19,6 +19,7 @@ const saleSchema = z.object({
     notas: z.string().optional(),
     items: z.array(saleItemSchema).min(1, "Debe agregar al menos un producto"),
     descuento_global: z.number().optional().default(0),
+    arqueo_id: z.string().uuid().optional().nullable(),
 })
 
 export type SaleFormData = z.infer<typeof saleSchema>
@@ -56,125 +57,35 @@ export async function createSale(data: SaleFormData) {
         }
         const validated = validationResult.data
 
-        // 1. Validar Stock
-        const productIds = validated.items.map(i => i.producto_id)
-        const { data: products, error: productsError } = await supabase
-            .from("productos")
-            .select("id, nombre, stock_actual, precio_venta, costo_unitario")
-            .in("id", productIds)
-
-        if (productsError) throw new Error("Error al validar stock: " + productsError.message)
-
-        type ProductType = {
-            id: string
-            nombre: string
-            stock_actual: number
-            precio_venta: number
-            costo_unitario: number
-        }
-
-        const productMap = new Map((products as ProductType[]).map((p: ProductType) => [p.id, p]))
-
-        for (const item of validated.items) {
-            const product = productMap.get(item.producto_id)
-            if (!product) throw new Error(`Producto no encontrado: ${item.producto_id}`)
-            if (Number(product.stock_actual) < item.cantidad) {
-                throw new Error(`Stock insuficiente para: ${product.nombre}`)
-            }
-        }
-
-        // 2. Calcular Totales
-        let subtotalVenta = 0
-        const itemsToInsert = validated.items.map(item => {
-            const product = productMap.get(item.producto_id)
-            const subtotalLine = item.cantidad * item.precio_unitario
-            const totalLine = subtotalLine - (item.descuento || 0)
-            subtotalVenta += subtotalLine
-
-            return {
-                tenant_id,
+        // 1. Llamada atómica al RPC
+        // Esto maneja: Validar stock, Decrementar stock, Insertar Venta e Insertar Detalles en UNA sola transacción.
+        const { data: saleId, error: rpcError } = await supabase.rpc('create_sale_v1', {
+            p_tenant_id: tenant_id,
+            p_usuario_id: user.id,
+            p_cliente_nombre: validated.cliente_nombre || null,
+            p_cliente_rut: validated.cliente_rut || null,
+            p_metodo_pago: validated.metodo_pago,
+            p_notas: validated.notas || null,
+            p_descuento_global: validated.descuento_global || 0,
+            p_arqueo_id: validated.arqueo_id || null,
+            p_items: validated.items.map(item => ({
                 producto_id: item.producto_id,
                 cantidad: item.cantidad,
                 precio_unitario: item.precio_unitario,
-                subtotal: subtotalLine,
-                descuento: item.descuento,
-                total: totalLine,
-                costo_unitario: product?.costo_unitario || 0
-            }
+                descuento: item.descuento || 0
+            }))
         })
 
-        const totalVenta = subtotalVenta - (validated.descuento_global || 0)
-
-        // 3. Generar número de venta (V-AAAAMMDD-XXX)
-        // Usar la fecha local para el número de venta para evitar saltos de día por UTC
-        const now = new Date()
-        const datePart = now.toLocaleDateString('en-CA') // YYYY-MM-DD
-        const dateStr = datePart.replace(/-/g, '')
-
-        const { count, error: countError } = await supabase
-            .from("ventas")
-            .select("id", { count: "exact", head: true })
-            .eq("tenant_id", tenant_id)
-            .gte("created_at", datePart)
-
-        if (countError) console.warn("Error counting sales for today:", countError)
-
-        const saleNumber = `V-${dateStr}-${String((count || 0) + 1).padStart(3, '0')}`
-
-        // 4. Iniciar Registro
-        // Crear la Venta
-        const { data: sale, error: saleError } = await supabase
-            .from("ventas")
-            .insert([{
-                tenant_id,
-                numero_venta: saleNumber,
-                fecha: now.toISOString(),
-                cliente_nombre: validated.cliente_nombre || null,
-                cliente_rut: validated.cliente_rut || null,
-                subtotal: subtotalVenta,
-                descuento: validated.descuento_global,
-                total: totalVenta,
-                metodo_pago: validated.metodo_pago,
-                estado: "completada",
-                usuario_id: user.id,
-                notas: validated.notas || null
-            }])
-            .select()
-            .single()
-
-        if (saleError) throw new Error("Error al crear venta: " + saleError.message)
-
-        // Crear los Detalles
-        const detailsWithSaleId = itemsToInsert.map(item => ({ ...item, venta_id: sale.id }))
-        const { error: detailsError } = await supabase
-            .from("venta_detalles")
-            .insert(detailsWithSaleId)
-
-        if (detailsError) {
-            // Intentar limpiar la venta si fallan los detalles
-            await supabase.from("ventas").delete().eq("id", sale.id)
-            throw new Error("Error al crear detalles de venta: " + detailsError.message)
-        }
-
-        // 5. Actualizar Stock (Security Definer RPC)
-        for (const item of validated.items) {
-            const { error: stockError } = await supabase.rpc('decrement_stock', {
-                product_id: item.producto_id,
-                amount: item.cantidad
-            })
-
-            if (stockError) {
-                console.error(`Error updating stock for ${item.producto_id}:`, stockError)
-                // Notificamos pero no fallamos toda la venta ya que el dinero ya se procesó.
-                // En un sistema ideal esto sería una transacción atómica.
-            }
+        if (rpcError) {
+            console.error("RPC Sale Error:", rpcError)
+            return { success: false, error: rpcError.message }
         }
 
         revalidatePath("/dashboard/pos")
         revalidatePath("/dashboard/inventario")
         revalidatePath("/dashboard/ventas")
 
-        return { success: true, saleId: sale.id }
+        return { success: true, saleId }
 
     } catch (error: any) {
         console.error("Critical Error in createSale:", error)
@@ -263,6 +174,31 @@ export async function anularVenta(id: string) {
         return { success: true }
     } catch (error: any) {
         console.error("Error anularVenta:", error)
+        return { success: false, error: error.message }
+    }
+}
+
+export async function getSaleDetails(id: string) {
+    try {
+        const { supabase, profile } = await validateRequest()
+
+        const { data, error } = await supabase
+            .from("ventas")
+            .select(`
+                *,
+                usuario:usuarios(nombre_completo),
+                detalles:venta_detalles(
+                    *,
+                    producto:productos(nombre, codigo)
+                )
+            `)
+            .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
+            .single()
+
+        if (error) throw error
+        return { success: true, data }
+    } catch (error: any) {
         return { success: false, error: error.message }
     }
 }

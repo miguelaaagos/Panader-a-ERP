@@ -6,7 +6,6 @@ import { ShoppingCart, Package, ChefHat, FileText } from "lucide-react"
 
 import { DashboardSummary, DashboardSummarySkeleton } from "@/components/dashboard/dashboard-summary"
 import { DashboardChartsContainer, DashboardChartsSkeleton } from "@/components/dashboard/dashboard-charts-container"
-import { CashSessionManager } from "@/components/caja/cash-session-manager"
 import { StockAlertsContainer, StockAlertsSkeleton } from "@/components/dashboard/stock-alerts-container"
 
 async function WelcomeMessage() {
@@ -63,7 +62,6 @@ export default async function DashboardPage() {
           </Suspense>
         </div>
         <div className="space-y-6">
-          <CashSessionManager />
           <Suspense fallback={<StockAlertsSkeleton />}>
             <StockAlertsContainer />
           </Suspense>
@@ -100,6 +98,6 @@ export default async function DashboardPage() {
           </div>
         </Link>
       </div>
-    </div>
+    </div >
   )
 }

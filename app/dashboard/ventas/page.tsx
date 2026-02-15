@@ -10,12 +10,15 @@ import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { SaleDetailsModal } from "@/components/pos/sale-details-modal"
 
 export default function VentasPage() {
     const [sales, setSales] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [processingId, setProcessingId] = useState<string | null>(null)
     const [searchTerm, setSearchTerm] = useState("")
+    const [selectedSaleId, setSelectedSaleId] = useState<string | null>(null)
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
     useEffect(() => {
         fetchSales()
@@ -122,10 +125,20 @@ export default function VentasPage() {
                         sales={filteredSales}
                         loading={loading}
                         onAnular={handleAnular}
+                        onView={(id) => {
+                            setSelectedSaleId(id)
+                            setIsDetailsOpen(true)
+                        }}
                         processingId={processingId}
                     />
                 </CardContent>
             </Card>
+
+            <SaleDetailsModal
+                saleId={selectedSaleId}
+                isOpen={isDetailsOpen}
+                onClose={() => setIsDetailsOpen(false)}
+            />
         </div>
     )
 }

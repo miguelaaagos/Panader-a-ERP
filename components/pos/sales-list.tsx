@@ -31,10 +31,11 @@ interface SalesListProps {
     sales: any[]
     loading: boolean
     onAnular: (id: string) => void
+    onView?: (id: string) => void
     processingId: string | null
 }
 
-export function SalesList({ sales, loading, onAnular, processingId }: SalesListProps) {
+export function SalesList({ sales, loading, onAnular, onView, processingId }: SalesListProps) {
     const getStatusBadge = (status: string) => {
         switch (status) {
             case "completada":
@@ -115,7 +116,12 @@ export function SalesList({ sales, loading, onAnular, processingId }: SalesListP
                             </TableCell>
                             <TableCell className="text-right">
                                 <div className="flex justify-end gap-2">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+                                        onClick={() => onView && onView(sale.id)}
+                                    >
                                         <Eye className="h-4 w-4" />
                                     </Button>
 

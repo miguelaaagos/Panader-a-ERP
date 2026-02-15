@@ -8,7 +8,8 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, Ticket, Printer } from "lucide-react"
+import { CheckCircle2, Ticket } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 interface SuccessModalProps {
     open: boolean
@@ -29,62 +30,67 @@ export function SuccessModal({ open, onOpenChange, transaction, onNewSale }: Suc
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md text-center">
-                <DialogHeader>
-                    <div className="mx-auto bg-green-100 p-3 rounded-full mb-4">
-                        <CheckCircle2 className="w-12 h-12 text-green-600" />
+                <DialogHeader className="pt-8 px-6">
+                    <div className="mx-auto bg-green-500/10 p-4 rounded-full mb-6 ring-1 ring-green-500/20">
+                        <CheckCircle2 className="w-16 h-16 text-green-500 animate-in zoom-in duration-500 fill-green-500/10" />
                     </div>
-                    <DialogTitle className="text-2xl font-bold text-center text-green-700">
-                        ¡Venta Exitosa!
+                    <DialogTitle className="text-3xl font-black text-center text-foreground tracking-tight">
+                        ¡Venta Procesada!
                     </DialogTitle>
-                    <DialogDescription className="text-center">
-                        La transacción se ha procesado correctamente.
+                    <DialogDescription className="text-center text-base pt-2 text-muted-foreground">
+                        El comprobante ha sido generado correctamente.
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="py-6 space-y-4">
-                    <div className="bg-muted/50 p-4 rounded-lg space-y-2">
-                        <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">Documento</span>
-                            <span className="font-medium">{transaction.tipo_documento}</span>
+                <div className="px-6 py-4">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-muted/80 to-muted/40 backdrop-blur-sm border border-border/50 p-6 rounded-2xl shadow-inner space-y-4">
+                        <div className="flex justify-between items-center py-1 border-b border-border/10">
+                            <span className="text-xs uppercase tracking-widest text-muted-foreground font-bold">Documento</span>
+                            <Badge variant="outline" className="font-semibold px-3 py-0.5 bg-background/50">
+                                {transaction.tipo_documento}
+                            </Badge>
                         </div>
-                        <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">ID Transacción</span>
-                            <span className="font-mono text-xs">{transaction.id.slice(0, 8)}...</span>
-                        </div>
-                        <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">Método de Pago</span>
-                            <span className="font-medium">{transaction.metodo_pago}</span>
-                        </div>
-                        <div className="border-t pt-2 mt-2 flex justify-between items-center">
-                            <span className="font-bold text-lg">Total Pagado</span>
-                            <span className="font-bold text-2xl text-primary">
-                                ${transaction.total.toLocaleString("es-CL")}
+
+                        <div className="flex justify-between items-center py-1 border-b border-border/10">
+                            <span className="text-xs uppercase tracking-widest text-muted-foreground font-bold">Transacción</span>
+                            <span className="font-mono text-[10px] text-muted-foreground bg-muted p-1 rounded">
+                                {transaction.id.slice(0, 12)}...
                             </span>
                         </div>
+
+                        <div className="flex justify-between items-center py-1 border-b border-border/10">
+                            <span className="text-xs uppercase tracking-widest text-muted-foreground font-bold">Pago</span>
+                            <span className="font-bold text-sm capitalize">{transaction.metodo_pago.replace('_', ' ')}</span>
+                        </div>
+
+                        <div className="pt-4 flex flex-col items-center justify-center">
+                            <span className="text-[10px] uppercase tracking-[0.2em] text-primary font-black mb-1">Monto Total</span>
+                            <div className="text-5xl font-black tracking-tighter text-primary">
+                                ${transaction.total.toLocaleString("es-CL")}
+                            </div>
+                        </div>
+
                         {transaction.change !== undefined && transaction.change > 0 && (
-                            <div className="flex justify-between items-center text-sm text-green-600 font-medium">
-                                <span>Vuelto</span>
-                                <span>${transaction.change.toLocaleString("es-CL")}</span>
+                            <div className="pt-2 flex justify-center">
+                                <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-none px-4 py-1 text-xs">
+                                    Vuelto: ${transaction.change.toLocaleString("es-CL")}
+                                </Badge>
                             </div>
                         )}
                     </div>
                 </div>
 
-                <DialogFooter className="flex-col gap-2 sm:gap-2">
+                <DialogFooter className="px-6 pb-8 pt-2">
                     <Button
                         size="lg"
-                        className="w-full font-bold text-lg h-12"
+                        className="w-full font-bold text-lg h-14 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 active:translate-y-0"
                         onClick={() => {
                             onOpenChange(false)
                             onNewSale()
                         }}
                     >
-                        <Ticket className="w-5 h-5 mr-2" />
-                        Nueva Venta
-                    </Button>
-                    <Button variant="outline" className="w-full" onClick={() => window.print()}>
-                        <Printer className="w-4 h-4 mr-2" />
-                        Imprimir Comprobante
+                        <Ticket className="w-6 h-6 mr-3" />
+                        NUEVA VENTA
                     </Button>
                 </DialogFooter>
             </DialogContent>

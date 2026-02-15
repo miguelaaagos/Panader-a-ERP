@@ -30,8 +30,7 @@ const configFormSchema = z.object({
     direccion: z.string().optional().nullable(),
     telefono: z.string().optional().nullable(),
     email: z.string().email("Email inválido").optional().nullable().or(z.literal("")),
-    encabezado_boleta: z.string().optional().nullable(),
-    pie_boleta: z.string().optional().nullable(),
+
     umbral_stock_bajo: z.coerce.number().min(0, "El umbral debe ser mayor o igual a 0").default(10),
     simbolo_moneda: z.string().default("$"),
 })
@@ -51,8 +50,7 @@ export function ConfigForm() {
             direccion: "",
             telefono: "",
             email: "",
-            encabezado_boleta: "",
-            pie_boleta: "",
+
             umbral_stock_bajo: 10,
             simbolo_moneda: "$",
         },
@@ -71,8 +69,7 @@ export function ConfigForm() {
                         direccion: data.direccion || "",
                         telefono: data.telefono || "",
                         email: data.email || "",
-                        encabezado_boleta: data.encabezado_boleta || "",
-                        pie_boleta: data.pie_boleta || "",
+
                         umbral_stock_bajo: Number(data.umbral_stock_bajo) || 10,
                         simbolo_moneda: data.simbolo_moneda || "$",
                     })
@@ -222,58 +219,6 @@ export function ConfigForm() {
 
                     {/* Sección: Configuración de Boleta y Globales */}
                     <div className="space-y-8">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Printer className="h-5 w-5" />
-                                    Personalización de Boleta
-                                </CardTitle>
-                                <CardDescription>
-                                    Configura los mensajes que aparecen en tus boletas de venta.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <FormField
-                                    control={form.control}
-                                    name="encabezado_boleta"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Texto de Encabezado</FormLabel>
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Ej: 'Venta de pan y pasteles al por mayor'"
-                                                    className="min-h-[80px]"
-                                                    {...field}
-                                                    value={field.value || ''}
-                                                />
-                                            </FormControl>
-                                            <FormDescription>Aparecerá justo debajo del nombre del negocio.</FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="pie_boleta"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Texto de Pie de Página</FormLabel>
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Ej: 'Gracias por su preferencia. No se aceptan cambios sin boleta.'"
-                                                    className="min-h-[80px]"
-                                                    {...field}
-                                                    value={field.value || ''}
-                                                />
-                                            </FormControl>
-                                            <FormDescription>Aparecerá al final de la boleta.</FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </CardContent>
-                        </Card>
-
                         <Card>
                             <CardHeader>
                                 <CardTitle>Ajustes Globales</CardTitle>
