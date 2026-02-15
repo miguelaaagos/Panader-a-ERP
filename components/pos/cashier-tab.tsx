@@ -24,21 +24,46 @@ import {
     Banknote,
     ArrowRightLeft,
     ReceiptText,
-    Eye
+    Eye,
+    ArrowUpRight
 } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { SaleDetailsModal } from "./sale-details-modal"
+import { ShiftHistory } from "./shift-history"
+
+interface CashSession {
+    id: string
+    fecha_apertura: string
+    monto_inicial: number
+    estado: string
+}
+
+interface SessionSummary {
+    efectivo: number
+    tarjeta_debito: number
+    tarjeta_credito: number
+    transferencia: number
+    total: number
+}
+
+interface RecentSale {
+    id: string
+    numero_venta: string
+    fecha: string
+    metodo_pago: string
+    total: number
+}
 
 interface CashierTabProps {
     onSessionChange?: () => void
 }
 
 export function CashierTab({ onSessionChange }: CashierTabProps) {
-    const [session, setSession] = useState<any>(null)
+    const [session, setSession] = useState<CashSession | null>(null)
     const [loading, setLoading] = useState(true)
-    const [summary, setSummary] = useState<any>(null)
-    const [recentSales, setRecentSales] = useState<any[]>([])
+    const [summary, setSummary] = useState<SessionSummary | null>(null)
+    const [recentSales, setRecentSales] = useState<RecentSale[]>([])
 
     const [opening, setOpening] = useState(false)
     const [closing, setClosing] = useState(false)
@@ -54,14 +79,13 @@ export function CashierTab({ onSessionChange }: CashierTabProps) {
         setLoading(true)
         const res = await getCurrentCashSession()
         if (res.success && res.session) {
-            setSession(res.session)
-            // Cargar resumen y actividad
+            setSession(res.session as CashSession)
             const [summaryRes, salesRes] = await Promise.all([
                 getSessionSummary(res.session.id),
                 getRecentShiftSales(res.session.id)
             ])
-            if (summaryRes.success) setSummary(summaryRes.summary)
-            if (salesRes.success) setRecentSales(salesRes.data || [])
+            if (summaryRes.success) setSummary(summaryRes.summary as SessionSummary)
+            if (salesRes.success) setRecentSales((salesRes.data || []) as RecentSale[])
         } else {
             setSession(null)
             setSummary(null)
@@ -301,45 +325,51 @@ export function CashierTab({ onSessionChange }: CashierTabProps) {
                                 </CardContent>
                             </Card>
 
-                            {/* Últimas Ventas */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-base flex items-center gap-2">
-                                        <ReceiptText className="h-4 w-4" />
-                                        Últimas Ventas (Turno)
-                                    </CardTitle>
+                            {/* Actividad Reciente */}
+                            <Card className="border-blue-500/10 shadow-sm">
+                                <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+                                    <div className="space-y-1">
+                                        <CardTitle className="text-sm font-bold flex items-center gap-2">
+                                            <ArrowUpRight className="h-4 w-4 text-blue-600" />
+                                            Actividad del Turno Actual
+                                        </CardTitle>
+                                        <CardDescription>Últimas ventas realizadas ahoras</CardDescription>
+                                    </div>
+                                    <Button variant="outline" size="sm" className="h-8">Ver todas</Button>
                                 </CardHeader>
                                 <CardContent>
-                                    {recentSales.length > 0 ? (
-                                        <div className="space-y-3">
+                                    {recentSales.length === 0 ? (
+                                        <div className="flex flex-col items-center justify-center py-12 text-muted-foreground italic text-sm border-2 border-dashed rounded-xl">
+                                            <p>No se han registrado ventas en este turno.</p>
+                                        </div>
+                                    ) : (
+                                        <div className="divide-y divide-border/50">
                                             {recentSales.map((sale) => (
-                                                <div key={sale.id} className="group flex justify-between items-center text-sm p-2 hover:bg-muted/50 rounded-md transition-colors">
+                                                <div
+                                                    key={sale.id}
+                                                    className="flex items-center justify-between py-3 hover:bg-muted/30 transition-colors px-2 rounded-md cursor-pointer group"
+                                                    onClick={() => {
+                                                        setSelectedSaleId(sale.id)
+                                                        setIsDetailsOpen(true)
+                                                    }}
+                                                >
                                                     <div className="flex items-center gap-3">
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                            onClick={() => {
-                                                                setSelectedSaleId(sale.id)
-                                                                setIsDetailsOpen(true)
-                                                            }}
-                                                        >
-                                                            <Eye className="h-3.5 w-3.5" />
-                                                        </Button>
+                                                        <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-xs font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                                            {sale.numero_venta.slice(-2)}
+                                                        </div>
                                                         <div>
-                                                            <p className="font-medium">#{sale.numero_venta.slice(-6)}</p>
-                                                            <p className="text-[10px] text-muted-foreground">
-                                                                {format(new Date(sale.fecha), 'HH:mm', { locale: es })} • {sale.metodo_pago.replace('_', ' ')}
+                                                            <p className="font-bold text-sm tracking-tight">{sale.numero_venta}</p>
+                                                            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">
+                                                                {format(new Date(sale.fecha), "HH:mm:ss", { locale: es })} • {sale.metodo_pago}
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <span className="font-bold text-primary">${Number(sale.total).toLocaleString('es-CL')}</span>
+                                                    <div className="text-right flex items-center gap-3">
+                                                        <span className="font-black text-sm">${sale.total.toLocaleString("es-CL")}</span>
+                                                        <Eye className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                    </div>
                                                 </div>
                                             ))}
-                                        </div>
-                                    ) : (
-                                        <div className="h-32 flex flex-col items-center justify-center text-muted-foreground">
-                                            <p className="text-sm">No hay ventas registradas</p>
                                         </div>
                                     )}
                                 </CardContent>
@@ -359,6 +389,11 @@ export function CashierTab({ onSessionChange }: CashierTabProps) {
                         </div>
                     </div>
                 )}
+
+                {/* Historial de Turnos (Siempre visible) */}
+                <div className="mt-6">
+                    <ShiftHistory />
+                </div>
             </div>
 
             <SaleDetailsModal

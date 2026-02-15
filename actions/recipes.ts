@@ -133,7 +133,17 @@ export async function upsertRecipe(data: RecipeFormData, recipeId?: string) {
         // Formula: costo / (1 - margen/100)
         const precioSugerido = margen < 100 ? Math.round(costoPorUnidad / (1 - margen / 100)) : Math.round(costoPorUnidad * 2)
 
-        const productUpdate: any = {
+        interface ProductUpdate {
+            tiene_receta: boolean
+            costo_receta: number
+            precio_sugerido: number
+            costo_unitario: number
+            margen_deseado: number
+            updated_at: string
+            precio_venta?: number
+        }
+
+        const productUpdate: ProductUpdate = {
             tiene_receta: true,
             costo_receta: costoPorUnidad,
             precio_sugerido: precioSugerido,
@@ -156,9 +166,9 @@ export async function upsertRecipe(data: RecipeFormData, recipeId?: string) {
         revalidatePath("/dashboard/inventario")
         return { success: true, id: currentRecipeId }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error in upsertRecipe:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -190,16 +200,16 @@ export async function recalculateRecipesUsingIngredient(ingredienteId: string) {
 
         revalidatePath("/dashboard/recetas")
         return { success: true, count: uniqueRecipeIds.length }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error recalculating recipes:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
 /**
  * Función interna para recalcular el costo de una receta y actualizar el producto destino
  */
-async function recalculateRecipeDetail(recipeId: string, supabase: any) {
+async function recalculateRecipeDetail(recipeId: string, supabase: ReturnType<typeof validateRequest> extends Promise<{ supabase: infer S }> ? S : any) {
     // 1. Obtener todos los ingredientes actuales y sus precios actuales
     const { data: recipe, error: recipeError } = await supabase
         .from("recetas")
@@ -286,8 +296,8 @@ export async function getRecipes() {
 
         if (error) throw error
         return { success: true, data }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -312,8 +322,8 @@ export async function getRecipeDetail(id: string) {
 
         if (error) throw error
         return { success: true, data }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -333,7 +343,7 @@ export async function deleteRecipe(id: string) {
 
         revalidatePath("/dashboard/recetas")
         return { success: true }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }

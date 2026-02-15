@@ -18,15 +18,30 @@ import { saveOfflineSale } from "@/lib/offline-queue"
 import { OfflineSync } from "./offline-sync"
 import { format } from "date-fns"
 
+import { Product, Category } from "./product-grid"
+
+interface TransactionRecord {
+    id: string
+    total: number
+    metodo_pago: string
+    tipo_documento: string
+}
+
+interface CashSession {
+    id: string
+    fecha_apertura: string
+    estado: string
+}
+
 export function POSContainer() {
-    const [products, setProducts] = useState<any[]>([])
-    const [categories, setCategories] = useState<any[]>([])
+    const [products, setProducts] = useState<Product[]>([])
+    const [categories, setCategories] = useState<Category[]>([])
     const [loading, setLoading] = useState(true)
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [successModalOpen, setSuccessModalOpen] = useState(false)
-    const [lastTransaction, setLastTransaction] = useState<any>(null)
-    const [activeSession, setActiveSession] = useState<any>(null)
+    const [lastTransaction, setLastTransaction] = useState<TransactionRecord | null>(null)
+    const [activeSession, setActiveSession] = useState<CashSession | null>(null)
 
     // Store Centralizado
     const { items, addItem, updateQuantity, removeItem, clearCart, getTotals } = usePOSStore()
@@ -101,8 +116,9 @@ export function POSContainer() {
                 console.error("Sale error result:", result.error)
                 toast.error("Error en la venta: " + result.error)
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Checkout crash, saving offline:", error)
+            const errorMessage = error instanceof Error ? error.message : "Error desconocido"
 
             // Si hay un error de red o similar, guardamos en la cola offline
             const offlineData = {

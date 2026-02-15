@@ -10,7 +10,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Search, Loader2, List, LayoutGrid, PackageOpen } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-interface Product {
+export interface Product {
     id: string
     nombre: string
     precio_venta: number
@@ -19,7 +19,7 @@ interface Product {
     categoria_id?: string
 }
 
-interface Category {
+export interface Category {
     id: string
     nombre: string
 }

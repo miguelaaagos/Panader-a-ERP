@@ -27,8 +27,22 @@ import {
 } from "lucide-react"
 import { RoleGuard } from "@/components/auth/RoleGuard"
 
+interface Sale {
+    id: string
+    numero_venta: string
+    fecha: string
+    cliente_nombre?: string | null
+    cliente_rut?: string | null
+    metodo_pago: string
+    total: number
+    estado: string
+    usuario?: {
+        nombre_completo: string
+    } | null
+}
+
 interface SalesListProps {
-    sales: any[]
+    sales: Sale[]
     loading: boolean
     onAnular: (id: string) => void
     onView?: (id: string) => void

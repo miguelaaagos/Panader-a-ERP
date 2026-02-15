@@ -24,7 +24,7 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> { }
 export function Sidebar({ className }: SidebarProps) {
     const pathname = usePathname();
     const { mutate: logout } = useLogout();
-    const { can, isLoading } = useUserRole();
+    const { can } = useUserRole();
 
     const routes = [
         {

@@ -3,8 +3,13 @@
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
+interface TopProductItem {
+    nombre: string
+    total: number
+}
+
 interface TopProductsChartProps {
-    data: any[]
+    data: TopProductItem[]
 }
 
 const COLORS = [
@@ -43,7 +48,7 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
                                     border: "1px solid hsl(var(--border))",
                                     borderRadius: "8px"
                                 }}
-                                formatter={(value: any) => [`$${Number(value).toLocaleString('es-CL')}`, "Total"]}
+                                formatter={(value: number | string | undefined) => [`$${Number(value || 0).toLocaleString('es-CL')}`, "Total"]}
                             />
                             <Bar dataKey="total" radius={[0, 4, 4, 0]}>
                                 {data.map((entry, index) => (

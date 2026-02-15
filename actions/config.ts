@@ -30,9 +30,9 @@ export async function getBusinessConfig() {
         if (error && error.code !== "PGRST116") throw error
 
         return { success: true, data: data || null }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error fetching config:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -72,8 +72,8 @@ export async function updateBusinessConfig(data: ConfigData) {
 
         revalidatePath("/dashboard/configuracion")
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error updating config:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }

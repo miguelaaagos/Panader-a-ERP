@@ -3,9 +3,19 @@
 import { SalesTrendChart } from "./sales-trend-chart"
 import { TopProductsChart } from "./top-products-chart"
 
+interface SalesTrendItem {
+    date: string
+    total: number
+}
+
+interface TopProductItem {
+    nombre: string
+    total: number
+}
+
 interface DashboardChartsProps {
-    salesTrend: any[]
-    topProducts: any[]
+    salesTrend: SalesTrendItem[]
+    topProducts: TopProductItem[]
 }
 
 export function DashboardCharts({ salesTrend, topProducts }: DashboardChartsProps) {

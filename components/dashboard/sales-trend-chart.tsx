@@ -3,8 +3,13 @@
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
+interface SalesTrendItem {
+    date: string
+    total: number
+}
+
 interface SalesTrendChartProps {
-    data: any[]
+    data: SalesTrendItem[]
 }
 
 export function SalesTrendChart({ data }: SalesTrendChartProps) {
@@ -39,7 +44,7 @@ export function SalesTrendChart({ data }: SalesTrendChartProps) {
                                     border: "1px solid hsl(var(--border))",
                                     borderRadius: "8px"
                                 }}
-                                formatter={(value: any) => [`$${Number(value).toLocaleString('es-CL')}`, "Total"]}
+                                formatter={(value: number | string | undefined) => [`$${Number(value || 0).toLocaleString('es-CL')}`, "Total"]}
                             />
                             <Line
                                 type="monotone"

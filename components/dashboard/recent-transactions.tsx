@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -19,11 +19,7 @@ export function RecentTransactions() {
     const supabase = createClient()
     const [transactions, setTransactions] = useState<Transaction[]>([])
 
-    useEffect(() => {
-        loadRecentTransactions()
-    }, [])
-
-    const loadRecentTransactions = async () => {
+    const loadRecentTransactions = useCallback(async () => {
         try {
             const { data, error } = await supabase
                 .from("ventas")
@@ -37,7 +33,11 @@ export function RecentTransactions() {
         } catch (error) {
             console.error("Error loading transactions:", error)
         }
-    }
+    }, [supabase])
+
+    useEffect(() => {
+        loadRecentTransactions()
+    }, [loadRecentTransactions])
 
     const formatTime = (dateString: string) => {
         const date = new Date(dateString)

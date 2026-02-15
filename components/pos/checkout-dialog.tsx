@@ -68,7 +68,7 @@ export function CheckoutDialog({ open, onOpenChange, total, onConfirm, submittin
 
                     <div className="space-y-3">
                         <Label className="text-base">Documento</Label>
-                        <Select value={tipoDocumento} onValueChange={(v: any) => setTipoDocumento(v)}>
+                        <Select value={tipoDocumento} onValueChange={(v: string) => setTipoDocumento(v as CheckoutData["tipo_documento"])}>
                             <SelectTrigger className="w-full h-11">
                                 <SelectValue placeholder="Tipo de Documento" />
                             </SelectTrigger>
@@ -90,7 +90,7 @@ export function CheckoutDialog({ open, onOpenChange, total, onConfirm, submittin
                                     <button
                                         key={opt.id}
                                         type="button"
-                                        onClick={() => setMetodoPago(opt.id as any)}
+                                        onClick={() => setMetodoPago(opt.id as CheckoutData["metodo_pago"])}
                                         className={`flex items-center gap-3 p-3 rounded-lg border text-sm font-medium transition-all ${isActive
                                             ? "border-primary bg-primary/10 text-primary shadow-sm ring-1 ring-primary"
                                             : "hover:bg-muted border-input"

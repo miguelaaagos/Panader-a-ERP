@@ -29,9 +29,9 @@ export async function getProductionOrders() {
 
         if (error) throw error
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error fetching production orders:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -76,9 +76,9 @@ export async function createProductionOrder(data: ProductionOrderFormData) {
 
         revalidatePath("/dashboard/produccion")
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error creating production order:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -97,9 +97,9 @@ export async function cancelProductionOrder(id: string) {
 
         revalidatePath("/dashboard/produccion")
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error cancelling production order:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -125,8 +125,13 @@ export async function completeProductionOrder(id: string) {
 
         const factor = order.cantidad_a_producir / recipe.rendimiento
 
+        interface RecipeIngredient {
+            ingrediente_id: string
+            cantidad: number
+        }
+
         // 2. Validar Stock de ingredientes
-        const ingredientIds = recipe.ingredientes.map((i: any) => i.ingrediente_id)
+        const ingredientIds = (recipe.ingredientes as RecipeIngredient[]).map((i) => i.ingrediente_id)
         const { data: products, error: productsError } = await supabase
             .from("productos")
             .select("id, nombre, stock_actual, unidad_medida")
@@ -144,7 +149,7 @@ export async function completeProductionOrder(id: string) {
         const stockMap = new Map((products as ProductType[]).map((p: ProductType) => [p.id, p]))
         const missingIngredients: string[] = []
 
-        for (const ing of recipe.ingredientes) {
+        for (const ing of (recipe.ingredientes as RecipeIngredient[])) {
             const product = stockMap.get(ing.ingrediente_id)
             const requiredAmount = ing.cantidad * factor
             if (!product || Number(product.stock_actual) < requiredAmount) {
@@ -158,7 +163,7 @@ export async function completeProductionOrder(id: string) {
 
         // 3. Ejecutar actualizaciones (Simulando transacción)
         // Restar ingredientes
-        for (const ing of recipe.ingredientes) {
+        for (const ing of (recipe.ingredientes as RecipeIngredient[])) {
             const requiredAmount = ing.cantidad * factor
             const { error: updateIngError } = await supabase.rpc('decrement_stock', {
                 product_id: ing.ingrediente_id,
@@ -204,8 +209,8 @@ export async function completeProductionOrder(id: string) {
         revalidatePath("/dashboard/inventario")
         return { success: true }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error completing production order:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }

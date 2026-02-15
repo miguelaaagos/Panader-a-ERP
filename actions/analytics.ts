@@ -45,7 +45,16 @@ export async function getDashboardStats() {
             .eq("activo", true)
             .not("stock_minimo", "is", null)
 
-        const criticalItems = allProducts?.filter((p: any) => Number(p.stock_actual) <= Number(p.stock_minimo)) || []
+        interface ProductWithStock {
+            id: string
+            nombre: string
+            stock_actual: number
+            stock_minimo: number
+        }
+
+        const criticalItems = (allProducts || []).filter((p: { stock_actual: number; stock_minimo: number }) =>
+            Number(p.stock_actual) <= Number(p.stock_minimo)
+        ) as unknown as ProductWithStock[]
         const stockCriticoCount = criticalItems.length
 
         return {
@@ -59,9 +68,9 @@ export async function getDashboardStats() {
                 criticalItems: criticalItems.slice(0, 5) // Send some items for the alert
             }
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error fetching dashboard stats:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -77,11 +86,18 @@ export async function getCriticalStockItems() {
 
         if (error) throw error
 
-        const criticalItems = data.filter((p: any) => Number(p.stock_actual) <= Number(p.stock_minimo))
+        interface ProductBase {
+            stock_actual: number
+            stock_minimo: number
+        }
+
+        const criticalItems = (data || []).filter((p: ProductBase) =>
+            Number(p.stock_actual) <= Number(p.stock_minimo)
+        )
 
         return { success: true, data: criticalItems }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -116,8 +132,8 @@ export async function getSalesTrendData() {
         })
 
         return { success: true, data: days }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -142,7 +158,13 @@ export async function getTopProductsData() {
         // Agrupar por producto
         const productMap: Record<string, { nombre: string, cantidad: number, total: number }> = {}
 
-        data?.forEach((item: any) => {
+        interface SaleDetailItem {
+            cantidad: number
+            total: number
+            producto: { nombre: string } | null
+        }
+
+        (data as unknown as SaleDetailItem[])?.forEach((item) => {
             const nombre = item.producto?.nombre || "Desconocido"
             if (!productMap[nombre]) {
                 productMap[nombre] = { nombre, cantidad: 0, total: 0 }
@@ -156,7 +178,7 @@ export async function getTopProductsData() {
             .slice(0, 5)
 
         return { success: true, data: topProducts }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }

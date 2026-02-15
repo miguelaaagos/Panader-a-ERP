@@ -18,8 +18,8 @@ export async function getCurrentCashSession() {
         if (error && error.code !== 'PGRST116') throw error // PGRST116 is "no rows found"
 
         return { success: true, session: data || null }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -50,8 +50,8 @@ export async function openCashSession(montoInicial: number, observaciones?: stri
 
         revalidatePath("/dashboard")
         return { success: true, data }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -80,8 +80,8 @@ export async function closeCashSession(montoFinalReal: number, observaciones?: s
 
         revalidatePath("/dashboard")
         return { success: true }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -98,16 +98,26 @@ export async function getSessionSummary(sessionId: string) {
 
         if (error) throw error
 
-        const summary = (data || []).reduce((acc: any, sale: any) => {
-            const metodo = sale.metodo_pago
-            acc[metodo] = (acc[metodo] || 0) + Number(sale.total)
+        interface CashSummary {
+            efectivo: number
+            tarjeta_debito: number
+            tarjeta_credito: number
+            transferencia: number
+            total: number
+        }
+
+        const summary = (data || []).reduce((acc: CashSummary, sale: { total: number, metodo_pago: string }) => {
+            const metodo = sale.metodo_pago as keyof CashSummary
+            if (metodo in acc) {
+                acc[metodo] = (acc[metodo] || 0) + Number(sale.total)
+            }
             acc.total = (acc.total || 0) + Number(sale.total)
             return acc
         }, { efectivo: 0, tarjeta_debito: 0, tarjeta_credito: 0, transferencia: 0, total: 0 })
 
         return { success: true, summary }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -125,7 +135,28 @@ export async function getRecentShiftSales(sessionId: string, limit = 5) {
         if (error) throw error
 
         return { success: true, data }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
+    }
+}
+
+export async function getPastCashSessions(limit = 10) {
+    try {
+        const { supabase, profile } = await validateRequest()
+
+        const { data, error } = await supabase
+            .from("arqueos_caja")
+            .select("*")
+            .eq("tenant_id", profile.tenant_id)
+            .eq("usuario_id", profile.id)
+            .eq("estado", "cerrado")
+            .order("fecha_apertura", { ascending: false })
+            .limit(limit)
+
+        if (error) throw error
+
+        return { success: true, sessions: data || [] }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }

@@ -4,8 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AlertTriangle, ArrowRight } from "lucide-react"
 import Link from "next/link"
 
+interface CriticalStockItem {
+    id: string
+    nombre: string
+    stock_actual: number
+    stock_minimo: number
+}
+
 interface StockAlertsProps {
-    items: any[]
+    items: CriticalStockItem[]
 }
 
 export function StockAlerts({ items }: StockAlertsProps) {

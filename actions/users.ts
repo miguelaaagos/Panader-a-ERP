@@ -16,7 +16,13 @@ const supabaseAdmin = createClient(
     }
 )
 
-export async function createUser(data: any) {
+interface UserData {
+    email: string
+    password?: string
+    nombre_completo: string
+}
+
+export async function createUser(data: UserData) {
     try {
         // Validar permisos antes de usar el cliente admin
         await validateRequest('users.manage')
@@ -70,13 +76,18 @@ export async function createUser(data: any) {
 
         revalidatePath("/dashboard/usuarios")
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error creating user:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
-export async function updateUser(id: string, data: any) {
+interface UpdateUserData {
+    nombre_completo: string
+    rol?: string
+}
+
+export async function updateUser(id: string, data: UpdateUserData) {
     try {
         const { supabase } = await validateRequest('users.manage')
 
@@ -94,8 +105,8 @@ export async function updateUser(id: string, data: any) {
         if (error) throw error
         revalidatePath("/dashboard/usuarios")
         return { success: true }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -116,7 +127,7 @@ export async function toggleUserStatus(id: string, currentStatus: boolean) {
         if (error) throw error
         revalidatePath("/dashboard/usuarios")
         return { success: true }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }

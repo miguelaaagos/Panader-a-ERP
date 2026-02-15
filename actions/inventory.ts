@@ -39,9 +39,9 @@ export async function createProduct(data: ProductFormData) {
 
         revalidatePath("/dashboard/inventario")
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error creating product:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -72,9 +72,9 @@ export async function updateProduct(id: string, data: ProductFormData) {
 
         revalidatePath("/dashboard/inventario")
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error updating product:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -92,9 +92,9 @@ export async function deleteProduct(id: string) {
 
         revalidatePath("/dashboard/inventario")
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error soft deleting product:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -122,9 +122,9 @@ export async function hardDeleteProduct(id: string) {
 
         revalidatePath("/dashboard/inventario")
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error hard deleting product:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -153,9 +153,9 @@ export async function adjustStock(id: string, delta: number) {
 
         revalidatePath("/dashboard/inventario")
         return { success: true, newStock }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error adjusting stock:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -174,9 +174,9 @@ export async function createCategory(nombre: string) {
 
         revalidatePath("/dashboard/inventario")
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error creating category:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -193,9 +193,9 @@ export async function updateCategory(id: string, nombre: string) {
 
         revalidatePath("/dashboard/inventario")
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error updating category:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -223,9 +223,9 @@ export async function deleteCategory(id: string) {
 
         revalidatePath("/dashboard/inventario")
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error deleting category:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -241,8 +241,8 @@ export async function getCategories() {
 
         if (error) throw error
         return { success: true, data }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 

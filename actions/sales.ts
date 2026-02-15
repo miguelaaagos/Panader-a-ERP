@@ -39,8 +39,8 @@ export async function getProductsForPOS() {
 
         if (error) throw error
         return { success: true, data }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -87,9 +87,9 @@ export async function createSale(data: SaleFormData) {
 
         return { success: true, saleId }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Critical Error in createSale:", error)
-        return { success: false, error: error.message || "Error desconocido en el servidor" }
+        return { success: false, error: error instanceof Error ? error.message : "Error desconocido en el servidor" }
     }
 }
 
@@ -125,8 +125,8 @@ export async function getRecentSales(limit = 10) {
         }
 
         throw new Error("No tienes permisos para ver ventas")
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -172,9 +172,9 @@ export async function anularVenta(id: string) {
         revalidatePath("/dashboard/inventario")
 
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error anularVenta:", error)
-        return { success: false, error: error.message }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -198,7 +198,7 @@ export async function getSaleDetails(id: string) {
 
         if (error) throw error
         return { success: true, data }
-    } catch (error: any) {
-        return { success: false, error: error.message }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
