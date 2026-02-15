@@ -1,6 +1,6 @@
 # 🥖 POS Panadería - Sistema de Punto de Venta
 
-> Sistema completo de punto de venta diseñado específicamente para panaderías, con gestión de inventario, ventas, y reportes en tiempo real.
+> Sistema integral de gestión y punto de venta diseñado para optimizar la operación diaria de panaderías y pastelerías, con control total de inventario, producción y flujo de caja en tiempo real.
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.1.6-black)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.0.0-blue)](https://reactjs.org/)
@@ -10,150 +10,72 @@
 
 ---
 
-## 📋 Tabla de Contenidos
+## 📋 Funcionalidades Principales
 
-- [Características](#-características)
-- [Stack Tecnológico](#-stack-tecnológico)
-- [Arquitectura](#-arquitectura)
-- [Instalación](#-instalación)
-- [Configuración](#-configuración)
-- [Estado del Proyecto](#-estado-del-proyecto)
-- [Seguridad](#-seguridad)
+### 🛒 Centro de Ventas (POS)
+*   **Gestión de Turnos Activa**: Control de apertura y cierre de caja con arqueo automatizado.
+*   **Historial de Turnos**: Consulta detallada de sesiones pasadas, ventas realizadas y balances por método de pago.
+*   **Interfaz Táctil y Rápida**: Organización por categorías, búsqueda inteligente y soporte para escáner de códigos de barras.
+*   **Venta de Productos Pesables**: Ingreso flexible por peso o precio con cálculo automático.
+*   **Modo Offline Resiliente**: Capacidad de continuar operando sin conexión mediante persistencia local y sincronización diferida.
 
----
+### 📦 Inventario y Producción
+*   **Control de Stock**: Gestión de insumos y productos finales con alertas de stock crítico configurables.
+*   **Sistema de Recetas**: Fórmulas detalladas con cálculo automático de costos basados en precios de proveedores.
+*   **Módulo de Producción**: Registro de panificación que descuenta automáticamente los insumos utilizados de las recetas.
 
-## ✨ Características
-
-### 🛒 Sistema POS (Punto de Venta) con Gestión de Turno
-- ✅ **Interfaz por Pestañas**: Separación clara entre "Venta" (carrito/productos) y "Turno/Caja".
-- ✅ **Gestión de Sesiones de Caja**: Apertura, arqueo y cierre centralizado directamente en el POS.
-- ✅ **Resumen de Turno**: Visualización en tiempo real de ventas por método de pago y transacciones.
-- ✅ **Escaneo de códigos de barras** con listener automático.
-- ✅ **Organización por Categorías** (Pestañas laterales).
-- ✅ **Búsqueda inteligente** con autocompletado y filtros.
-- ✅ **Productos pesables** con ingreso flexible por precio.
-- ✅ **Validación de stock** en tiempo real con alertas.
-- ✅ **Modo Offline Resiliente**: Cola de ventas local para seguir operando sin internet.
-- ✅ **Trazabilidad Total**: Cada venta queda vinculada al ID de sesión de caja (arqueo).
-
-### 📊 Dashboard y Reportes
-- ✅ **Métricas en tiempo real**: Ventas hoy, transacciones, ticket promedio
-- ✅ **Optimización con Suspense**: Carga no bloqueante con esqueletos (streaming)
-- ✅ **Gráficos interactivos**: Tendencias de ventas y productos TOP
-- ✅ **Alertas de Stock Crítico**: Basadas en umbrales configurables
-
-### 📦 Gestión de Inventario y Producción
-- ✅ **CRUD de Insumos y Productos**: Gestión completa con soft-delete
-- ✅ **Sistema de Recetas**: Cálculo automático de costos y márgenes sugeridos
-- ✅ **Módulo de Producción**: Registro de panificación con descuento automático de insumos
-- ✅ **Costeo de Recetas**: Integración con precios de proveedores
-
-### 👥 Administración
-- ✅ **Autenticación robusta**: Manejada vía server actions y Supabase Auth
-- ✅ **Perfiles de usuario**: Con roles y permisos definidos (en expansión)
-- ✅ **Configuración Global**: Personalización de boletas, moneda y umbrales de stock
+### 📊 Inteligencia de Negocio
+*   **Dashboard en Tiempo Real**: Visualización de métricas clave (Ventas del día, Ticket Promedio, Transacciones).
+*   **Análisis de Tendencias**: Gráficos interactivos de ventas históricas y ranking de productos más vendidos.
+*   **Reportes de Cierre**: Resúmenes detallados por turno para una auditoría sencilla.
 
 ---
 
-## 🏗 Arquitectura
+## 🔒 Seguridad y Robustez
 
-### Estructura del Proyecto
+El sistema ha sido diseñado priorizando la integridad de los datos y la seguridad de la información:
 
-```
-POS-Panaderia/
-├── app/                          # Next.js App Router
-│   ├── (auth)/                   # Páginas de login y registro
-│   ├── dashboard/                # Panel de control principal
-│   │   ├── configuracion/        # ✅ Ajustes globales
-│   │   ├── inventario/           # ✅ CRUD Insumos y Productos
-│   │   ├── pos/                  # ✅ Punto de venta
-│   │   ├── produccion/           # ✅ Control de órdenes de producción
-│   │   ├── recetas/              # ✅ Gestión de costeo y fórmulas
-│   │   ├── usuarios/             # ✅ Gestión de personal
-│   │   └── ventas/               # ✅ Historial y analíticas
-│   ├── layout.tsx                # Layout raíz
-│   └── page.tsx                  # Landing page
-├── components/                   # Componentes React
-│   ├── dashboard/                # Componentes analíticos y layouts
-│   ├── pos/                      # Lógica de ventas y carrito
-│   ├── recipes/                  # Componentes de gestión de recetas
-│   └── ui/                       # Componentes base (shadcn/ui)
-├── actions/                      # Server Actions (Lógica de negocio)
-├── hooks/                        # Custom React Hooks
-└── lib/                          # Utilidades y Supabase Client
-```
+*   **Autenticación Centralizada**: Gestión de identidades mediante Supabase Auth con soporte para múltiples roles.
+*   **Seguridad a Nivel de Datos (RLS)**: Cada consulta a la base de datos está protegida por políticas de *Row Level Security*, asegurando que el personal solo acceda a la información que le corresponde.
+*   **Validación en Servidor**: Todas las operaciones críticas (ventas, ajustes de stock, cierres de caja) se ejecutan mediante *Server Actions*, eliminando la manipulación de datos en el cliente.
+*   **Integridad Reforzada**: Uso de funciones de base de datos (RPC) para garantizar transacciones atómicas y prevenir inconsistencias financieras.
 
 ---
 
-## 🧠 Síntesis de Sesión: Gestión de Ventas y Arqueo 2.0 (Feb 2026)
+## 🏗 Stack Tecnológico
 
-Esta sesión transformó el POS de una herramienta de venta simple a un centro de gestión financiera robusto.
-
-## 🚀 Logros Principales
-
-### 1. Reinvención del POS
-- **Diseño por Pestañas**: Organización semántica de tareas.
-- **Cashier Tab**: Módulo dedicado al control de flujo de caja y ventas recientes del turno.
-
-### 2. Estabilidad y Funcionalidad
-- **Fix SQL**: Corrección del RPC `create_sale_v1` para manejar cálculos de `total` en detalles.
-- **SaleDetailsModal**: Implementación de vista detallada funcional y libre de errores de carga.
-- **Sincronización de Estado**: El POS reacciona dinámicamente al estado de la caja.
-
-### 3. Calidad de Código
-- **Tests**: Validación de cálculos críticos en el store del POS.
-- **Seguridad**: RLS reforzado para asegurar que los usuarios solo vean datos de su propio tenant.
-
-## 🛠 Estado Técnico
-- **Branch**: `main`
-- **Database**: RPCs actualizados y esquema verificado (`productos.codigo`).
+*   **Frontend**: Next.js 15 (App Router), React 19, Tailwind CSS.
+*   **Componentes UI**: Shadcn/UI para una interfaz moderna y coherente.
+*   **Backend & DB**: Supabase (PostgreSQL), Auth y Realtime.
+*   **Estado & Datos**: Server Actions y hooks personalizados para una sincronización eficiente.
 
 ---
 
-### ✅ Completado (98%)
-- [x] Punto de Venta (POS) funcional con soporte multi-pago
-- [x] Lógica de ventas atómica mediante Supabase RPC
-- [x] Sincronización offline con persistencia local
-- **POS con Pestañas**: Nueva interfaz organizada en pestañas ("Venta" y "Turno / Caja") para separar la facturación de la gestión financiera.
-- **Gestión de Turnos (Arqueo)**: Control total sobre la apertura y cierre de caja, con balances automáticos por método de pago (Efectivo, Débito, Crédito, Transferencia).
-- **Detalle de Ventas**: Visualización completa de cada venta, incluyendo desglose de productos, metadatos de pago y notas del vendedor.
-- **Validación Proactiva**: El sistema ahora previene ventas si no existe un turno activo, asegurando la integridad de los reportes.
-- **Correcciones Críticas**: Resuelto error en la creación de ventas (constraint en `venta_detalles`) y errores de carga en el historial por desajuste de columnas.
-- **PWA y Soporte Offline**: Implementación de Service Workers y cola de sincronización para operar sin conexión estable.
-- [x] Gestión de inventario con alertas de stock crítico
-- [x] Módulo de recetas con cálculo de costos automático
-- [x] Control de producción con trazabilidad de insumos
-- [x] Dashboard optimizado con streaming (Suspense)
-- [x] Configuración centralizada de empresa
+## 🚀 Hitos Recientes (Febrero 2026)
 
-### ⏳ Próximos Pasos
-- [ ] Integración con impresoras térmicas
-- [ ] Exportación avanzada de reportes a PDF/Excel
-- [ ] Auditoría de cambios en inventario
+*   ✅ **Módulo de Historial de Turnos**: Implementación de vista histórica con detalle de ventas para auditorías post-cierre.
+*   ✅ **Refactorización de Estabilidad**: Migración completa a tipos estrictos en el POS para eliminar errores de ejecución.
+*   ✅ **Optimización de Carga**: Implementación de Streaming y Suspense para una interfaz más fluida.
+*   ✅ **Mejora en Gestión Financiera**: Soporte multi-pago (Efectivo, Débito, Crédito, Transferencia) con arqueo diferenciado.
 
 ---
 
-## 🚀 Instalación y Desarrollo
+## 🛠 Instalación
 
 ```bash
-# 1. Instalar dependencias
+# 1. Clonar e instalar dependencias
 npm install
 
-# 2. Configurar .env con credenciales de Supabase
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+# 2. Configurar variables de entorno (.env)
+NEXT_PUBLIC_SUPABASE_URL=your_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
 
-# 3. Iniciar modo desarrollo
+# 3. Iniciar servidor de desarrollo
 npm run dev
 ```
 
 ---
 
-## 🔒 Seguridad
-
-El sistema utiliza **Supabase Auth** para la gestión de sesiones y **Server Actions** para interactuar con la base de datos, asegurando que toda operación sea validada en el servidor antes de ejecutarse.
-
----
-
-**Última actualización**: 15 de Febrero, 2026
-**Versión**: 0.9.5 (Release Candidate)
+**Versión**: 0.9.8 (Release Candidate)  
+**Estado**: Estable / En optimización final  
+**Última actualización**: 15 de febrero de 2026
