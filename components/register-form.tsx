@@ -22,7 +22,7 @@ export function RegisterForm({
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const { mutate: register, isLoading } = useRegister();
+    const { mutate: register, isPending } = useRegister();
 
     const handleRegister = (e: React.FormEvent) => {
         e.preventDefault();
@@ -73,8 +73,8 @@ export function RegisterForm({
                                     <p className="text-xs text-destructive text-center">{error}</p>
                                 </div>
                             )}
-                            <Button type="submit" className="w-full h-11 text-lg font-medium" disabled={isLoading}>
-                                {isLoading ? "Creando cuenta..." : "Registrarse"}
+                            <Button type="submit" className="w-full h-11 text-lg font-medium" disabled={isPending}>
+                                {isPending ? "Registrando..." : "Crear Cuenta"}
                             </Button>
                         </div>
                         <div className="mt-6 text-center text-sm text-muted-foreground">

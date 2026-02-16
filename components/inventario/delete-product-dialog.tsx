@@ -28,7 +28,7 @@ export function DeleteProductDialog({ open, onOpenChange, producto, onSuccess }:
         try {
             const supabase = createClient()
             const { data, error } = await supabase
-                .from("detalle_ventas")
+                .from("venta_detalles")
                 .select("id")
                 .eq("producto_id", producto.id)
                 .limit(1)
@@ -37,7 +37,7 @@ export function DeleteProductDialog({ open, onOpenChange, producto, onSuccess }:
 
             setHasVentas((data?.length || 0) > 0)
         } catch (error: any) {
-            console.error("Error checking ventas:", error)
+            console.error("Error checking ventas:", JSON.stringify(error, null, 2))
         } finally {
             setCheckingVentas(false)
         }

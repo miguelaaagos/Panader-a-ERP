@@ -19,8 +19,8 @@ export function SalesTrendChart({ data }: SalesTrendChartProps) {
                 <CardTitle>Ventas Últimos 14 Días</CardTitle>
                 <CardDescription>Rendimiento diario de ingresos.</CardDescription>
             </CardHeader>
-            <CardContent>
-                <div className="h-[300px] w-full">
+            <CardContent className="pl-2">
+                <div className="h-[300px] min-h-[300px] w-full min-w-0">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />

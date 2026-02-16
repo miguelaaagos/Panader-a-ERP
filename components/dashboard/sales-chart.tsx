@@ -35,7 +35,7 @@ export function SalesChart() {
                 hourlyData[`${i}:00`] = 0
             }
 
-            ventas?.forEach(venta => {
+            ventas?.forEach((venta: any) => {
                 const hour = new Date(venta.created_at).getHours()
                 const hourKey = `${hour}:00`
                 hourlyData[hourKey] += venta.total
@@ -71,7 +71,7 @@ export function SalesChart() {
                     tickFormatter={(value) => `$${value.toLocaleString('es-CL')}`}
                 />
                 <Tooltip
-                    formatter={(value: number) => [`$${value.toLocaleString('es-CL')}`, "Ventas"]}
+                    formatter={(value: any) => [`$${Number(value || 0).toLocaleString('es-CL')}`, "Ventas"] as [string, string]}
                     cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
                 />
                 <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />

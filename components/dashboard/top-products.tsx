@@ -25,7 +25,7 @@ export function TopProducts() {
 
             // Obtener detalles de ventas del día con productos
             const { data, error } = await supabase
-                .from("detalle_ventas")
+                .from("venta_detalles")
                 .select(`
                     cantidad,
                     subtotal,

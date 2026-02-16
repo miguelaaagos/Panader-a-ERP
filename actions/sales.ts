@@ -34,7 +34,7 @@ export async function getProductsForPOS() {
             .select("*")
             .eq("tenant_id", profile.tenant_id)
             .eq("activo", true)
-            .in("tipo", ["producto_terminado", "ambos"])
+            .eq("mostrar_en_pos", true)
             .order("nombre", { ascending: true })
 
         if (error) throw error
@@ -149,7 +149,7 @@ export async function anularVenta(id: string) {
         // 2. Marcar como anulada
         const { error: updateError } = await supabase
             .from("ventas")
-            .update({ estado: "anulada", updated_at: new Date().toISOString() })
+            .update({ estado: "anulada" })
             .eq("id", id)
 
         if (updateError) throw updateError

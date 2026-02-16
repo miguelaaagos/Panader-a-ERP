@@ -4,6 +4,7 @@ import { validateRequest } from "@/lib/server/auth"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import { recalculateRecipesUsingIngredient } from "./recipes"
+import { handleUnitConversion } from "@/lib/utils/units"
 
 // Schema para validación de productos
 const productSchema = z.object({
@@ -18,6 +19,8 @@ const productSchema = z.object({
     tipo: z.enum(["ingrediente", "producto_terminado", "ambos"]).default("producto_terminado"),
     unidad_medida: z.enum(["kg", "g", "L", "ml", "unidades"]).default("unidades"),
     margen_deseado: z.number().min(0, "El margen debe ser positivo").max(100, "El margen no puede exceder 100%").optional().nullable(),
+    es_pesable: z.boolean().default(false),
+    mostrar_en_pos: z.boolean().default(true),
 })
 
 export type ProductFormData = z.infer<typeof productSchema>
@@ -39,9 +42,14 @@ export async function createProduct(data: ProductFormData) {
 
         revalidatePath("/dashboard/inventario")
         return { success: true }
-    } catch (error: unknown) {
+    } catch (error: any) {
         console.error("Error creating product:", error)
-        return { success: false, error: error instanceof Error ? error.message : String(error) }
+        const errorMessage = error instanceof Error
+            ? error.message
+            : typeof error === 'object' && error !== null && 'message' in error
+                ? error.message
+                : String(error);
+        return { success: false, error: errorMessage }
     }
 }
 
@@ -51,32 +59,55 @@ export async function updateProduct(id: string, data: ProductFormData) {
 
         const validatedData = productSchema.parse(data)
 
-        // Obtener datos actuales para comparar costo_unitario
-        const { data: currentProduct } = await supabase
+        // Obtener datos actuales para comparar costo_unitario y unidad_medida
+        const { data: currentProduct, error: fetchError } = await supabase
             .from("productos")
-            .select("costo_unitario")
+            .select("costo_unitario, unit_medida:unidad_medida, stock_actual")
             .eq("id", id)
             .single()
 
+        if (fetchError) throw fetchError
+
+        // Lógica de conversión de unidades
+        const unitChanges = handleUnitConversion(
+            currentProduct.unit_medida as any,
+            validatedData.unidad_medida,
+            validatedData.stock_actual,
+            validatedData.costo_unitario
+        )
+
+        const finalData = {
+            ...validatedData,
+            stock_actual: unitChanges.newStock,
+            costo_unitario: unitChanges.newCost
+        }
+
         const { error } = await supabase
             .from("productos")
-            .update(validatedData)
+            .update(finalData)
             .eq("id", id)
 
         if (error) throw error
 
         // Si el precio de costo cambió, recalcular recetas que usan este producto como ingrediente
-        if (currentProduct && Number(currentProduct.costo_unitario) !== Number(validatedData.costo_unitario)) {
+        if (Number(currentProduct.costo_unitario) !== Number(finalData.costo_unitario)) {
             await recalculateRecipesUsingIngredient(id)
         }
 
         revalidatePath("/dashboard/inventario")
         return { success: true }
-    } catch (error: unknown) {
+    } catch (error: any) {
         console.error("Error updating product:", error)
-        return { success: false, error: error instanceof Error ? error.message : String(error) }
+        // Ensure database errors are properly stringified for the client
+        const errorMessage = error instanceof Error
+            ? error.message
+            : typeof error === 'object' && error !== null && 'message' in error
+                ? error.message
+                : String(error);
+        return { success: false, error: errorMessage }
     }
 }
+
 
 export async function deleteProduct(id: string) {
     try {
@@ -104,7 +135,7 @@ export async function hardDeleteProduct(id: string) {
 
         // Verificar si hay ventas
         const { count, error: countError } = await supabase
-            .from("detalle_ventas")
+            .from("venta_detalles")
             .select("*", { count: "exact", head: true })
             .eq("producto_id", id)
 

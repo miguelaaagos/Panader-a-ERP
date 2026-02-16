@@ -108,7 +108,7 @@ export const usePOSStore = create<POSState>((set, get) => ({
         set({
             items: items.map((item) =>
                 item.id === id
-                    ? { ...item, cantidad: quantity, subtotal: quantity * item.precio_venta }
+                    ? { ...item, cantidad: quantity, subtotal: Math.round(quantity * item.precio_venta) }
                     : item
             ),
         })

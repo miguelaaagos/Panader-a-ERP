@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CreditCard, Banknote, Landmark, User, FileText, Loader2 } from "lucide-react"
+import { CreditCard, Banknote, Landmark, User, FileText, Loader2, AlertCircle } from "lucide-react"
 
 interface CheckoutDialogProps {
     open: boolean
@@ -14,6 +14,7 @@ interface CheckoutDialogProps {
     total: number
     onConfirm: (data: CheckoutData) => void
     submitting: boolean
+    hasActiveSession: boolean
 }
 
 export interface CheckoutData {
@@ -24,7 +25,7 @@ export interface CheckoutData {
     tipo_documento?: "Boleta" | "Factura" | "Ticket"
 }
 
-export function CheckoutDialog({ open, onOpenChange, total, onConfirm, submitting }: CheckoutDialogProps) {
+export function CheckoutDialog({ open, onOpenChange, total, onConfirm, submitting, hasActiveSession }: CheckoutDialogProps) {
     const [metodoPago, setMetodoPago] = useState<CheckoutData["metodo_pago"]>("efectivo")
     const [clienteNombre, setClienteNombre] = useState("")
     const [clienteRut, setClienteRut] = useState("")
@@ -57,6 +58,16 @@ export function CheckoutDialog({ open, onOpenChange, total, onConfirm, submittin
                         Finalizar Venta
                     </DialogTitle>
                 </DialogHeader>
+
+                {!hasActiveSession && (
+                    <div className="bg-destructive/10 border border-destructive/20 p-3 rounded-lg flex items-start gap-2 text-destructive text-sm mt-2">
+                        <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                        <div>
+                            <p className="font-bold">Caja no detectada</p>
+                            <p>No se puede procesar el pago sin un turno activo.</p>
+                        </div>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-6 py-4">
                     <div className="bg-primary/5 rounded-xl p-6 text-center border border-primary/10">
@@ -102,6 +113,35 @@ export function CheckoutDialog({ open, onOpenChange, total, onConfirm, submittin
                                 )
                             })}
                         </div>
+                    </div>
+
+                    <div className="bg-primary/5 rounded-xl p-6 text-center border border-primary/10 space-y-2">
+                        <span className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">Total a Pagar</span>
+
+                        {(metodoPago === "tarjeta_debito" || metodoPago === "tarjeta_credito") && (
+                            <div className="flex flex-col gap-1 py-1 mb-1 border-b border-dashed border-primary/20 pb-2">
+                                <div className="flex justify-between text-xs text-muted-foreground">
+                                    <span>Subtotal:</span>
+                                    <span>${total.toLocaleString("es-CL")}</span>
+                                </div>
+                                <div className="flex justify-between text-xs font-bold text-orange-600">
+                                    <span>Recargo IVA (19%):</span>
+                                    <span>+${Math.round(total * 0.19).toLocaleString("es-CL")}</span>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="text-4xl font-black text-primary mt-1">
+                            ${((metodoPago === "tarjeta_debito" || metodoPago === "tarjeta_credito")
+                                ? Math.round(total * 1.19)
+                                : total
+                            ).toLocaleString("es-CL")}
+                        </div>
+                        {(metodoPago === "tarjeta_debito" || metodoPago === "tarjeta_credito") && (
+                            <p className="text-[10px] text-muted-foreground italic">
+                                * Se aplica 19% de recargo por pago con tarjeta
+                            </p>
+                        )}
                     </div>
 
                     <div className="space-y-4">
@@ -152,7 +192,12 @@ export function CheckoutDialog({ open, onOpenChange, total, onConfirm, submittin
                         <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
                             Volver
                         </Button>
-                        <Button type="submit" size="lg" className="px-8 font-bold text-lg h-12" disabled={submitting}>
+                        <Button
+                            type="submit"
+                            size="lg"
+                            className="px-8 font-bold text-lg h-12"
+                            disabled={submitting || !hasActiveSession}
+                        >
                             {submitting ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
                             Confirmar Pago
                         </Button>

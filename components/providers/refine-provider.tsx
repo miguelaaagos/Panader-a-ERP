@@ -22,13 +22,10 @@ export function RefineProvider({ children }: { children: React.ReactNode }) {
     const supabase = createClient();
 
 
-    // Only run client-side hooks after mounting
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    // Custom Auth Provider to handle our specific requirements if needed
-    // For now using the default one from @refinedev/supabase but we might need to override getIdentity
     // Custom Auth Provider
     const customAuthProvider: AuthProvider = {
         login: async ({ email, password, providerName }) => {
@@ -36,15 +33,31 @@ export function RefineProvider({ children }: { children: React.ReactNode }) {
                 const { error } = await supabase.auth.signInWithOAuth({
                     provider: providerName as any,
                 });
-                if (error) return { success: false, error };
+                if (error) {
+                    console.error("[AuthProvider] OAuth Error:", error);
+                    return { success: false, error };
+                }
                 return { success: true };
             }
-            const { error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
-            if (error) return { success: false, error };
-            return { success: true, redirectTo: "/dashboard" };
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+                if (error) {
+                    console.error("[AuthProvider] Login Error:", error);
+                    return { success: false, error };
+                }
+
+                // Ensure cookies are synchronized by using a hard redirect
+                if (typeof window !== "undefined") {
+                    window.location.href = "/dashboard";
+                }
+                return { success: true };
+            } catch (err) {
+                console.error("[AuthProvider] Unexpected Error:", err);
+                return { success: false, error: err as any };
+            }
         },
         logout: async () => {
             const { error } = await supabase.auth.signOut();
@@ -57,7 +70,7 @@ export function RefineProvider({ children }: { children: React.ReactNode }) {
             return { authenticated: false, redirectTo: "/login" };
         },
         onError: async (error) => {
-            console.error(error);
+            console.error("[AuthProvider] Global error handler:", error);
             return { error };
         },
         getIdentity: async () => {
@@ -76,7 +89,7 @@ export function RefineProvider({ children }: { children: React.ReactNode }) {
                 return {
                     ...user,
                     ...profile,
-                    rol: profile.rol, // Explicitly map rol for useUserRole hook
+                    rol: profile.rol,
                     nombre_completo: profile.nombre_completo,
                     name: profile.nombre_completo || user.email,
                 };

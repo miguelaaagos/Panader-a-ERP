@@ -80,11 +80,11 @@ export default function InventarioPage() {
 
         // Filtro de stock
         if (stockFiltro === "bajo") {
-            filtered = filtered.filter(p => p.unidad_medida === 'unidades' && p.stock_actual < p.stock_minimo && p.stock_actual > 0)
+            filtered = filtered.filter(p => p.stock_actual < p.stock_minimo && p.stock_actual > 0)
         } else if (stockFiltro === "sin_stock") {
-            filtered = filtered.filter(p => p.unidad_medida === 'unidades' && p.stock_actual === 0)
+            filtered = filtered.filter(p => p.stock_actual === 0)
         } else if (stockFiltro === "ok") {
-            filtered = filtered.filter(p => p.unidad_medida === 'unidades' && p.stock_actual >= p.stock_minimo)
+            filtered = filtered.filter(p => p.stock_actual >= p.stock_minimo)
         }
 
         // Filtro de estado (activo/inactivo)
@@ -152,8 +152,8 @@ export default function InventarioPage() {
     // Cálculos de estadísticas
     const totalProductos = filteredProductos.length
     const productosPesables = filteredProductos.filter(p => p.unidad_medida !== 'unidades').length
-    const stockBajo = filteredProductos.filter(p => p.unidad_medida === 'unidades' && p.stock_actual < p.stock_minimo && p.stock_actual > 0).length
-    const sinStock = filteredProductos.filter(p => p.unidad_medida === 'unidades' && p.stock_actual === 0).length
+    const stockBajo = filteredProductos.filter(p => p.stock_actual < p.stock_minimo && p.stock_actual > 0).length
+    const sinStock = filteredProductos.filter(p => p.stock_actual === 0).length
 
     // Paginación
     const totalPages = Math.ceil(filteredProductos.length / itemsPerPage)
@@ -226,7 +226,7 @@ export default function InventarioPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-green-600">
-                            {filteredProductos.filter(p => p.unidad_medida === 'unidades' && p.stock_actual >= p.stock_minimo).length}
+                            {filteredProductos.filter(p => p.stock_actual >= p.stock_minimo).length}
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">
                             Stock suficiente
@@ -359,23 +359,25 @@ export default function InventarioPage() {
                                 <TableHead>Producto</TableHead>
                                 <TableHead>Código</TableHead>
                                 <TableHead>Categoría</TableHead>
-                                <TableHead className="text-right">Precio Venta</TableHead>
-                                <TableHead className="text-right">Stock</TableHead>
                                 <TableHead>Tipo</TableHead>
                                 <TableHead>Estado</TableHead>
+                                <TableHead className="text-right">Stock</TableHead>
+                                <TableHead className="text-right">Costo</TableHead>
+                                <TableHead className="text-right">Margen</TableHead>
+                                <TableHead className="text-right">Venta</TableHead>
                                 <TableHead className="text-right">Acciones</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {loading ? (
                                 <TableRow>
-                                    <TableCell colSpan={8} className="h-64 text-center">
+                                    <TableCell colSpan={10} className="h-64 text-center">
                                         Cargando productos...
                                     </TableCell>
                                 </TableRow>
                             ) : currentProductos.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={8} className="h-64 text-center text-muted-foreground">
+                                    <TableCell colSpan={10} className="h-64 text-center text-muted-foreground">
                                         No se encontraron productos
                                     </TableCell>
                                 </TableRow>
@@ -383,6 +385,12 @@ export default function InventarioPage() {
                                 currentProductos.map((producto) => {
                                     const stockBajo = producto.unidad_medida === 'unidades' && (producto.stock_actual || 0) < producto.stock_minimo && (producto.stock_actual || 0) > 0
                                     const sinStock = producto.unidad_medida === 'unidades' && (producto.stock_actual || 0) === 0
+
+                                    // Cálculo de Margen
+                                    const costo = producto.costo_unitario || 0
+                                    const venta = producto.precio_venta || 0
+                                    const margen = venta > 0 ? ((venta - costo) / venta) * 100 : 0
+                                    const margenValor = venta - costo
 
                                     return (
                                         <TableRow key={producto.id}>
@@ -394,20 +402,6 @@ export default function InventarioPage() {
                                                 <Badge variant="outline">
                                                     {producto.categorias?.nombre || "Sin categoría"}
                                                 </Badge>
-                                            </TableCell>
-                                            <TableCell className="text-right font-bold">
-                                                ${producto.precio_venta.toLocaleString("es-CL")}
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                {producto.unidad_medida !== 'unidades' ? (
-                                                    <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200">
-                                                        Por {producto.unidad_medida}
-                                                    </Badge>
-                                                ) : (
-                                                    <span className={sinStock ? "text-red-600 font-bold" : stockBajo ? "text-orange-600 font-bold" : ""}>
-                                                        {(producto.stock_actual || 0).toFixed(0)} uds
-                                                    </span>
-                                                )}
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant="outline">
@@ -427,14 +421,36 @@ export default function InventarioPage() {
                                                 )}
                                             </TableCell>
                                             <TableCell className="text-right">
+                                                <span className={`${sinStock ? "text-red-600 font-bold" : stockBajo ? "text-orange-600 font-bold" : ""} font-medium`}>
+                                                    {Number(producto.stock_actual).toLocaleString("es-CL", {
+                                                        minimumFractionDigits: 0,
+                                                        maximumFractionDigits: producto.unidad_medida === 'unidades' ? 0 : 3
+                                                    })} {producto.unidad_medida === 'unidades' ? 'uds' : producto.unidad_medida}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="text-right text-muted-foreground">
+                                                ${costo.toLocaleString("es-CL")}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex flex-col items-end">
+                                                    <span className={`font-medium ${margen < 20 ? 'text-red-600' : 'text-green-600'}`}>
+                                                        {margen.toFixed(0)}%
+                                                    </span>
+                                                    <span className="text-xs text-muted-foreground">
+                                                        ${margenValor.toLocaleString("es-CL")}
+                                                    </span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-right font-bold">
+                                                ${venta.toLocaleString("es-CL")}
+                                            </TableCell>
+                                            <TableCell className="text-right">
                                                 <div className="flex justify-end gap-1">
                                                     <RoleGuard permission="inventory.adjust_stock">
-                                                        {producto.unidad_medida === 'unidades' && (
-                                                            <StockAdjuster
-                                                                producto={producto}
-                                                                onSuccess={fetchProductos}
-                                                            />
-                                                        )}
+                                                        <StockAdjuster
+                                                            producto={producto}
+                                                            onSuccess={fetchProductos}
+                                                        />
                                                     </RoleGuard>
                                                     <RoleGuard permission="inventory.edit">
                                                         <Button

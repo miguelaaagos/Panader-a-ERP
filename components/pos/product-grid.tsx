@@ -17,6 +17,7 @@ export interface Product {
     stock_actual: number
     unidad_medida: string
     categoria_id?: string
+    es_pesable: boolean
 }
 
 export interface Category {

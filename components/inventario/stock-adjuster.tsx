@@ -28,7 +28,7 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
                 throw new Error(result.error)
             }
 
-            toast.success(`Stock actualizado a ${result.newStock} unidades`)
+            toast.success(`Stock actualizado a ${result.newStock} ${producto.unidad_medida === 'unidades' ? 'uds' : producto.unidad_medida}`)
             onSuccess()
             setOpen(false)
             setAdjustment("")
@@ -43,7 +43,7 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
     }
 
     const handleCustomAdjust = () => {
-        const delta = parseInt(adjustment)
+        const delta = parseFloat(adjustment)
         if (isNaN(delta)) {
             toast.error("Ingresa un número válido")
             return
@@ -63,7 +63,7 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
                     <div>
                         <h4 className="font-medium text-sm mb-1">Ajustar Stock</h4>
                         <p className="text-xs text-muted-foreground">
-                            Stock actual: <strong>{(producto.stock_actual || 0)} uds</strong>
+                            Stock actual: <strong>{producto.stock_actual?.toFixed(3)} {producto.unidad_medida === 'unidades' ? 'uds' : producto.unidad_medida}</strong>
                         </p>
                     </div>
 
@@ -116,6 +116,7 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
                         <div className="flex gap-2">
                             <Input
                                 type="number"
+                                step="0.001"
                                 placeholder="+/- cantidad"
                                 value={adjustment}
                                 onChange={(e) => setAdjustment(e.target.value)}

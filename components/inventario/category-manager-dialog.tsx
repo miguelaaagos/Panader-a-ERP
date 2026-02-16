@@ -54,7 +54,7 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
 
             // Contar productos por categoría
             const categoriasWithCount = await Promise.all(
-                (categoriasData || []).map(async (cat) => {
+                (categoriasData || []).map(async (cat: any) => {
                     const { count } = await supabase
                         .from("productos")
                         .select("*", { count: "exact", head: true })

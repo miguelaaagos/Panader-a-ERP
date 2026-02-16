@@ -50,22 +50,26 @@ export function CartPanel({ items, onUpdateQuantity, onRemoveItem, onCheckout, t
                                             size="icon"
                                             className="h-7 w-7"
                                             onClick={() => onUpdateQuantity(item.id, -1)}
+                                            disabled={item.es_pesable}
                                         >
                                             <Minus className="h-3 w-3" />
                                         </Button>
-                                        <span className="w-8 text-center text-sm font-medium">{item.cantidad}</span>
+                                        <div className="px-2 min-w-[50px] text-center text-sm font-medium bg-muted/30 rounded py-1">
+                                            {item.es_pesable ? item.cantidad.toFixed(3) : item.cantidad}
+                                            {item.es_pesable ? ' kg' : ''}
+                                        </div>
                                         <Button
                                             variant="outline"
                                             size="icon"
                                             className="h-7 w-7"
                                             onClick={() => onUpdateQuantity(item.id, 1)}
-                                            disabled={!item.es_pesable && item.cantidad >= item.stock_cantidad}
+                                            disabled={item.es_pesable || (!item.es_pesable && item.cantidad >= item.stock_cantidad)}
                                         >
                                             <Plus className="h-3 w-3" />
                                         </Button>
                                     </div>
                                     <span className="font-bold text-sm">
-                                        ${(item.precio_venta * item.cantidad).toLocaleString("es-CL")}
+                                        ${item.subtotal.toLocaleString("es-CL")}
                                     </span>
                                 </div>
                             </div>

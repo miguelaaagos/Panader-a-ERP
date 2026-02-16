@@ -32,7 +32,7 @@ export function BakeryStats() {
                 .gte("created_at", today.toISOString())
                 .eq("anulada", false);
 
-            const ventasHoy = ventas?.reduce((sum, v) => sum + v.total, 0) || 0;
+            const ventasHoy = ventas?.reduce((sum: number, v: any) => sum + v.total, 0) || 0;
             const transaccionesHoy = ventas?.length || 0;
 
             // Query 2: Total de productos activos
@@ -52,7 +52,7 @@ export function BakeryStats() {
 
             // Filtrar en el cliente donde stock_cantidad <= stock_minimo
             const stockCritico = productosStockBajo?.filter(
-                p => p.stock_cantidad <= p.stock_minimo
+                (p: any) => p.stock_cantidad <= p.stock_minimo
             ).length || 0;
 
             setStats({

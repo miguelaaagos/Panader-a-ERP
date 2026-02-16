@@ -42,7 +42,7 @@ export function ConfigForm() {
     const [saving, setSaving] = useState(false)
 
     const form = useForm<ConfigFormValues>({
-        resolver: zodResolver(configFormSchema),
+        resolver: zodResolver(configFormSchema) as any,
         defaultValues: {
             nombre_negocio: "Mi Panadería",
             razon_social: "",

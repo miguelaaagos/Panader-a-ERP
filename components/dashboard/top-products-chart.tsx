@@ -27,8 +27,8 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
                 <CardTitle>Top Productos (30 días)</CardTitle>
                 <CardDescription>Por volumen de ventas CLP.</CardDescription>
             </CardHeader>
-            <CardContent>
-                <div className="h-[300px] w-full">
+            <CardContent className="pl-2">
+                <div className="h-[300px] min-h-[300px] w-full min-w-0">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={data} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                             <XAxis type="number" hide />
