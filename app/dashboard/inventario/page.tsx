@@ -25,13 +25,13 @@ interface Producto {
     id: string
     nombre: string
     codigo: string | null
-    precio_venta: number
-    costo_unitario: number
-    stock_actual: number
-    stock_minimo: number
+    precio_venta: number | null
+    costo_unitario: number | null
+    stock_actual: number | null
+    stock_minimo: number | null
     unidad_medida: string
     tipo: 'ingrediente' | 'producto_terminado' | 'ambos'
-    activo: boolean
+    activo: boolean | null
     categoria_id: string | null
     categorias: {
         nombre: string
@@ -80,11 +80,11 @@ export default function InventarioPage() {
 
         // Filtro de stock
         if (stockFiltro === "bajo") {
-            filtered = filtered.filter(p => p.stock_actual < p.stock_minimo && p.stock_actual > 0)
+            filtered = filtered.filter(p => (p.stock_actual ?? 0) < (p.stock_minimo ?? 0) && (p.stock_actual ?? 0) > 0)
         } else if (stockFiltro === "sin_stock") {
-            filtered = filtered.filter(p => p.stock_actual === 0)
+            filtered = filtered.filter(p => (p.stock_actual ?? 0) === 0)
         } else if (stockFiltro === "ok") {
-            filtered = filtered.filter(p => p.stock_actual >= p.stock_minimo)
+            filtered = filtered.filter(p => (p.stock_actual ?? 0) >= (p.stock_minimo ?? 0))
         }
 
         // Filtro de estado (activo/inactivo)
@@ -152,8 +152,8 @@ export default function InventarioPage() {
     // Cálculos de estadísticas
     const totalProductos = filteredProductos.length
     const productosPesables = filteredProductos.filter(p => p.unidad_medida !== 'unidades').length
-    const stockBajo = filteredProductos.filter(p => p.stock_actual < p.stock_minimo && p.stock_actual > 0).length
-    const sinStock = filteredProductos.filter(p => p.stock_actual === 0).length
+    const stockBajo = filteredProductos.filter(p => (p.stock_actual ?? 0) < (p.stock_minimo ?? 0) && (p.stock_actual ?? 0) > 0).length
+    const sinStock = filteredProductos.filter(p => (p.stock_actual ?? 0) === 0).length
 
     // Paginación
     const totalPages = Math.ceil(filteredProductos.length / itemsPerPage)
@@ -226,7 +226,7 @@ export default function InventarioPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-green-600">
-                            {filteredProductos.filter(p => p.stock_actual >= p.stock_minimo).length}
+                            {filteredProductos.filter(p => (p.stock_actual ?? 0) >= (p.stock_minimo ?? 0)).length}
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">
                             Stock suficiente
@@ -270,9 +270,9 @@ export default function InventarioPage() {
                 <CardContent className="pt-6">
                     <div className="flex flex-wrap gap-4">
                         <div className="flex-1 min-w-[200px]">
-                            <label className="text-sm font-medium mb-2 block">Categoría</label>
+                            <label htmlFor="filtro-categoria" className="text-sm font-medium mb-2 block">Categoría</label>
                             <Select value={categoriaFiltro} onValueChange={setCategoriaFiltro}>
-                                <SelectTrigger>
+                                <SelectTrigger id="filtro-categoria">
                                     <SelectValue placeholder="Todas" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -287,9 +287,9 @@ export default function InventarioPage() {
                         </div>
 
                         <div className="flex-1 min-w-[200px]">
-                            <label className="text-sm font-medium mb-2 block">Tipo de Producto</label>
+                            <label htmlFor="filtro-tipo" className="text-sm font-medium mb-2 block">Tipo de Producto</label>
                             <Select value={tipoFiltro} onValueChange={setTipoFiltro}>
-                                <SelectTrigger>
+                                <SelectTrigger id="filtro-tipo">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -302,9 +302,9 @@ export default function InventarioPage() {
                         </div>
 
                         <div className="flex-1 min-w-[200px]">
-                            <label className="text-sm font-medium mb-2 block">Estado de Stock</label>
+                            <label htmlFor="filtro-stock" className="text-sm font-medium mb-2 block">Estado de Stock</label>
                             <Select value={stockFiltro} onValueChange={setStockFiltro}>
-                                <SelectTrigger>
+                                <SelectTrigger id="filtro-stock">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -317,9 +317,9 @@ export default function InventarioPage() {
                         </div>
 
                         <div className="flex-1 min-w-[200px]">
-                            <label className="text-sm font-medium mb-2 block">Estado</label>
+                            <label htmlFor="filtro-estado" className="text-sm font-medium mb-2 block">Estado</label>
                             <Select value={estadoFiltro} onValueChange={setEstadoFiltro}>
-                                <SelectTrigger>
+                                <SelectTrigger id="filtro-estado">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -383,7 +383,7 @@ export default function InventarioPage() {
                                 </TableRow>
                             ) : (
                                 currentProductos.map((producto) => {
-                                    const stockBajo = producto.unidad_medida === 'unidades' && (producto.stock_actual || 0) < producto.stock_minimo && (producto.stock_actual || 0) > 0
+                                    const stockBajo = producto.unidad_medida === 'unidades' && (producto.stock_actual ?? 0) < (producto.stock_minimo ?? 0) && (producto.stock_actual ?? 0) > 0
                                     const sinStock = producto.unidad_medida === 'unidades' && (producto.stock_actual || 0) === 0
 
                                     // Cálculo de Margen

@@ -1,7 +1,16 @@
 "use client"
 
-import { SalesTrendChart } from "./sales-trend-chart"
-import { TopProductsChart } from "./top-products-chart"
+import dynamic from "next/dynamic"
+
+const SalesTrendChart = dynamic(() => import("./sales-trend-chart").then(mod => mod.SalesTrendChart), {
+    ssr: false,
+    loading: () => <div className="lg:col-span-2 h-[350px] bg-muted animate-pulse rounded-xl" />
+})
+
+const TopProductsChart = dynamic(() => import("./top-products-chart").then(mod => mod.TopProductsChart), {
+    ssr: false,
+    loading: () => <div className="h-[350px] bg-muted animate-pulse rounded-xl" />
+})
 
 interface SalesTrendItem {
     date: string

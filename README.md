@@ -2,11 +2,11 @@
 
 > Sistema integral de gestión y punto de venta diseñado para optimizar la operación diaria de panaderías y pastelerías, con control total de inventario, producción y flujo de caja en tiempo real.
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.1.6-black)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19.0.0-blue)](https://reactjs.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-Latest-green)](https://supabase.com/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.1-38bdf8)](https://tailwindcss.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.2.4-blue)](https://reactjs.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-SSR-green)](https://supabase.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-v3.4.1-38bdf8)](https://tailwindcss.com/)
 
 ---
 
@@ -38,16 +38,18 @@ El sistema ha sido diseñado priorizando la integridad de los datos y la segurid
 *   **Autenticación Centralizada**: Gestión de identidades mediante Supabase Auth con soporte para múltiples roles.
 *   **Seguridad a Nivel de Datos (RLS)**: Cada consulta a la base de datos está protegida por políticas de *Row Level Security*, asegurando que el personal solo acceda a la información que le corresponde.
 *   **Validación en Servidor**: Todas las operaciones críticas (ventas, ajustes de stock, cierres de caja) se ejecutan mediante *Server Actions*, eliminando la manipulación de datos en el cliente.
-*   **Integridad Reforzada**: Uso de funciones de base de datos (RPC) para garantizar transacciones atómicas y prevenir inconsistencias financieras.
+*   **Integridad Reforzada**: Uso de funciones de base de datos (RPC) para garantizar transacciones atómicas.
+*   **Aceleración por Caché**: Implementación de `"use cache"` de Next.js 16 para una respuesta instantánea y reducción de latencia en el Dashboard y POS.
 
 ---
 
 ## 🏗 Stack Tecnológico
 
-*   **Frontend**: Next.js 15 (App Router), React 19, Tailwind CSS.
+*   **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS v3.
+*   **Gestor de Paquetes**: pnpm 10.x
 *   **Componentes UI**: Shadcn/UI para una interfaz moderna y coherente.
-*   **Backend & DB**: Supabase (PostgreSQL), Auth y Realtime.
-*   **Estado & Datos**: Server Actions y hooks personalizados para una sincronización eficiente.
+*   **Backend & DB**: Supabase (PostgreSQL), Auth SSR y Realtime.
+*   **Estado & Datos**: TanStack Query v5, Server Actions y hooks personalizados.
 
 ---
 ## 🚀 Funcionalidades Completas (Versión 1.0)
@@ -74,29 +76,34 @@ El sistema ha sido diseñado priorizando la integridad de los datos y la segurid
 ---
 
 ## 🛠️ Stack Tecnológico
--   **Frontend**: Next.js 14, React, Tailwind CSS, ShadCN UI.
+-   **Frontend**: Next.js 16, React 19, Tailwind CSS v3, ShadCN UI.
 -   **Backend**: Supabase (PostgreSQL + Edge Functions).
--   **Seguridad**: Row Level Security (RLS) y autenticación robusta.
--   **Estado**: Zustand para gestión de carrito y sesión.
+-   **Seguridad**: Row Level Security (RLS) y autenticación SSR robusta.
+-   **Estado**: Zustand y TanStack Query.
 
 ---
 
 ## 🛠 Instalación
 
 ```bash
-# 1. Clonar e instalar dependencias
-npm install
+# 1. Instalar pnpm (si no lo tienes)
+npm install -g pnpm
 
-# 2. Configurar variables de entorno (.env)
-NEXT_PUBLIC_SUPABASE_URL=your_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+# 2. Clonar e instalar dependencias
+pnpm install
 
-# 3. Iniciar servidor de desarrollo
-npm run dev
+# 3. Configurar variables de entorno (.env)
+# Copiar .env.example a .env y completar las llaves
+
+# 4. Iniciar servidor de desarrollo
+pnpm dev
+
+# 5. Verificar tipos
+pnpm typecheck
 ```
 
 ---
 
-**Versión**: 0.9.8 (Release Candidate)  
-**Estado**: Estable / En optimización final  
-**Última actualización**: 15 de febrero de 2026
+**Versión**: 1.0.1 (Stack 2026 Compliant)  
+**Estado**: Producción / Auth Estabilizado  
+**Última actualización**: 20 de febrero de 2026 — Fix `proxy.ts`: `getUser()` para middleware, `getClaims()` para Server Actions  

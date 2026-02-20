@@ -98,9 +98,9 @@ export function BakeryStats() {
 
     return (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {statsData.map((stat, index) => (
+            {statsData.map((stat) => (
                 <Card
-                    key={index}
+                    key={stat.title}
                     className={`border-primary/10 shadow-sm hover:shadow-md transition-shadow ${stat.alert ? 'border-amber-500/50 bg-amber-50/50 dark:bg-amber-950/20' : ''
                         }`}
                 >

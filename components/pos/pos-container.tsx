@@ -6,6 +6,7 @@ import { CartPanel } from "./cart-panel"
 import { CheckoutDialog, CheckoutData } from "./checkout-dialog"
 import { SuccessModal } from "./success-modal"
 import { getProductsForPOS, createSale } from "@/actions/sales"
+import { getSession } from "@/actions/auth"
 import { getCategories } from "@/actions/inventory"
 import { usePOSStore } from "@/hooks/use-pos-store"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -31,8 +32,9 @@ interface TransactionRecord {
 
 interface CashSession {
     id: string
-    fecha_apertura: string
+    fecha_apertura: string | null
     estado: string
+    monto_inicial: number
 }
 
 export function POSContainer() {
@@ -45,6 +47,7 @@ export function POSContainer() {
     const [lastTransaction, setLastTransaction] = useState<TransactionRecord | null>(null)
     const [activeSession, setActiveSession] = useState<CashSession | null>(null)
     const [weighingProduct, setWeighingProduct] = useState<Product | null>(null)
+    const [tenantId, setTenantId] = useState<string | null>(null)
     const [activeTab, setActiveTab] = useState("pos")
 
     // Store Centralizado
@@ -54,8 +57,20 @@ export function POSContainer() {
     useEffect(() => {
         const init = async () => {
             setLoading(true)
-            await Promise.all([fetchProducts(), fetchCategories(), fetchSession()])
-            setLoading(false)
+            try {
+                const sessionResult = await getSession()
+                if (sessionResult.success && sessionResult.profile) {
+                    const tid = sessionResult.profile.tenant_id
+                    setTenantId(tid)
+                    // Ejecutar fetchSession primero para reducir el parpadeo de la advertencia de caja
+                    await fetchSession()
+                    await Promise.all([fetchProducts(tid), fetchCategories()])
+                } else {
+                    await Promise.all([fetchCategories(), fetchSession()])
+                }
+            } finally {
+                setLoading(false)
+            }
         }
         init()
     }, [])
@@ -63,7 +78,7 @@ export function POSContainer() {
     const fetchSession = async () => {
         const res = await getCurrentCashSession()
         if (res.success) {
-            setActiveSession(res.session)
+            setActiveSession(res.session ?? null)
         }
     }
 
@@ -74,11 +89,20 @@ export function POSContainer() {
         }
     }
 
-    const fetchProducts = async () => {
-        const result = await getProductsForPOS()
-        if (result.success) {
-            setProducts(result.data || [])
-        } else {
+    const fetchProducts = async (tid: string) => {
+        const result = await getProductsForPOS(tid)
+        if (result.success && result.data) {
+            const sanitizedProducts: Product[] = result.data.map(p => ({
+                id: p.id,
+                nombre: p.nombre,
+                precio_venta: p.precio_venta ?? 0,
+                stock_actual: p.stock_actual ?? 0,
+                unidad_medida: p.unidad_medida,
+                categoria_id: p.categoria_id ?? undefined,
+                es_pesable: p.es_pesable ?? false
+            }))
+            setProducts(sanitizedProducts)
+        } else if (!result.success) {
             toast.error("Error al cargar productos: " + result.error)
         }
     }
@@ -115,7 +139,7 @@ export function POSContainer() {
 
             if (result.success) {
                 setLastTransaction({
-                    id: result.saleId,
+                    id: result.saleId ?? "",
                     total: total,
                     metodo_pago: checkoutData.metodo_pago,
                     tipo_documento: checkoutData.tipo_documento || "Boleta"
@@ -123,7 +147,7 @@ export function POSContainer() {
                 setSuccessModalOpen(true)
                 clearCart()
                 setIsCheckoutOpen(false)
-                fetchProducts() // Refrescar stock
+                if (tenantId) fetchProducts(tenantId) // Refrescar stock
             } else {
                 console.error("Sale error result:", result.error)
                 toast.error("Error en la venta: " + result.error)
@@ -191,7 +215,7 @@ export function POSContainer() {
                     </TabsTrigger>
                 </TabsList>
 
-                {activeSession && (
+                {activeSession && activeSession.fecha_apertura && (
                     <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-green-500/10 text-green-700 rounded-full text-xs font-medium border border-green-500/20">
                         <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                         Turno Activo: {format(new Date(activeSession.fecha_apertura), 'HH:mm')}
@@ -200,7 +224,7 @@ export function POSContainer() {
             </div>
 
             <TabsContent value="pos" className="mt-0 outline-none">
-                {!activeSession && (
+                {!loading && !activeSession && (
                     <div className="mb-6 p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         <div className="flex items-center gap-3">
                             <div className="bg-orange-500 p-2 rounded-lg">

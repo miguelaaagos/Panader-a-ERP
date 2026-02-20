@@ -15,7 +15,7 @@ interface Producto {
     id: string
     nombre: string
     unidad_medida: string
-    costo_unitario: number
+    costo_unitario: number | null
     tipo: "ingrediente" | "producto_terminado" | "ambos"
 }
 
@@ -103,7 +103,7 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
 
             if (error) throw error
             setProducts(data || [])
-        } catch (error: any) {
+        } catch (error: unknown) {
             toast.error("Error al cargar productos")
         } finally {
             setLoading(false)
@@ -145,20 +145,22 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
         setIngredientes(ingredientes.filter((_, i) => i !== index))
     }
 
-    const updateIngredient = (index: number, field: keyof IngredienteSeleccionado, value: any) => {
+    const updateIngredient = (index: number, field: keyof IngredienteSeleccionado, value: string | number) => {
         const newIngredientes = [...ingredientes]
+        const current = newIngredientes[index]
+        if (!current) return
         if (field === "ingrediente_id") {
             const product = products.find(p => p.id === value)
             if (product) {
                 newIngredientes[index] = {
-                    ...newIngredientes[index],
-                    ingrediente_id: value,
-                    costo_unitario: Number(product.costo_unitario),
+                    ...current,
+                    ingrediente_id: value as string,
+                    costo_unitario: product.costo_unitario ?? 0,
                     unidad_medida: product.unidad_medida
                 }
             }
         } else {
-            newIngredientes[index] = { ...newIngredientes[index], [field]: value }
+            newIngredientes[index] = { ...current, [field]: value }
         }
         setIngredientes(newIngredientes)
     }

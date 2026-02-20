@@ -24,15 +24,7 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    console.log("[LoginForm] MOUNTED AND READY");
     setMounted(true);
-
-    // Add a global click listener just to prove JS is alive
-    const tracker = (e: MouseEvent) => {
-      console.log("[LoginForm] GLOBAL CLICK DETECTED", e.target);
-    };
-    window.addEventListener('click', tracker);
-    return () => window.removeEventListener('click', tracker);
   }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,22 +34,12 @@ export function LoginForm({
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("!!! [LoginForm] SUBMIT TRIGGERED !!!");
-    console.log("Email:", email, "Refine Ready:", !!login);
     setError(null);
-    if (!login) {
-      console.error("!!! [LoginForm] login mutation is UNDEFINED !!!");
-      setError("Error de sistema: Refine Context no listo.");
-      return;
-    }
     login({ email, password }, {
-      onError: (error: any) => {
-        console.error("[LoginForm] Mutation error:", error);
-        setError(error?.message || "Error de autenticación");
+      onError: (err: unknown) => {
+        const message = err instanceof Error ? err.message : "Error de autenticación";
+        setError(message);
       },
-      onSuccess: () => {
-        console.log("[LoginForm] Mutation success, letting Refine/Middleware handle redirect");
-      }
     });
   };
 
@@ -109,12 +91,9 @@ export function LoginForm({
                   <p className="text-xs text-destructive text-center">{error}</p>
                 </div>
               )}
-              <Button type="submit" className="w-full h-11 text-lg font-medium" disabled={isPending}>
-                {!mounted ? "Inicializando..." : isPending ? "Cargando..." : "Ingresar al POS"}
+              <Button type="submit" className="w-full h-11 text-lg font-medium" disabled={isPending || !mounted}>
+                {isPending ? "Cargando..." : "Ingresar al POS"}
               </Button>
-              <div className="text-[10px] text-center text-muted-foreground/30 mt-2">
-                Debug: {mounted ? "Sistema Listo" : "Esperando Hidratación"} | Pending: {isPending ? "Sí" : "No"}
-              </div>
             </div>
             <div className="mt-6 text-center text-sm text-muted-foreground">
               ¿No tienes una cuenta?{" "}

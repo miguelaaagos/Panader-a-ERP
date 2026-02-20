@@ -52,7 +52,8 @@ export async function getDashboardStats() {
             stock_minimo: number
         }
 
-        const criticalItems = (allProducts || []).filter((p: { stock_actual: number; stock_minimo: number }) =>
+        const criticalItems = (allProducts || []).filter((p) =>
+            (p.stock_actual !== null && p.stock_minimo !== null) &&
             Number(p.stock_actual) <= Number(p.stock_minimo)
         ) as unknown as ProductWithStock[]
         const stockCriticoCount = criticalItems.length
@@ -91,7 +92,8 @@ export async function getCriticalStockItems() {
             stock_minimo: number
         }
 
-        const criticalItems = (data || []).filter((p: ProductBase) =>
+        const criticalItems = (data || []).filter((p) =>
+            (p.stock_actual !== null && p.stock_minimo !== null) &&
             Number(p.stock_actual) <= Number(p.stock_minimo)
         )
 

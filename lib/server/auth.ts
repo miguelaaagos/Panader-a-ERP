@@ -1,9 +1,11 @@
 import { createClient } from "@/lib/supabase/server"
 import { Permission, hasPermission, UserRole } from "@/lib/roles"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { Database } from "@/types/supabase"
 
-export type AuthContext = {
-    supabase: any
-    user: any
+export interface AuthContext {
+    supabase: SupabaseClient<Database>
+    user_id: string
     profile: {
         id: string
         tenant_id: string
@@ -14,33 +16,35 @@ export type AuthContext = {
 
 /**
  * Validates that the current user is authenticated and optionally checks for a specific permission.
- * Returns the Supabase client, user, and full profile.
+ * Returns the Supabase client, user_id, and full profile.
  */
 export async function validateRequest(requiredPermission?: Permission): Promise<AuthContext> {
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims()
+    const claims = claimsData?.claims
 
-    if (!user) {
+    if (claimsError || !claims) {
         throw new Error("No autenticado")
     }
 
-    const { data: profile } = await supabase
+    const { data: profileData, error: profileError } = await supabase
         .from("usuarios")
         .select("*")
-        .eq("id", user.id)
+        .eq("id", claims.sub!)
         .single()
 
-    if (!profile || !profile.tenant_id) {
-        throw new Error("Perfil de usuario no válido o sin tenant asignado")
+    if (profileError || !profileData) {
+        throw new Error("Perfil de usuario no encontrado")
     }
 
-    const userRole = profile.rol as UserRole
+    // Cast explicitly to solve "never" type issue from Supabase client inference in some contexts
+    const profile = profileData as unknown as AuthContext['profile']
 
     if (requiredPermission) {
-        if (!hasPermission(userRole, requiredPermission)) {
+        if (!hasPermission(profile.rol, requiredPermission)) {
             throw new Error(`Acceso denegado. Se requiere el permiso: ${requiredPermission}`)
         }
     }
 
-    return { supabase, user, profile }
+    return { supabase, user_id: claims.sub!, profile }
 }

@@ -4,15 +4,14 @@ import { useState, useEffect, useCallback } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { FileText, Receipt } from "lucide-react"
 
 interface Transaction {
     id: string
     created_at: string
     total: number
-    metodo_pago: string
-    tipo_documento: string
-    cliente_razon_social?: string
+    metodo_pago: "efectivo" | "tarjeta_debito" | "tarjeta_credito" | "transferencia" | null
+    numero_venta: string
+    cliente_nombre: string | null
 }
 
 export function RecentTransactions() {
@@ -23,8 +22,8 @@ export function RecentTransactions() {
         try {
             const { data, error } = await supabase
                 .from("ventas")
-                .select("id, created_at, total, metodo_pago, tipo_documento, cliente_razon_social")
-                .eq("anulada", false)
+                .select("id, created_at, total, metodo_pago, numero_venta, cliente_nombre")
+                .neq("estado", "anulada")
                 .order("created_at", { ascending: false })
                 .limit(10)
 
@@ -44,14 +43,14 @@ export function RecentTransactions() {
         return date.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })
     }
 
-    const getPaymentBadge = (metodo: string) => {
-        const variants: { [key: string]: "default" | "secondary" | "outline" } = {
-            "Efectivo": "default",
-            "Debito": "secondary",
-            "Credito": "secondary",
-            "Transferencia": "outline"
+    const getPaymentLabel = (metodo: Transaction["metodo_pago"]) => {
+        const labels: Record<string, string> = {
+            efectivo: "Efectivo",
+            tarjeta_debito: "Débito",
+            tarjeta_credito: "Crédito",
+            transferencia: "Transferencia",
         }
-        return <Badge variant={variants[metodo] || "default"}>{metodo}</Badge>
+        return metodo ? (labels[metodo] ?? metodo) : "—"
     }
 
     if (transactions.length === 0) {
@@ -63,7 +62,7 @@ export function RecentTransactions() {
             <TableHeader>
                 <TableRow>
                     <TableHead>Hora</TableHead>
-                    <TableHead>Tipo</TableHead>
+                    <TableHead>N° Venta</TableHead>
                     <TableHead>Cliente</TableHead>
                     <TableHead>Método</TableHead>
                     <TableHead className="text-right">Total</TableHead>
@@ -75,23 +74,14 @@ export function RecentTransactions() {
                         <TableCell className="font-medium">
                             {formatTime(transaction.created_at)}
                         </TableCell>
-                        <TableCell>
-                            <div className="flex items-center gap-2">
-                                {transaction.tipo_documento === "Factura" ? (
-                                    <FileText className="h-4 w-4 text-primary" />
-                                ) : (
-                                    <Receipt className="h-4 w-4 text-muted-foreground" />
-                                )}
-                                <span className="text-sm">
-                                    {transaction.tipo_documento === "Factura" ? "Factura" : "Boleta"}
-                                </span>
-                            </div>
+                        <TableCell className="text-xs text-muted-foreground">
+                            {transaction.numero_venta}
                         </TableCell>
                         <TableCell>
-                            {transaction.cliente_razon_social || "Consumidor Final"}
+                            {transaction.cliente_nombre || "Consumidor Final"}
                         </TableCell>
                         <TableCell>
-                            {getPaymentBadge(transaction.metodo_pago)}
+                            <Badge variant="secondary">{getPaymentLabel(transaction.metodo_pago)}</Badge>
                         </TableCell>
                         <TableCell className="text-right font-bold">
                             ${Math.round(transaction.total).toLocaleString('es-CL')}

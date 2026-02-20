@@ -20,7 +20,7 @@ import { EditUserDialog } from "@/components/users/edit-user-dialog"
 
 interface User {
     id: string
-    nombre_completo: string
+    nombre_completo: string | null
     rol: string
     created_at: string
     activo?: boolean
@@ -92,7 +92,7 @@ export function UserList({ users, currentUserId }: UserListProps) {
                                 <TableCell>{format(new Date(user.created_at), "dd/MM/yyyy", { locale: es })}</TableCell>
                                 <TableCell className="text-right">
                                     <div className="flex justify-end gap-2">
-                                        <EditUserDialog user={user} />
+                                        <EditUserDialog user={{ ...user, nombre_completo: user.nombre_completo ?? "" }} />
                                         <Button
                                             variant="ghost"
                                             size="icon"

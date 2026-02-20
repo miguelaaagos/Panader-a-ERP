@@ -62,7 +62,15 @@ export function ShiftDetailsModal({ session, isOpen, onClose }: ShiftDetailsModa
                     getSessionSummary(session.id),
                     getRecentShiftSales(session.id, 20)
                 ])
-                if (summaryRes.success) setSummary(summaryRes.summary as Summary)
+                if (summaryRes.success && summaryRes.summary) {
+                    setSummary({
+                        efectivo: summaryRes.summary.efectivo ?? 0,
+                        tarjeta_debito: summaryRes.summary.tarjeta_debito ?? 0,
+                        tarjeta_credito: summaryRes.summary.tarjeta_credito ?? 0,
+                        transferencia: summaryRes.summary.transferencia ?? 0,
+                        total: summaryRes.summary.total ?? 0,
+                    })
+                }
                 if (salesRes.success) setRecentSales((salesRes.data || []) as Sale[])
                 setLoading(false)
             }

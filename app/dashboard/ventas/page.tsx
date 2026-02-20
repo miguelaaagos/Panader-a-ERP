@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { getRecentSales, anularVenta } from "@/actions/sales"
+import { getSession } from "@/actions/auth"
 import { SalesList } from "@/components/pos/sales-list"
 import { RoleGuard } from "@/components/auth/RoleGuard"
 import { FileText, Search, RefreshCcw, Download } from "lucide-react"
@@ -14,6 +15,7 @@ import { SaleDetailsModal } from "@/components/pos/sale-details-modal"
 
 export default function VentasPage() {
     const [sales, setSales] = useState<any[]>([])
+    const [tenantId, setTenantId] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
     const [processingId, setProcessingId] = useState<string | null>(null)
     const [searchTerm, setSearchTerm] = useState("")
@@ -21,12 +23,21 @@ export default function VentasPage() {
     const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
     useEffect(() => {
-        fetchSales()
+        const init = async () => {
+            const sessionResult = await getSession()
+            if (sessionResult.success && sessionResult.profile) {
+                setTenantId(sessionResult.profile.tenant_id)
+                fetchSales(sessionResult.profile.tenant_id)
+            } else {
+                setLoading(false)
+            }
+        }
+        init()
     }, [])
 
-    const fetchSales = async () => {
+    const fetchSales = async (tenantId: string) => {
         setLoading(true)
-        const result = await getRecentSales(50)
+        const result = await getRecentSales(tenantId, 50)
         if (result.success) {
             setSales(result.data || [])
         } else {
@@ -42,7 +53,7 @@ export default function VentasPage() {
         const result = await anularVenta(id)
         if (result.success) {
             toast.success("Venta anulada correctamente")
-            fetchSales()
+            if (tenantId) fetchSales(tenantId)
         } else {
             toast.error("Error al anular: " + result.error)
         }
@@ -87,7 +98,7 @@ export default function VentasPage() {
                     <p className="text-muted-foreground italic">Registro de todas las transacciones realizadas en el POS.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={fetchSales} disabled={loading}>
+                    <Button variant="outline" size="sm" onClick={() => tenantId && fetchSales(tenantId)} disabled={loading}>
                         <RefreshCcw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                         Actualizar
                     </Button>

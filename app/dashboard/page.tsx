@@ -10,22 +10,25 @@ import { StockAlertsContainer, StockAlertsSkeleton } from "@/components/dashboar
 
 async function WelcomeMessage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: claimsData } = await supabase.auth.getClaims()
+  const user_id = claimsData?.claims?.sub
 
-  if (!user) {
+  if (!user_id) {
     redirect("/login")
   }
 
-  const { data: profile } = await supabase
+  const { data: profileData } = await supabase
     .from("usuarios")
     .select("*")
-    .eq("id", user.id)
+    .eq("id", user_id)
     .single()
+
+  const profile = profileData as any
 
   return (
     <div className="flex flex-col gap-1">
       <h1 className="text-3xl font-serif text-primary md:text-4xl">
-        Hola, {profile?.nombre_completo || user.email?.split('@')[0]}!
+        Hola, {profile?.nombre_completo || claimsData?.claims?.email?.split('@')[0]}!
       </h1>
       <p className="text-muted-foreground">Resumen de actividad para tu panadería hoy.</p>
     </div>

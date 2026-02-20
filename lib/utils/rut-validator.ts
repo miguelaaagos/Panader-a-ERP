@@ -38,7 +38,7 @@ function calculateDV(rut: string): string {
 
     // Recorrer de derecha a izquierda
     for (let i = cleanNumber.length - 1; i >= 0; i--) {
-        sum += parseInt(cleanNumber[i]) * multiplier
+        sum += parseInt(cleanNumber[i] ?? '0') * multiplier
         multiplier = multiplier === 7 ? 2 : multiplier + 1
     }
 

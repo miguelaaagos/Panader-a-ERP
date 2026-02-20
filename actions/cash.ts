@@ -106,7 +106,7 @@ export async function getSessionSummary(sessionId: string) {
             total: number
         }
 
-        const summary = (data || []).reduce((acc: CashSummary, sale: { total: number, metodo_pago: string }) => {
+        const summary = (data || []).reduce((acc: CashSummary, sale: { total: number | null, metodo_pago: string | null }) => {
             const metodo = sale.metodo_pago as keyof CashSummary
             if (metodo in acc) {
                 acc[metodo] = (acc[metodo] || 0) + Number(sale.total)

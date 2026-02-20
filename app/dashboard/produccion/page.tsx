@@ -19,9 +19,29 @@ export default function ProduccionPage() {
     const fetchOrders = useCallback(async () => {
         setLoading(true)
         const result = await getProductionOrders()
-        if (result.success) {
-            setOrders(result.data || [])
-        } else {
+        if (result.success && result.data) {
+            const sanitizedOrders: ProductionOrder[] = result.data.map(o => ({
+                id: o.id,
+                numero_orden: o.numero_orden,
+                created_at: o.created_at,
+                cantidad_a_producir: o.cantidad_a_producir,
+                estado: o.estado as ProductionOrder["estado"],
+                notas: o.notas,
+                receta: {
+                    nombre: o.receta?.nombre || "N/A",
+                    rendimiento: o.receta?.rendimiento || 1,
+                    costo_total: o.receta?.costo_total ?? null
+                },
+                producto: {
+                    nombre: o.producto?.nombre || "N/A",
+                    unidad_medida: o.producto?.unidad_medida || ""
+                },
+                usuario: {
+                    nombre_completo: o.usuario?.nombre_completo || "Desconocido"
+                }
+            }))
+            setOrders(sanitizedOrders)
+        } else if (!result.success) {
             toast.error("Error al cargar órdenes: " + result.error)
         }
         setLoading(false)

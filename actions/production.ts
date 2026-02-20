@@ -20,7 +20,7 @@ export async function getProductionOrders() {
             .from("ordenes_produccion")
             .select(`
                 *,
-                receta:recetas(nombre),
+                receta:recetas(nombre, rendimiento, costo_total),
                 producto:productos(nombre, unidad_medida),
                 usuario:usuarios(nombre_completo)
             `)
@@ -37,7 +37,7 @@ export async function getProductionOrders() {
 
 export async function createProductionOrder(data: ProductionOrderFormData) {
     try {
-        const { supabase, user, profile } = await validateRequest('production.manage')
+        const { supabase, user_id, profile } = await validateRequest('production.manage')
         const validated = productionOrderSchema.parse(data)
 
         // Obtener producto_id de la receta
@@ -50,7 +50,7 @@ export async function createProductionOrder(data: ProductionOrderFormData) {
         if (recetaError || !recetaData) throw new Error("Receta no encontrada")
 
         // Generar número de orden simple (ej: OP-20240214-001)
-        const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '')
+        const dateStr = (new Date().toISOString().split('T')[0] ?? '').replace(/-/g, '')
         const { count } = await supabase
             .from("ordenes_produccion")
             .select("*", { count: "exact", head: true })
@@ -69,7 +69,7 @@ export async function createProductionOrder(data: ProductionOrderFormData) {
                 cantidad_a_producir: validated.cantidad_a_producir,
                 estado: "pendiente",
                 notas: validated.notas,
-                usuario_id: user.id
+                usuario_id: user_id
             }])
 
         if (error) throw error
@@ -198,7 +198,7 @@ export async function completeProductionOrder(id: string) {
                 estado: "completada",
                 fecha_completada: new Date().toISOString(),
                 cantidad_producida: order.cantidad_a_producir,
-                costo_ingredientes: recipe.costo_total * factor, // Snapshot de costo
+                costo_ingredientes: (recipe.costo_total ?? 0) * factor, // Snapshot de costo
                 updated_at: new Date().toISOString()
             })
             .eq("id", id)

@@ -73,8 +73,8 @@ export function TopProducts() {
 
     return (
         <div className="space-y-4">
-            {products.map((product, index) => (
-                <div key={index} className="flex items-center justify-between">
+            {products.map((product) => (
+                <div key={product.nombre} className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{product.nombre}</p>
                         <p className="text-xs text-muted-foreground">

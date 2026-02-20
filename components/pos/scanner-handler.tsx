@@ -54,7 +54,7 @@ export function ScannerHandler() {
             if (data) {
                 addItem(data)
                 toast.success(`Agregado: ${data.nombre}`, {
-                    description: `$${data.precio_venta.toLocaleString()} añadido al carrito.`,
+                    description: `$${(data.precio_venta ?? 0).toLocaleString()} añadido al carrito.`,
                     duration: 2000,
                 })
             }

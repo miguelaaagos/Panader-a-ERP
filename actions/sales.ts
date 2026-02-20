@@ -2,7 +2,8 @@
 
 import { validateRequest } from "@/lib/server/auth"
 import { hasPermission } from "@/lib/roles"
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
+import { cacheTag, cacheLife } from "next/cache"
 import { z } from "zod"
 
 const saleItemSchema = z.object({
@@ -26,18 +27,21 @@ export type SaleFormData = z.infer<typeof saleSchema>
 
 // Replace legacy checkAuth with validateRequest inside functions.
 
-export async function getProductsForPOS() {
+export async function getProductsForPOS(tenant_id: string) {
     try {
-        const { supabase, profile } = await validateRequest('sales.create') // Permite ver productos al que pueda crear ventas
+        const { supabase, profile } = await validateRequest('sales.create')
+
         const { data, error } = await supabase
             .from("productos")
             .select("*")
-            .eq("tenant_id", profile.tenant_id)
+            .eq("tenant_id", tenant_id)
             .eq("activo", true)
             .eq("mostrar_en_pos", true)
             .order("nombre", { ascending: true })
 
-        if (error) throw error
+        if (error) {
+            throw error
+        }
         return { success: true, data }
     } catch (error: unknown) {
         return { success: false, error: error instanceof Error ? error.message : String(error) }
@@ -46,7 +50,7 @@ export async function getProductsForPOS() {
 
 export async function createSale(data: SaleFormData) {
     try {
-        const { supabase, user, profile } = await validateRequest('sales.create')
+        const { supabase, user_id, profile } = await validateRequest('sales.create')
         const tenant_id = profile.tenant_id
 
         // 0. Validar Schema con Zod
@@ -59,20 +63,21 @@ export async function createSale(data: SaleFormData) {
 
         // 1. Llamada atómica al RPC
         // Esto maneja: Validar stock, Decrementar stock, Insertar Venta e Insertar Detalles en UNA sola transacción.
-        const { data: saleId, error: rpcError } = await supabase.rpc('create_sale_v1', {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: saleId, error: rpcError } = await (supabase.rpc as any)('create_sale_v1', {
             p_tenant_id: tenant_id,
-            p_usuario_id: user.id,
-            p_cliente_nombre: validated.cliente_nombre || null,
-            p_cliente_rut: validated.cliente_rut || null,
+            p_usuario_id: user_id,
+            p_cliente_nombre: validated.cliente_nombre ?? null,
+            p_cliente_rut: validated.cliente_rut ?? null,
             p_metodo_pago: validated.metodo_pago,
-            p_notas: validated.notas || null,
-            p_descuento_global: validated.descuento_global || 0,
-            p_arqueo_id: validated.arqueo_id || null,
+            p_notas: validated.notas ?? null,
+            p_descuento_global: validated.descuento_global ?? 0,
+            p_arqueo_id: validated.arqueo_id ?? null,
             p_items: validated.items.map(item => ({
                 producto_id: item.producto_id,
                 cantidad: item.cantidad,
                 precio_unitario: item.precio_unitario,
-                descuento: item.descuento || 0
+                descuento: item.descuento ?? 0
             }))
         })
 
@@ -84,6 +89,7 @@ export async function createSale(data: SaleFormData) {
         revalidatePath("/dashboard/pos")
         revalidatePath("/dashboard/inventario")
         revalidatePath("/dashboard/ventas")
+        revalidateTag('sales', 'default')
 
         return { success: true, saleId }
 
@@ -93,7 +99,7 @@ export async function createSale(data: SaleFormData) {
     }
 }
 
-export async function getRecentSales(limit = 10) {
+export async function getRecentSales(tenant_id: string, limit = 10) {
     try {
         const { supabase, profile } = await validateRequest()
 
@@ -102,11 +108,13 @@ export async function getRecentSales(limit = 10) {
             const { data, error } = await supabase
                 .from("ventas")
                 .select("*, usuario:usuarios(nombre_completo)")
-                .eq("tenant_id", profile.tenant_id)
+                .eq("tenant_id", tenant_id)
                 .order("created_at", { ascending: false })
                 .limit(limit)
 
-            if (error) throw error
+            if (error) {
+                throw error
+            }
             return { success: true, data }
         }
 
@@ -115,12 +123,14 @@ export async function getRecentSales(limit = 10) {
             const { data, error } = await supabase
                 .from("ventas")
                 .select("*, usuario:usuarios(nombre_completo)")
-                .eq("tenant_id", profile.tenant_id)
+                .eq("tenant_id", tenant_id)
                 .eq("usuario_id", profile.id)
                 .order("created_at", { ascending: false })
                 .limit(limit)
 
-            if (error) throw error
+            if (error) {
+                throw error
+            }
             return { success: true, data }
         }
 

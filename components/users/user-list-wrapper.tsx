@@ -18,5 +18,5 @@ export async function UserListWrapper() {
         return <div className="text-red-500">Error cargando usuarios</div>
     }
 
-    return <UserList users={profiles || []} currentUserId={user?.id} />
+    return <UserList users={(profiles || []).map(p => ({ ...p, activo: p.activo ?? undefined }))} currentUserId={user?.id} />
 }

@@ -15,7 +15,7 @@ export type ProductionOrder = {
     cantidad_a_producir: number
     estado: "pendiente" | "en_proceso" | "completada" | "cancelada"
     notas: string | null
-    receta: { nombre: string }
+    receta: { nombre: string, rendimiento: number, costo_total: number | null }
     producto: { nombre: string, unidad_medida: string }
     usuario: { nombre_completo: string }
 }

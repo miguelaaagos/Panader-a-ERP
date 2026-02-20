@@ -112,10 +112,10 @@ export async function updateUser(id: string, data: UpdateUserData) {
 
 export async function toggleUserStatus(id: string, currentStatus: boolean) {
     try {
-        const { supabase, user } = await validateRequest('users.manage')
+        const { supabase, user_id } = await validateRequest('users.manage')
 
         // Prevent self-deactivation
-        if (user.id === id) {
+        if (user_id === id) {
             return { success: false, error: "No puedes desactivar tu propia cuenta" }
         }
 

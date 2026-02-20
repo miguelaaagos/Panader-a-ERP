@@ -17,8 +17,8 @@ interface Recipe {
     id: string
     nombre: string
     descripcion: string | null
-    costo_total: number
-    costo_por_unidad: number
+    costo_total: number | null
+    costo_por_unidad: number | null
     rendimiento: number
     tiempo_preparacion_minutos: number | null
     activa: boolean
@@ -42,10 +42,24 @@ export default function RecetasPage() {
     const fetchRecipes = async () => {
         setLoading(true)
         const result = await getRecipes()
-        if (result.success) {
-            setRecipes(result.data || [])
-            setFilteredRecipes(result.data || [])
-        } else {
+        if (result.success && result.data) {
+            const sanitizedRecetas: Recipe[] = result.data.map(r => ({
+                id: r.id,
+                nombre: r.nombre,
+                descripcion: r.descripcion,
+                costo_total: r.costo_total ?? 0,
+                costo_por_unidad: r.costo_por_unidad ?? 0,
+                rendimiento: r.rendimiento ?? 1,
+                tiempo_preparacion_minutos: r.tiempo_preparacion_minutos,
+                activa: r.activa ?? true,
+                producto: {
+                    nombre: r.producto?.nombre || "N/A",
+                    unidad_medida: r.producto?.unidad_medida || ""
+                }
+            }))
+            setRecipes(sanitizedRecetas)
+            setFilteredRecipes(sanitizedRecetas)
+        } else if (!result.success) {
             toast.error("Error al cargar recetas: " + result.error)
         }
         setLoading(false)
