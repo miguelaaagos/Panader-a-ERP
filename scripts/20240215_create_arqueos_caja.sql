@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS arqueos_caja (
     observaciones TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+); 
 
 -- Habilitar RLS
 ALTER TABLE arqueos_caja ENABLE ROW LEVEL SECURITY;

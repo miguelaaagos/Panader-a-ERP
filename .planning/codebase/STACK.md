@@ -1,86 +1,76 @@
 # Technology Stack
 
-**Analysis Date:** 2024-07-31
+**Analysis Date:** 2025-02-27
 
 ## Languages
 
 **Primary:**
-- TypeScript 5.x - Used for all application code, including frontend components, backend logic (Next.js API routes), and utility functions. Enforced with `strict: true`.
-
-**Secondary:**
-- JavaScript - Used for configuration files like `next.config.ts` and `postcss.config.mjs`.
-- SQL - Used for database migrations and schemas in the `scripts/` directory.
+- TypeScript 5.x - Throughout the entire codebase (`tsconfig.json`, `package.json`).
 
 ## Runtime
 
 **Environment:**
-- Node.js 20.x
+- Node.js (implicitly via Next.js 15)
+- Next.js 15.3.1 - Web framework
 
 **Package Manager:**
-- npm - Indicated by the presence of `package-lock.json`.
+- npm
+- Lockfile: `package-lock.json` present
 
 ## Frameworks
 
 **Core:**
-- Next.js (latest) - Full-stack framework for React. Used for routing, server-side rendering (SSR), API routes, and static site generation.
-
-**UI:**
-- React 19 - For building user interfaces.
-- Shadcn/UI - A collection of re-usable UI components, built on Radix UI and Tailwind CSS. Components are not installed as a package but are integrated directly into the codebase under `components/ui/`.
-- Tailwind CSS 3.4.1 - A utility-first CSS framework for styling.
-
-**Data Fetching/State:**
-- Refine.js (`@refinedev/core`) - A meta-framework used for rapidly building data-intensive applications. It uses a Supabase data provider (`@refinedev/supabase`) to interface with the backend.
+- Next.js 15 - Main application framework using App Router (`app/`).
+- React 19 - UI library.
+- Refine 5.x - Internal CRUD and CRM framework (`@refinedev/core`, `@refinedev/nextjs-router`, `@refinedev/supabase`).
 
 **Testing:**
-- Not detected. No testing frameworks like Jest or Vitest are present in the dependencies.
+- Vitest 4.0.18 - Test runner (`vitest.config.ts`).
+- React Testing Library 16.3.2 - UI testing.
+- JSDOM - Browser environment simulation for tests.
 
 **Build/Dev:**
-- Next.js CLI (`next build`, `next dev`) - For building and running the development server.
-- TypeScript CLI (`tsc`) - For type checking.
-- ESLint 9 - For code linting and style enforcement.
+- Tailwind CSS 3.4.1 - Styling framework.
+- PostCSS - CSS transformation.
+- Autoprefixer - CSS vendor prefixing.
+- ESLint - Linting (`eslint.config.mjs`).
 
 ## Key Dependencies
 
 **Critical:**
-- `@supabase/ssr`, `@supabase/supabase-js`: JavaScript client libraries for interacting with the Supabase backend (database, auth, etc.).
-- `@refinedev/core`, `@refinedev/supabase`: Core libraries for the Refine framework and its integration with Supabase.
-- `react`, `react-dom`: Core libraries for the React framework.
-- `next`: Core library for the Next.js framework.
+- Supabase SSR - Authentication and database connection handling (`@supabase/ssr`, `@supabase/supabase-js`).
+- Radix UI - Primitive UI components (`@radix-ui/react-*`).
+- Zustand 5.0.11 - State management (`hooks/use-pos-store.ts`).
+- React Hook Form 7.x - Form management (`package.json`).
+- Zod 4.x - Schema validation (`actions/sales.ts`).
 
-**State Management:**
-- `zustand`: A small, fast, and scalable state-management solution. Used for client-side state, for example in `hooks/use-pos-store.ts`.
-
-**Forms:**
-- `react-hook-form`: For building and managing forms.
-- `zod`: For schema declaration and validation, often used with `react-hook-form`.
-
-**UI & Styling:**
-- `@radix-ui/*`: A set of low-level, unstyled, accessible UI primitives that power the Shadcn/UI components.
-- `lucide-react`: For icons.
-- `recharts`: For building charts and graphs.
-- `tailwind-merge`, `clsx`: Utilities for conditionally combining Tailwind CSS classes.
+**Infrastructure:**
+- Lucide React - Iconography.
+- Recharts 3.7.0 - Data visualization and charts (`components/dashboard/`).
+- Sonner - Toast notifications.
+- Date-fns - Date manipulation.
 
 ## Configuration
 
 **Environment:**
-- Environment variables are managed via a `.env` file (inferred from `.env.example`).
-- Key required variables include `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- Managed via `.env` (seen in `.env.example`).
+- Required: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 
 **Build:**
-- `next.config.ts`: Main configuration for the Next.js application.
-- `tsconfig.json`: TypeScript compiler options, including path aliases (`@/*`).
-- `tailwind.config.ts`: Configuration for Tailwind CSS.
-- `postcss.config.mjs`: Configuration for PostCSS.
+- `next.config.ts` - Configures Next.js behavior (note: currently set to ignore TS/ESLint errors during build).
+- `tsconfig.json` - TypeScript configuration with path alias `@/*` pointing to root.
+- `tailwind.config.ts` - Tailwind CSS configuration.
 
 ## Platform Requirements
 
 **Development:**
-- Node.js and npm are required for dependency management and running the application.
+- Node.js 18+ (typical for Next.js 15).
+- Access to a Supabase project.
 
 **Production:**
-- The application is designed to be deployed on a platform that supports Node.js and Next.js hosting (e.g., Vercel, AWS Amplify, Netlify).
+- Deployment target likely Vercel or similar Next.js-compatible hosting.
+- Requires Supabase instance for DB and Auth.
 
 ---
 
-*Stack analysis: 2024-07-31*
+*Stack analysis: 2025-02-27*
