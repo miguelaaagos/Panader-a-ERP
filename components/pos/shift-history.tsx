@@ -18,6 +18,7 @@ interface PastSession {
     monto_final_real: number
     estado: string
     observaciones: string | null
+    usuarios?: { nombre_completo: string } | null
 }
 
 export function ShiftHistory() {
@@ -78,7 +79,7 @@ export function ShiftHistory() {
                     <History className="h-4 w-4" />
                     Turnos Anteriores
                 </h3>
-                <Button variant="ghost" size="sm" onClick={() => fetchSessions(limit)} disabled={loading}>
+                <Button variant="secondary" size="sm" onClick={() => fetchSessions(limit)} disabled={loading} className="text-xs">
                     Actualizar
                 </Button>
             </div>
@@ -101,6 +102,11 @@ export function ShiftHistory() {
                                             ID: {sess.id.slice(0, 8)}
                                         </p>
                                     </div>
+                                    {sess.usuarios?.nombre_completo && (
+                                        <p className="text-sm text-muted-foreground mb-1">
+                                            👤 {sess.usuarios.nombre_completo}
+                                        </p>
+                                    )}
 
                                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                                         <span className="flex items-center gap-1">

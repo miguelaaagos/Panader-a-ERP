@@ -288,6 +288,24 @@ export async function updateProduct(id: string) {
 - Variables descriptivas (`isLoading`, `hasError`)
 - `const objects` o `as const` en vez de enums
 
+## 🎨 UI/UX y Estándares de Diseño
+
+1. **Notificaciones y Feedback**: 
+   - SIEMPRE mostrar un mensaje de éxito (Toaster) o de error claro cuando se crea, actualiza o elimina un registro.
+   - Usar `toast` (sonner o shadcn) para feedback visual tras Server Actions.
+2. **Tablas Responsivas**: 
+   - En pantallas pequeñas (móviles), ocultar columnas secundarias. Mostrar solo la información más crítica (ej. Nombre, Total, Estado).
+3. **Móvil Primero (Responsive)**:
+   - Navegación lateral (`Sidebar`) debe convertirse en un menú Hamburguesa (Sheet) en móviles.
+   - Las vistas de grilla (ej. Dashboard) deben apilarse en una sola columna en pantallas pequeñas (`grid-cols-1`).
+4. **Gráficos (Recharts)**:
+   - Los gráficos deben ser responsivos (`ResponsiveContainer`).
+   - SIEMPRE incluir etiquetas visibles (usando `<LabelList>` en Barras o Líneas) estilo PowerBI, para que los datos se puedan leer sin necesidad de hover.
+   - Mantener coherencia en los colores (degradado desde el #1 al #5 de manera lógica, respetando backgrounds y foregrounds).
+5. **Modo Oscuro (Dark Mode)**:
+   - Respetar las variables CSS (`hsl(var(--foreground))`, `hsl(var(--background))`, `hsl(var(--muted))`).
+   - Evitar colores fijos (ej. `#000` o `white`) que rompan el contraste en dark mode.
+
 ## Protocolo de Sincronización del Agente
 1. Cada vez que se actualice el `README.md`, el agente DEBE actualizar el `TODO.md` con el resumen del hito actual.
 2. Al iniciar, el agente DEBE verificar `TODO.md` para entender si hubo cambios manuales o de otra ciudad.

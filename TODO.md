@@ -6,6 +6,7 @@
 - **Hito**: Sistema estabilizado con pnpm y validado con react-doctor.
 
 ## Tareas Completadas [x]
+- [x] Establecer y documentar estándares UI/UX (Notificaciones, Gráficos PowerBI style, Tablas móviles, Dark mode) en GEMINI.md y skills.
 - [x] Optimizar la responsividad móvil en tablas de Inventario, Ventas y Punto de Venta (POS).
 - [x] Solucionar error 500 en creación de usuarios e incorporar estado visual de notificaciones (Toaster).
 - [x] Consolidar `proxy.ts` y eliminar `middleware.ts`.
@@ -24,6 +25,7 @@
 - [ ] Revisión de políticas RLS para nuevas tablas de arqueo de caja.
 - [ ] Testing integral del flujo de POS con el nuevo sistema de caché.
 - [ ] Configurar GitHub Projects para seguimiento visual de tareas.
+- [ ] Implementar soporte 100% Offline (PWA) con IndexedDB para carga total de catálogo y sincronización en segundo plano.
 
 ## Notas para el Agente
 - Leer este archivo AL INICIO de cada sesión.

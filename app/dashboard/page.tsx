@@ -25,6 +25,10 @@ async function WelcomeMessage() {
 
   const profile = profileData as any
 
+  if (profile?.rol === "cajero") {
+    redirect("/dashboard/pos")
+  }
+
   return (
     <div className="flex flex-col gap-1">
       <h1 className="text-3xl font-serif text-primary md:text-4xl">

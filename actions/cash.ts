@@ -9,7 +9,7 @@ export async function getCurrentCashSession() {
 
         const { data, error } = await supabase
             .from("arqueos_caja")
-            .select("*")
+            .select("*, usuarios(nombre_completo)")
             .eq("tenant_id", profile.tenant_id)
             .eq("usuario_id", profile.id)
             .eq("estado", "abierto")
@@ -43,7 +43,7 @@ export async function openCashSession(montoInicial: number, observaciones?: stri
                 observaciones: observaciones,
                 estado: 'abierto'
             })
-            .select()
+            .select("*, usuarios(nombre_completo)")
             .single()
 
         if (error) throw error
@@ -146,7 +146,7 @@ export async function getPastCashSessions(limit = 10) {
 
         const { data, error } = await supabase
             .from("arqueos_caja")
-            .select("*")
+            .select("*, usuarios(nombre_completo)")
             .eq("tenant_id", profile.tenant_id)
             .eq("usuario_id", profile.id)
             .eq("estado", "cerrado")

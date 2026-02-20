@@ -25,6 +25,7 @@ interface PastSession {
     monto_final_real: number | null
     estado: string
     observaciones: string | null
+    usuarios?: { nombre_completo: string } | null
 }
 
 interface Summary {
@@ -96,6 +97,7 @@ export function ShiftDetailsModal({ session, isOpen, onClose }: ShiftDetailsModa
                     </DialogTitle>
                     <DialogDescription>
                         Resumen completo de la actividad de caja el {format(new Date(session.fecha_apertura), "PPP", { locale: es })}
+                        {session.usuarios?.nombre_completo && ` • Cajero: ${session.usuarios.nombre_completo}`}
                     </DialogDescription>
                 </DialogHeader>
 

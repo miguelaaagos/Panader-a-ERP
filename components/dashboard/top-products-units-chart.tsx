@@ -3,13 +3,13 @@
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell, LabelList } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
-interface TopProductItem {
+interface TopProductUnitItem {
     nombre: string
-    total: number
+    cantidad: number
 }
 
-interface TopProductsChartProps {
-    data: TopProductItem[]
+interface TopProductsUnitsChartProps {
+    data: TopProductUnitItem[]
 }
 
 const COLORS = [
@@ -20,17 +20,17 @@ const COLORS = [
     'hsl(var(--primary)/0.2)'
 ]
 
-export function TopProductsChart({ data }: TopProductsChartProps) {
+export function TopProductsUnitsChart({ data }: TopProductsUnitsChartProps) {
     return (
         <Card>
             <CardHeader>
                 <CardTitle>Top Productos (30 días)</CardTitle>
-                <CardDescription>Por volumen de ventas CLP.</CardDescription>
+                <CardDescription>Por unidades vendidas.</CardDescription>
             </CardHeader>
             <CardContent className="pl-2">
                 <div className="h-[300px] min-h-[300px] w-full min-w-0">
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={data} layout="vertical" margin={{ top: 5, right: 50, left: 20, bottom: 5 }}>
+                        <BarChart data={data} layout="vertical" margin={{ top: 5, right: 40, left: 20, bottom: 5 }}>
                             <XAxis type="number" hide />
                             <YAxis
                                 dataKey="nombre"
@@ -53,15 +53,14 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
                                 itemStyle={{
                                     color: "hsl(var(--foreground))"
                                 }}
-                                formatter={(value: number | string | undefined) => [`$${Number(value || 0).toLocaleString('es-CL')}`, "Total"]}
+                                formatter={(value: number | string | undefined) => [`${value} unidades`, "Total"]}
                             />
-                            <Bar dataKey="total" radius={[0, 4, 4, 0]}>
+                            <Bar dataKey="cantidad" radius={[0, 4, 4, 0]}>
                                 <LabelList
-                                    dataKey="total"
+                                    dataKey="cantidad"
                                     position="right"
                                     fill="hsl(var(--foreground))"
                                     fontSize={12}
-                                    formatter={(value: any) => `$${Number(value) >= 1000 ? (Number(value) / 1000).toFixed(1) + 'k' : value}`}
                                 />
                                 {data.map((entry, index) => (
                                     <Cell key={`cell-${entry.nombre}`} fill={COLORS[index % COLORS.length]} />

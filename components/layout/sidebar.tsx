@@ -28,17 +28,18 @@ export function Sidebar({ className }: SidebarProps) {
 
     const routes = [
         {
-            label: "Dashboard",
-            icon: LayoutDashboard,
-            href: "/dashboard",
-            active: pathname === "/dashboard",
-        },
-        {
-            label: "POS (Caja)",
+            label: "Caja",
             icon: ShoppingCart,
             href: "/dashboard/pos",
             active: pathname.startsWith("/dashboard/pos"),
             permission: "sales.create" as Permission,
+        },
+        {
+            label: "Dashboard",
+            icon: LayoutDashboard,
+            href: "/dashboard",
+            active: pathname === "/dashboard",
+            permission: "analytics.view_full" as Permission,
         },
         {
             label: "Inventario",
@@ -66,7 +67,7 @@ export function Sidebar({ className }: SidebarProps) {
             icon: FileText,
             href: "/dashboard/ventas",
             active: pathname.startsWith("/dashboard/ventas"),
-            permission: "sales.view_own" as Permission,
+            permission: "sales.view_all" as Permission,
         },
         {
             label: "Usuarios",

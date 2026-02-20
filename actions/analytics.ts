@@ -189,3 +189,46 @@ export async function getTopProductsData() {
         return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
+
+export async function getTopProductsByUnitsData() {
+    await connection()
+    try {
+        const { supabase, profile } = await validateRequest('analytics.view_full')
+        const thirtyDaysAgo = subDays(new Date(), 30)
+
+        const { data, error } = await supabase
+            .from("venta_detalles")
+            .select(`
+                cantidad,
+                total,
+                producto:productos(nombre)
+            `)
+            .eq("tenant_id", profile.tenant_id)
+            .gte("created_at", thirtyDaysAgo.toISOString())
+
+        if (error) throw error
+
+        const productMap: Record<string, { nombre: string, cantidad: number }> = {}
+
+        interface SaleDetailItem {
+            cantidad: number
+            producto: { nombre: string } | null
+        }
+
+        (data as unknown as SaleDetailItem[])?.forEach((item) => {
+            const nombre = item.producto?.nombre || "Desconocido"
+            if (!productMap[nombre]) {
+                productMap[nombre] = { nombre, cantidad: 0 }
+            }
+            productMap[nombre].cantidad += Number(item.cantidad)
+        })
+
+        const topProducts = Object.values(productMap)
+            .sort((a, b) => b.cantidad - a.cantidad)
+            .slice(0, 5)
+
+        return { success: true, data: topProducts }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
+    }
+}

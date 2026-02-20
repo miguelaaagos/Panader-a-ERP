@@ -12,6 +12,11 @@ const TopProductsChart = dynamic(() => import("./top-products-chart").then(mod =
     loading: () => <div className="h-[350px] bg-muted animate-pulse rounded-xl" />
 })
 
+const TopProductsUnitsChart = dynamic(() => import("./top-products-units-chart").then(mod => mod.TopProductsUnitsChart), {
+    ssr: false,
+    loading: () => <div className="h-[350px] bg-muted animate-pulse rounded-xl" />
+})
+
 interface SalesTrendItem {
     date: string
     total: number
@@ -22,16 +27,29 @@ interface TopProductItem {
     total: number
 }
 
+interface TopProductUnitItem {
+    nombre: string
+    cantidad: number
+}
+
 interface DashboardChartsProps {
     salesTrend: SalesTrendItem[]
     topProducts: TopProductItem[]
+    topProductsUnits: TopProductUnitItem[]
 }
 
-export function DashboardCharts({ salesTrend, topProducts }: DashboardChartsProps) {
+export function DashboardCharts({ salesTrend, topProducts, topProductsUnits }: DashboardChartsProps) {
     return (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <SalesTrendChart data={salesTrend} />
-            <TopProductsChart data={topProducts} />
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+            <div className="lg:col-span-2">
+                <SalesTrendChart data={salesTrend} />
+            </div>
+            <div className="w-full">
+                <TopProductsChart data={topProducts} />
+            </div>
+            <div className="w-full">
+                <TopProductsUnitsChart data={topProductsUnits} />
+            </div>
         </div>
     )
 }

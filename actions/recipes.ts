@@ -166,9 +166,9 @@ export async function upsertRecipe(data: RecipeFormData, recipeId?: string) {
         revalidatePath("/dashboard/inventario")
         return { success: true, id: currentRecipeId }
 
-    } catch (error: unknown) {
+    } catch (error: any) {
         console.error("Error in upsertRecipe:", error)
-        return { success: false, error: error instanceof Error ? error.message : String(error) }
+        return { success: false, error: error?.message || String(error) }
     }
 }
 
@@ -200,9 +200,9 @@ export async function recalculateRecipesUsingIngredient(ingredienteId: string) {
 
         revalidatePath("/dashboard/recetas")
         return { success: true, count: uniqueRecipeIds.length }
-    } catch (error: unknown) {
+    } catch (error: any) {
         console.error("Error recalculating recipes:", error)
-        return { success: false, error: error instanceof Error ? error.message : String(error) }
+        return { success: false, error: error?.message || String(error) }
     }
 }
 
@@ -296,8 +296,8 @@ export async function getRecipes() {
 
         if (error) throw error
         return { success: true, data }
-    } catch (error: unknown) {
-        return { success: false, error: error instanceof Error ? error.message : String(error) }
+    } catch (error: any) {
+        return { success: false, error: error?.message || String(error) }
     }
 }
 
@@ -322,8 +322,8 @@ export async function getRecipeDetail(id: string) {
 
         if (error) throw error
         return { success: true, data }
-    } catch (error: unknown) {
-        return { success: false, error: error instanceof Error ? error.message : String(error) }
+    } catch (error: any) {
+        return { success: false, error: error?.message || String(error) }
     }
 }
 
@@ -343,7 +343,7 @@ export async function deleteRecipe(id: string) {
 
         revalidatePath("/dashboard/recetas")
         return { success: true }
-    } catch (error: unknown) {
-        return { success: false, error: error instanceof Error ? error.message : String(error) }
+    } catch (error: any) {
+        return { success: false, error: error?.message || String(error) }
     }
 }

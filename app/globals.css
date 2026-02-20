@@ -29,29 +29,34 @@
   }
 
   .dark {
-    --background: 15 30% 8%;
-    --foreground: 35 25% 98%;
-    --card: 15 30% 10%;
-    --card-foreground: 35 25% 98%;
-    --popover: 15 30% 8%;
-    --popover-foreground: 35 25% 98%;
-    --primary: 25 45% 55%;
-    --primary-foreground: 15 30% 8%;
-    --secondary: 15 30% 15%;
-    --secondary-foreground: 35 25% 98%;
-    --muted: 15 30% 18%;
-    --muted-foreground: 35 10% 70%;
-    --accent: 25 30% 20%;
-    --accent-foreground: 35 25% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 35 25% 98%;
-    --border: 15 30% 20%;
-    --input: 15 30% 20%;
-    --ring: 25 45% 55%;
+    --background: 20 40% 5%;
+    --foreground: 40 30% 96%;
+    --card: 20 35% 8%;
+    --card-foreground: 40 30% 96%;
+    --popover: 20 35% 8%;
+    --popover-foreground: 40 30% 96%;
+    --primary: 30 70% 55%;
+    --primary-foreground: 20 40% 5%;
+    --secondary: 20 30% 15%;
+    --secondary-foreground: 40 30% 96%;
+    --muted: 20 30% 12%;
+    --muted-foreground: 35 20% 75%;
+    --accent: 30 50% 20%;
+    --accent-foreground: 40 30% 96%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 40 30% 96%;
+    --border: 20 30% 16%;
+    --input: 20 30% 16%;
+    --ring: 30 70% 55%;
   }
 }
 
 @layer base {
+  .dark body {
+    background: radial-gradient(circle at top right, hsl(25, 30%, 12%), hsl(var(--background)));
+    background-attachment: fixed;
+  }
+
   * {
     @apply border-border;
   }

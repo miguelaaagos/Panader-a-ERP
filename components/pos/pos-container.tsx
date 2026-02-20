@@ -49,7 +49,7 @@ export function POSContainer() {
     const [activeSession, setActiveSession] = useState<CashSession | null>(null)
     const [weighingProduct, setWeighingProduct] = useState<Product | null>(null)
     const [tenantId, setTenantId] = useState<string | null>(null)
-    const [activeTab, setActiveTab] = useState("pos")
+    const [activeTab, setActiveTab] = useState("turno")
     const [isMobileProductsOpen, setIsMobileProductsOpen] = useState(true)
 
     // Store Centralizado
@@ -306,7 +306,7 @@ export function POSContainer() {
             </TabsContent>
 
             <TabsContent value="turno" className="mt-0 outline-none">
-                <CashierTab onSessionChange={fetchSession} />
+                <CashierTab onSessionChange={fetchSession} onStartSale={() => setActiveTab("pos")} />
             </TabsContent>
 
             <CheckoutDialog

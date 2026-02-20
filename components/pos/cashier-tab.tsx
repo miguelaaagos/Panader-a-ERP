@@ -25,7 +25,9 @@ import {
     ArrowRightLeft,
     ReceiptText,
     Eye,
-    ArrowUpRight
+    ArrowUpRight,
+    ShoppingCart,
+    User
 } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
@@ -37,6 +39,7 @@ interface CashSession {
     fecha_apertura: string
     monto_inicial: number
     estado: string
+    usuarios?: { nombre_completo: string } | null
 }
 
 interface SessionSummary {
@@ -57,9 +60,10 @@ interface RecentSale {
 
 interface CashierTabProps {
     onSessionChange?: () => void
+    onStartSale?: () => void
 }
 
-export function CashierTab({ onSessionChange }: CashierTabProps) {
+export function CashierTab({ onSessionChange, onStartSale }: CashierTabProps) {
     const [session, setSession] = useState<CashSession | null>(null)
     const [loading, setLoading] = useState(true)
     const [summary, setSummary] = useState<SessionSummary | null>(null)
@@ -149,6 +153,17 @@ export function CashierTab({ onSessionChange }: CashierTabProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-20">
             {/* Control Principal */}
             <div className="lg:col-span-4 space-y-6">
+                {session && onStartSale && (
+                    <Button
+                        size="lg"
+                        className="w-full h-16 text-xl font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg flex items-center justify-center gap-3 animate-bounce"
+                        onClick={onStartSale}
+                        style={{ animationIterationCount: 1.5 }}
+                    >
+                        <ShoppingCart className="h-6 w-6" />
+                        Realizar Venta
+                    </Button>
+                )}
                 <Card className="overflow-hidden border-orange-500/20">
                     <CardHeader className="bg-orange-500/5 pb-4">
                         <div className="flex items-center justify-between">
@@ -158,8 +173,13 @@ export function CashierTab({ onSessionChange }: CashierTabProps) {
                             </CardTitle>
                             {session ? <Unlock className="h-5 w-5 text-green-500" /> : <Lock className="h-5 w-5 text-muted-foreground" />}
                         </div>
-                        <CardDescription>
-                            {session ? "Mantenimiento del turno actual" : "Inicia un nuevo turno de caja"}
+                        <CardDescription className="flex items-center justify-between">
+                            <span>{session ? "Mantenimiento del turno actual" : "Inicia un nuevo turno de caja"}</span>
+                            {session?.usuarios?.nombre_completo && (
+                                <span className="text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
+                                    <User className="h-3 w-3" /> {session.usuarios.nombre_completo}
+                                </span>
+                            )}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="pt-6">
