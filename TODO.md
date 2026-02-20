@@ -6,6 +6,8 @@
 - **Hito**: Sistema estabilizado con pnpm y validado con react-doctor.
 
 ## Tareas Completadas [x]
+- [x] Optimizar la responsividad móvil en tablas de Inventario, Ventas y Punto de Venta (POS).
+- [x] Solucionar error 500 en creación de usuarios e incorporar estado visual de notificaciones (Toaster).
 - [x] Consolidar `proxy.ts` y eliminar `middleware.ts`.
 - [x] Actualizar clientes de Supabase SSR con `getClaims()` en Server Actions.
 - [x] Implementar `"use cache"` en Dashboard y Acciones de Ventas.

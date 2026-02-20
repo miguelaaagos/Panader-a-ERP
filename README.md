@@ -106,4 +106,4 @@ pnpm typecheck
 
 **Versión**: 1.0.1 (Stack 2026 Compliant)  
 **Estado**: Producción / Auth Estabilizado  
-**Última actualización**: 20 de febrero de 2026 — Fix `proxy.ts`: `getUser()` para middleware, `getClaims()` para Server Actions  
+**Última actualización**: 20 de febrero de 2026 — Ajustes de responsividad móvil (POS, Inventario, Ventas) y corrección de auth para agregar cajeros.  
