@@ -357,14 +357,14 @@ export default function InventarioPage() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Producto</TableHead>
-                                <TableHead>Código</TableHead>
-                                <TableHead>Categoría</TableHead>
-                                <TableHead>Tipo</TableHead>
-                                <TableHead>Estado</TableHead>
+                                <TableHead className="hidden md:table-cell">Código</TableHead>
+                                <TableHead className="hidden sm:table-cell">Categoría</TableHead>
+                                <TableHead className="hidden lg:table-cell">Tipo</TableHead>
+                                <TableHead className="hidden md:table-cell">Estado</TableHead>
                                 <TableHead className="text-right">Stock</TableHead>
-                                <TableHead className="text-right">Costo</TableHead>
-                                <TableHead className="text-right">Margen</TableHead>
-                                <TableHead className="text-right">Venta</TableHead>
+                                <TableHead className="text-right hidden md:table-cell">Costo</TableHead>
+                                <TableHead className="text-right hidden sm:table-cell">Margen</TableHead>
+                                <TableHead className="text-right hidden sm:table-cell">Venta</TableHead>
                                 <TableHead className="text-right">Acciones</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -394,22 +394,29 @@ export default function InventarioPage() {
 
                                     return (
                                         <TableRow key={producto.id}>
-                                            <TableCell className="font-medium">{producto.nombre}</TableCell>
-                                            <TableCell className="font-mono text-sm">
+                                            <TableCell className="font-medium">
+                                                <div className="flex flex-col">
+                                                    <span>{producto.nombre}</span>
+                                                    <span className="sm:hidden text-xs text-muted-foreground font-normal">
+                                                        Venta: ${venta.toLocaleString("es-CL")}
+                                                    </span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="font-mono text-sm hidden md:table-cell">
                                                 {producto.codigo || "-"}
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="hidden sm:table-cell">
                                                 <Badge variant="outline">
                                                     {producto.categorias?.nombre || "Sin categoría"}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="hidden lg:table-cell">
                                                 <Badge variant="outline">
                                                     {producto.tipo === 'producto_terminado' ? 'Venta' :
                                                         producto.tipo === 'ingrediente' ? 'Ingrediente' : 'Mixto'}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="hidden md:table-cell">
                                                 {producto.activo ? (
                                                     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                                                         Activo
@@ -428,10 +435,10 @@ export default function InventarioPage() {
                                                     })} {producto.unidad_medida === 'unidades' ? 'uds' : producto.unidad_medida}
                                                 </span>
                                             </TableCell>
-                                            <TableCell className="text-right text-muted-foreground">
+                                            <TableCell className="text-right text-muted-foreground hidden md:table-cell">
                                                 ${costo.toLocaleString("es-CL")}
                                             </TableCell>
-                                            <TableCell className="text-right">
+                                            <TableCell className="text-right hidden sm:table-cell">
                                                 <div className="flex flex-col items-end">
                                                     <span className={`font-medium ${margen < 20 ? 'text-red-600' : 'text-green-600'}`}>
                                                         {margen.toFixed(0)}%
@@ -441,7 +448,7 @@ export default function InventarioPage() {
                                                     </span>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="text-right font-bold">
+                                            <TableCell className="text-right font-bold hidden sm:table-cell">
                                                 ${venta.toLocaleString("es-CL")}
                                             </TableCell>
                                             <TableCell className="text-right">

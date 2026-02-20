@@ -86,11 +86,11 @@ export function SalesList({ sales, loading, onAnular, onView, processingId }: Sa
                     <TableRow>
                         <TableHead>N° Venta</TableHead>
                         <TableHead>Fecha</TableHead>
-                        <TableHead>Cliente</TableHead>
-                        <TableHead>Vendedor</TableHead>
-                        <TableHead>Pago</TableHead>
+                        <TableHead className="hidden sm:table-cell">Cliente</TableHead>
+                        <TableHead className="hidden lg:table-cell">Vendedor</TableHead>
+                        <TableHead className="hidden md:table-cell">Pago</TableHead>
                         <TableHead>Total</TableHead>
-                        <TableHead>Estado</TableHead>
+                        <TableHead className="hidden sm:table-cell">Estado</TableHead>
                         <TableHead className="text-right">Acciones</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -99,24 +99,29 @@ export function SalesList({ sales, loading, onAnular, onView, processingId }: Sa
                         <TableRow key={sale.id}>
                             <TableCell className="font-mono text-xs font-bold">{sale.numero_venta}</TableCell>
                             <TableCell className="text-sm">
-                                <div className="flex items-center gap-1.5">
-                                    <Calendar className="h-3 w-3 text-muted-foreground" />
-                                    {format(new Date(sale.fecha), "dd MMM, HH:mm", { locale: es })}
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-1.5">
+                                    <div className="flex items-center gap-1.5">
+                                        <Calendar className="h-3 w-3 text-muted-foreground" />
+                                        {format(new Date(sale.fecha), "dd MMM, HH:mm", { locale: es })}
+                                    </div>
+                                    <span className="sm:hidden text-xs text-muted-foreground capitalize">
+                                        {sale.metodo_pago.replace("_", " ")}
+                                    </span>
                                 </div>
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="hidden sm:table-cell">
                                 <div className="flex flex-col">
                                     <span className="text-sm font-medium">{sale.cliente_nombre || "Cliente General"}</span>
                                     {sale.cliente_rut && <span className="text-xs text-muted-foreground">{sale.cliente_rut}</span>}
                                 </div>
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="hidden lg:table-cell">
                                 <div className="flex items-center gap-1.5 text-sm">
                                     <UserIcon className="h-3 w-3 text-muted-foreground" />
                                     {sale.usuario?.nombre_completo || "Sistema"}
                                 </div>
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="hidden md:table-cell">
                                 <div className="flex items-center gap-2 text-xs font-medium capitalize bg-muted/50 px-2 py-1 rounded-md w-fit">
                                     {getPaymentIcon(sale.metodo_pago)}
                                     {sale.metodo_pago.replace("_", " ")}
@@ -124,8 +129,11 @@ export function SalesList({ sales, loading, onAnular, onView, processingId }: Sa
                             </TableCell>
                             <TableCell className="font-bold text-sm">
                                 ${sale.total.toLocaleString("es-CL")}
+                                {sale.estado === "anulada" && (
+                                    <span className="block sm:hidden text-[10px] text-red-500 font-normal">Anulada</span>
+                                )}
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="hidden sm:table-cell">
                                 {getStatusBadge(sale.estado)}
                             </TableCell>
                             <TableCell className="text-right">

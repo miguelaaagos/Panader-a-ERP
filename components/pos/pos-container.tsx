@@ -9,6 +9,7 @@ import { getProductsForPOS, createSale } from "@/actions/sales"
 import { getSession } from "@/actions/auth"
 import { getCategories } from "@/actions/inventory"
 import { usePOSStore } from "@/hooks/use-pos-store"
+import { cn } from "@/lib/utils"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CashierTab } from "./cashier-tab"
 import { getCurrentCashSession } from "@/actions/cash"
@@ -16,7 +17,7 @@ import { WeighItemDialog } from "./weigh-item-dialog"
 import { Button } from "@/components/ui/button"
 
 import { toast } from "sonner"
-import { PackageSearch, ShoppingCart, AlertCircle, ArrowRight } from "lucide-react"
+import { PackageSearch, ShoppingCart, AlertCircle, ArrowRight, ChevronDown, ChevronUp } from "lucide-react"
 import { saveOfflineSale } from "@/lib/offline-queue"
 import { OfflineSync } from "./offline-sync"
 import { format } from "date-fns"
@@ -49,6 +50,7 @@ export function POSContainer() {
     const [weighingProduct, setWeighingProduct] = useState<Product | null>(null)
     const [tenantId, setTenantId] = useState<string | null>(null)
     const [activeTab, setActiveTab] = useState("pos")
+    const [isMobileProductsOpen, setIsMobileProductsOpen] = useState(true)
 
     // Store Centralizado
     const { items, addItem, updateQuantity, removeItem, clearCart, getTotals } = usePOSStore()
@@ -246,26 +248,49 @@ export function POSContainer() {
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-210px)] min-h-[500px]">
-                    {/* Sector Productos */}
-                    <div className="lg:col-span-8 flex flex-col h-full bg-muted/20 p-4 rounded-xl border border-dashed border-muted-foreground/20">
-                        <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:h-[calc(100vh-210px)] min-h-[500px]">
+                    {/* Sector Productos (Collapsible on Mobile) */}
+                    <div className={cn(
+                        "lg:col-span-7 xl:col-span-8 flex flex-col bg-muted/20 p-4 rounded-xl border border-dashed border-muted-foreground/20 transition-all",
+                        !isMobileProductsOpen && "max-h-[70px] lg:max-h-none overflow-hidden pb-0",
+                        isMobileProductsOpen && "h-[60vh] lg:h-full"
+                    )}>
+                        <div
+                            className="flex items-center justify-between mb-4 cursor-pointer lg:cursor-default"
+                            onClick={() => setIsMobileProductsOpen(!isMobileProductsOpen)}
+                        >
                             <div className="flex items-center gap-2 text-muted-foreground">
                                 <PackageSearch className="h-5 w-5" />
                                 <h2 className="font-medium">Selección de Productos</h2>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 ml-1 lg:hidden rounded-full hover:bg-muted"
+                                >
+                                    {isMobileProductsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                                </Button>
                             </div>
-                            <OfflineSync />
+                            <div onClick={(e) => e.stopPropagation()}>
+                                <OfflineSync />
+                            </div>
                         </div>
-                        <ProductGrid
-                            products={products}
-                            categories={categories}
-                            loading={loading}
-                            onAddToCart={handleAddToCart}
-                        />
+
+                        <div className={cn("flex-1 overflow-hidden transition-opacity", !isMobileProductsOpen ? "opacity-0 lg:opacity-100 hidden lg:flex" : "opacity-100 flex flex-col")}>
+                            <ProductGrid
+                                products={products}
+                                categories={categories}
+                                loading={loading}
+                                onAddToCart={(product) => {
+                                    handleAddToCart(product)
+                                    // Auto-collapse on mobile after adding a product if we want to focus on cart
+                                    // setIsMobileProductsOpen(false) 
+                                }}
+                            />
+                        </div>
                     </div>
 
                     {/* Sector Carrito */}
-                    <div className="lg:col-span-4 h-full">
+                    <div className="lg:col-span-5 xl:col-span-4 h-full min-h-[400px]">
                         <CartPanel
                             items={items}
                             onUpdateQuantity={(id, delta) => {

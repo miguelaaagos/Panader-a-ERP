@@ -35,7 +35,9 @@ interface ProductGridProps {
 export function ProductGrid({ products, categories, loading, onAddToCart }: ProductGridProps) {
     const [search, setSearch] = useState("")
     const [selectedCategory, setSelectedCategory] = useState("all")
-    const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+    // By default, we could use list view to save space on mobile, 
+    // but the responsive CSS classes will also handle stacking nicely.
+    const [viewMode, setViewMode] = useState<"grid" | "list">("list")
 
     const filteredProducts = products.filter(p => {
         const matchesSearch = p.nombre.toLowerCase().includes(search.toLowerCase())
@@ -116,7 +118,7 @@ export function ProductGrid({ products, categories, loading, onAddToCart }: Prod
                     <div className={cn(
                         "gap-3 transition-all duration-300",
                         viewMode === "grid"
-                            ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                             : "flex flex-col"
                     )}>
                         {filteredProducts.map((product) => (

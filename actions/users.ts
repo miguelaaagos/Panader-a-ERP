@@ -4,18 +4,8 @@ import { createClient } from "@supabase/supabase-js"
 import { validateRequest } from "@/lib/server/auth"
 import { revalidatePath } from "next/cache"
 
-// Admin client to bypass RLS and create users
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-        auth: {
-            autoRefreshToken: false,
-            persistSession: false
-        }
-    }
-)
-
+// The admin client will be initialized inside the action to prevent top-level crashes
+// and appropriately await connection() if needed by Next.js in the future.
 interface UserData {
     email: string
     password?: string
@@ -26,6 +16,25 @@ export async function createUser(data: UserData) {
     try {
         // Validar permisos antes de usar el cliente admin
         await validateRequest('users.manage')
+
+        // Cargar clave secreta desde el nuevo estándar o el legacy
+        const secretKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
+
+        if (!secretKey) {
+            throw new Error("Missing Supabase Secret/Service Role Key")
+        }
+
+        // Admin client to bypass RLS and create users
+        const supabaseAdmin = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            secretKey,
+            {
+                auth: {
+                    autoRefreshToken: false,
+                    persistSession: false
+                }
+            }
+        )
 
         // Enforce 'cajero' role for new users created via this action
         const rol = "cajero"
