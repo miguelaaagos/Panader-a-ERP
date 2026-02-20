@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { RefineProvider } from "@/components/providers/refine-provider";
 import { Suspense } from "react";
+import { Toaster } from "sonner";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -45,6 +46,7 @@ export default function RootLayout({
           <Suspense fallback={null}>
             <RefineProvider>{children}</RefineProvider>
           </Suspense>
+          <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>
     </html >

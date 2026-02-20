@@ -55,7 +55,7 @@ export async function createUser(data: UserData) {
                 .from("usuarios")
                 .select("id")
                 .eq("id", authData.user.id)
-                .single()
+                .maybeSingle()
 
             if (existingProfile) {
                 const { error: profileError } = await supabaseAdmin
