@@ -6,7 +6,7 @@ import { ShoppingCart, Package, ChefHat, FileText } from "lucide-react"
 
 import { DashboardSummary, DashboardSummarySkeleton } from "@/components/dashboard/dashboard-summary"
 import { DashboardChartsContainer, DashboardChartsSkeleton } from "@/components/dashboard/dashboard-charts-container"
-import { StockAlertsContainer, StockAlertsSkeleton } from "@/components/dashboard/stock-alerts-container"
+import { RecentSalesContainer, RecentSalesSkeleton } from "@/components/dashboard/recent-sales-container"
 
 async function WelcomeMessage() {
   const supabase = await createClient()
@@ -65,41 +65,10 @@ export default async function DashboardPage() {
           </Suspense>
         </div>
         <div className="space-y-6">
-          <Suspense fallback={<StockAlertsSkeleton />}>
-            <StockAlertsContainer />
+          <Suspense fallback={<RecentSalesSkeleton />}>
+            <RecentSalesContainer />
           </Suspense>
         </div>
-      </div>
-
-      {/* Accesos Rápidos */}
-      <div className="grid gap-6 md:grid-cols-3">
-        <Link href="/dashboard/inventario">
-          <div className="group rounded-xl border border-primary/10 bg-card p-6 shadow-sm hover:bg-muted/50 transition-colors cursor-pointer">
-            <div className="flex items-center gap-3 mb-2">
-              <Package className="h-5 w-5 text-primary" />
-              <h3 className="text-lg font-bold">Inventario</h3>
-            </div>
-            <p className="text-sm text-muted-foreground">Controla tus insumos y productos.</p>
-          </div>
-        </Link>
-        <Link href="/dashboard/produccion">
-          <div className="group rounded-xl border border-primary/10 bg-card p-6 shadow-sm hover:bg-muted/50 transition-colors cursor-pointer">
-            <div className="flex items-center gap-3 mb-2">
-              <ChefHat className="h-5 w-5 text-primary" />
-              <h3 className="text-lg font-bold">Producción</h3>
-            </div>
-            <p className="text-sm text-muted-foreground">Recetas y órdenes de panificación.</p>
-          </div>
-        </Link>
-        <Link href="/dashboard/ventas">
-          <div className="group rounded-xl border border-primary/10 bg-card p-6 shadow-sm hover:bg-muted/50 transition-colors cursor-pointer">
-            <div className="flex items-center gap-3 mb-2">
-              <FileText className="h-5 w-5 text-primary" />
-              <h3 className="text-lg font-bold">Ventas</h3>
-            </div>
-            <p className="text-sm text-muted-foreground">Revisa el historial y cancelaciones.</p>
-          </div>
-        </Link>
       </div>
     </div >
   )

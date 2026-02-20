@@ -1,6 +1,7 @@
 import { getDashboardStats } from "@/actions/analytics"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, FileText, ArrowUpRight, AlertTriangle } from "lucide-react"
+import Link from "next/link"
 
 export async function DashboardSummary() {
     const statsRes = await getDashboardStats()
@@ -59,18 +60,20 @@ export async function DashboardSummary() {
                 </CardContent>
             </Card>
 
-            <Card className={`border-primary/10 shadow-sm ${stats?.stockCritico ? 'border-amber-500/50 bg-amber-50/50 dark:bg-amber-950/10' : ''}`}>
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">Stock Crítico</CardTitle>
-                    <AlertTriangle className={`h-4 w-4 ${stats?.stockCritico ? 'text-amber-500' : 'text-muted-foreground'}`} />
-                </CardHeader>
-                <CardContent>
-                    <div className={`text-2xl font-bold font-serif ${stats?.stockCritico ? 'text-amber-600' : ''}`}>
-                        {stats?.stockCritico}
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Productos por reponer</p>
-                </CardContent>
-            </Card>
+            <Link href="/dashboard/inventario" className="block h-full">
+                <Card className={`h-full border-primary/10 shadow-sm transition-all hover:ring-2 hover:ring-primary/20 ${stats?.stockCritico ? 'border-amber-500/50 bg-amber-50/50 dark:bg-amber-950/20 hover:border-amber-500' : 'hover:bg-muted/50'}`}>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">Stock Crítico</CardTitle>
+                        <AlertTriangle className={`h-4 w-4 ${stats?.stockCritico ? 'text-amber-500' : 'text-muted-foreground'}`} />
+                    </CardHeader>
+                    <CardContent>
+                        <div className={`text-2xl font-bold font-serif ${stats?.stockCritico ? 'text-amber-600' : ''}`}>
+                            {stats?.stockCritico}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">Productos por reponer</p>
+                    </CardContent>
+                </Card>
+            </Link>
         </div>
     )
 }

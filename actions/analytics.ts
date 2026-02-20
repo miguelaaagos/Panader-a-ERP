@@ -2,8 +2,10 @@
 
 import { validateRequest } from "@/lib/server/auth"
 import { startOfDay, subDays, format, parseISO } from "date-fns"
+import { connection } from "next/server"
 
 export async function getDashboardStats() {
+    await connection()
     try {
         // Solo admins ven KPIs financieros completos por ahora
         // Podríamos crear un permiso 'analytics.view_basic' para cajeros si fuera necesario
@@ -76,6 +78,7 @@ export async function getDashboardStats() {
 }
 
 export async function getCriticalStockItems() {
+    await connection()
     try {
         const { supabase, profile } = await validateRequest()
         const { data, error } = await supabase
@@ -104,6 +107,7 @@ export async function getCriticalStockItems() {
 }
 
 export async function getSalesTrendData() {
+    await connection()
     try {
         const { supabase, profile } = await validateRequest('analytics.view_full')
 
@@ -140,6 +144,7 @@ export async function getSalesTrendData() {
 }
 
 export async function getTopProductsData() {
+    await connection()
     try {
         const { supabase, profile } = await validateRequest('analytics.view_full')
         const thirtyDaysAgo = subDays(new Date(), 30)

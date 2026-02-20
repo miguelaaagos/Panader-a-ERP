@@ -3,6 +3,7 @@ import { Geist, Instrument_Serif } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { RefineProvider } from "@/components/providers/refine-provider";
+import { Suspense } from "react";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -41,9 +42,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <RefineProvider>{children}</RefineProvider>
+          <Suspense fallback={null}>
+            <RefineProvider>{children}</RefineProvider>
+          </Suspense>
         </ThemeProvider>
       </body>
-    </html>
+    </html >
   );
 }
