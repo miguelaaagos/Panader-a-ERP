@@ -24,6 +24,9 @@
 - [x] **Infraestructura de Testing**: Integración completa de Playwright (E2E y Component testing) con auth global.
 - [x] **Módulo de Gastos Operativos**: UI y Backend (Supabase + Actions) para registro de tickets de gastos.
 - [x] **Reportes Financieros (SII)**: Dashboard integrado con Recharts para IVA Débito, Crédito, Ventas y Gastos.
+- [x] **Estabilización Core ERP**: Resolución holística de inconsistencias de esquema (errores `total null`, enum states) reescribiendo `create_sale_v1` RPC.
+- [x] **Flujo Auth PKCE**: Implementación completa de recuperación de contraseña (`forgot-password`, `reset-password`, actions).
+- [x] **Limpieza de Repositorio**: Eliminación de rama `vercel` y consolidación de trabajo en la nueva rama `desarrollo`.
 
 ## Tareas Pendientes [ ]
 - [ ] Auditoría profunda de cálculos de costos en recetas vs precios de insumos.

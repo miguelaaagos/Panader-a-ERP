@@ -109,6 +109,7 @@ pnpm typecheck
 
 ---
 
-**Versión**: 1.1.0 (ERP Migration Complete)  
-**Estado**: Producción / RLS Estabilizado / ERP Brand  
-**Última actualización**: 20 de febrero de 2026 — Migración completa de POS a ERP (Rutas, Componentes, Store y UI). Saneamiento total de políticas RLS.  
+**Versión**: 1.2.0 (ERP Core & Auth Recovery Complete)  
+**Estado**: Desarrollo Activo (Rama `desarrollo`) / Producción Estable  
+**Última actualización**: 22 de febrero de 2026 — Eliminación de errores de RPC (`create_sale_v1`), sincronización total del esquema de ventas e inventario, integración del flujo de recuperación de contraseñas (PKCE) y limpieza del repositorio (eliminación rama `vercel`).
+

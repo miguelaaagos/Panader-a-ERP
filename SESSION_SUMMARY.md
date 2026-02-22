@@ -1,35 +1,27 @@
-# 📓 SESSION SUMMARY - POS Panadería (Febrero 2026)
+# 🚀 Session Summary: ERP Core & Auth Estabilization
+**Date**: 22 Febrero 2026  
+**Branch**: `desarrollo` (The `vercel` branch was deleted locally and remotely to clean up the repository).
 
-## 🕒 Última Sesión: 20 de Febrero, 2026
-**Hito**: Saneamiento Crítico de RLS y Optimización de Performance.
+## 🎯 What We Accomplished
 
-## 🚀 Logros de la Sesión
-1.  **Saneamiento de RLS**:
-    *   Se resolvieron los errores de recursividad infinita en las políticas de `usuarios` y `ventas`.
-    *   Se migraron todas las políticas críticas a funciones `SECURITY DEFINER` (`is_admin()`, `get_my_tenant_id()`).
-    *   Se eliminaron los warnings de "InitPlan" y políticas permisivas múltiples.
-2.  **Optimización UI/UX**:
-    *   Implementación de menú móvil (Hamburguesa) usando Shadcn Sheet.
-    *   Ajustes de responsividad en tablas de Inventario y Ventas (ocultar columnas no críticas).
-    *   Nuevos componentes de carga (croissant animado) y dashboard mejorado.
-3.  **Estabilización del Stack**:
-    *   Migración completa a `pnpm`.
-    *   Validación con `react-doctor` (92/100).
-    *   Corrección de Error 500 en creación de usuarios (Supabase Admin Keys).
-4.  **Calidad y Testing**:
-    *  - **Integración de Playwright**: Configuración completa de E2E con soporte para Supabase Auth persistente y validación de responsividad móvil.
-- **Validación de Infraestructura**: Verificación exitosa de 11 tests (Desktop, Mobile, Auth Setup).
+### 1. ERP Core Stabilization (Sales & Inventory)
+- **Root Cause Fix**: We resolved the persistent `null value in column "total"` and `invalid input value for enum venta_estado` errors during the checkout process.
+- **Action Taken**: We performed a full schema audit of `ventas`, `venta_detalles`, and `productos`. Based on this, we completely rewrote the `create_sale_v1` PostgreSQL RPC function.
+- **Result**: The checkout process now flawlessly inserts sales, correctly tracking both `subtotal` and `total` per item, capturing the current `costo_unitario` for margin tracking, and successfully deducting `stock_actual` from the inventory without constraint violations.
 
-## ⚠️ Estado del Proyecto
-*   **Auth**: Estable con `@supabase/ssr` y `proxy.ts`.
-*   **Database**: RLS blindado y optimizado.
-*   **Performance**: `"use cache"` implementado en analytics; POS operando en tiempo real.
+### 2. Authentication & PKCE Flow
+- **Password Recovery**: We built the complete "Forgot Password" and "Reset Password" flow.
+- **Components**: Added `forgot-password-form` and `reset-password-form` components, fully integrated with Next.js App Router (`/forgot-password` and `/reset-password` routes).
+- **Backend Mechanics**: Implemented the server actions (`forgotPassword`, `resetPassword`) in `actions/auth.ts`, ensuring secure PKCE token exchange via the `/auth/confirm` route using `@supabase/ssr`.
 
-## 🛠 Próximos Pasos (Próxima Sesión)
-- [ ] Auditoría profunda de costos en Recetas vs Precios de Compra.
-- [ ] Implementar soporte 100% Offline con IndexedDB.
-- [ ] **Planificación Transbank**: Integración de Webpay Plus mediante SDK oficial de Node.js (Ambiente de Integración).
-- [ ] Configurar GitHub Projects.
+### 3. Cleanup & Documentation
+- **Branch Management**: Safely deleted the legacy `vercel` branch to prevent confusion. All active work is now consolidated on the new `desarrollo` branch.
+- **Documentation Sync**: Updated both `README.md` (Version 1.2.0) and `TODO.md` to reflect the completed milestones, ensuring the "Source of Truth" is perfectly aligned for development on any other machine.
 
----
-*Este archivo debe ser actualizado al final de cada sesión de desarrollo.*
+## 🛠 Next Steps for Your Other PC
+1. **Pull the branch**: `git fetch origin` followed by `git checkout desarrollo` (or `git pull origin desarrollo` if already on it).
+2. **Install deps**: Run `pnpm install` just in case.
+3. **Environment**: Ensure your `.env` file on the new PC has the correct `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+4. **Start Dev Server**: Run `pnpm run dev`.
+
+You are fully synced and ready to continue! 🥖📈
