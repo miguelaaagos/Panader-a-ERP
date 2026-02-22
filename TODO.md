@@ -29,6 +29,7 @@
 - [x] **Limpieza de Repositorio**: Eliminación de rama `vercel` y consolidación de trabajo en la nueva rama `desarrollo`.
 
 ## Tareas Pendientes [ ]
+- [ ] **Módulo Financiero**: Añadir gestión de "Gastos Fijos" del local (arriendo, luz, agua, sueldos) para integrarlos en el cálculo de Utilidad Neta del Dashboard.
 - [ ] Auditoría profunda de cálculos de costos en recetas vs precios de insumos.
 - [ ] Implementar soporte 100% Offline (PWA) con IndexedDB para carga total de catálogo y sincronización en segundo plano.
 - [x] Ejecución de pruebas iniciales con Playwright (Salud del sistema)
