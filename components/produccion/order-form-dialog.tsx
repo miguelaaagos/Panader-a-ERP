@@ -111,9 +111,18 @@ export function OrderFormDialog({ open, onOpenChange, onSuccess }: OrderFormDial
                         <Label>Cantidad a Producir ({recipeDetail?.producto?.unidad_medida || ""})</Label>
                         <Input
                             type="number"
-                            step="0.01"
+                            step={recipeDetail?.producto?.unidad_medida === "unidades" ? "1" : "0.01"}
                             value={cantidad}
-                            onChange={(e) => setCantidad(e.target.value)}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (recipeDetail?.producto?.unidad_medida === "unidades") {
+                                    // Prevenir decimales para 'unidades'
+                                    const intVal = parseInt(val, 10);
+                                    setCantidad(isNaN(intVal) ? "" : intVal.toString());
+                                } else {
+                                    setCantidad(val);
+                                }
+                            }}
                             placeholder="Ej: 10"
                         />
                         {recipeDetail && (

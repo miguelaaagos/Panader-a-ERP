@@ -1,31 +1,35 @@
-# 🧠 Síntesis de Sesión: Refactorización POS y Gestión de Turno (Feb 2026)
+# 📓 SESSION SUMMARY - POS Panadería (Febrero 2026)
 
-Esta sesión se centró en mejorar el flujo de trabajo del cajero mediante la refactorización de la interfaz del POS y la integración de controles financieros directamente en la ventana de ventas.
+## 🕒 Última Sesión: 20 de Febrero, 2026
+**Hito**: Saneamiento Crítico de RLS y Optimización de Performance.
 
-## 🚀 Logros Principales
+## 🚀 Logros de la Sesión
+1.  **Saneamiento de RLS**:
+    *   Se resolvieron los errores de recursividad infinita en las políticas de `usuarios` y `ventas`.
+    *   Se migraron todas las políticas críticas a funciones `SECURITY DEFINER` (`is_admin()`, `get_my_tenant_id()`).
+    *   Se eliminaron los warnings de "InitPlan" y políticas permisivas múltiples.
+2.  **Optimización UI/UX**:
+    *   Implementación de menú móvil (Hamburguesa) usando Shadcn Sheet.
+    *   Ajustes de responsividad en tablas de Inventario y Ventas (ocultar columnas no críticas).
+    *   Nuevos componentes de carga (croissant animado) y dashboard mejorado.
+3.  **Estabilización del Stack**:
+    *   Migración completa a `pnpm`.
+    *   Validación con `react-doctor` (92/100).
+    *   Corrección de Error 500 en creación de usuarios (Supabase Admin Keys).
+4.  **Calidad y Testing**:
+    *  - **Integración de Playwright**: Configuración completa de E2E con soporte para Supabase Auth persistente y validación de responsividad móvil.
+- **Validación de Infraestructura**: Verificación exitosa de 11 tests (Desktop, Mobile, Auth Setup).
 
-### 1. Refactorización Integral del POS
-- **Interfaz por Pestañas**: Se implementó un layout basado en `Tabs` para separar la **Venta** del control de **Turno/Caja**. 
-- **Tab de Turno (CashierTab)**: Nuevo módulo que permite abrir/cerrar caja, visualizar el resumen de ventas del turno y ver la actividad reciente sin salir del POS.
-- **Relación Venta-Turno**: Todas las ventas ahora viajan con el `arqueo_id` correspondiente, asegurando que los reportes de caja sean 100% precisos.
+## ⚠️ Estado del Proyecto
+*   **Auth**: Estable con `@supabase/ssr` y `proxy.ts`.
+*   **Database**: RLS blindado y optimizado.
+*   **Performance**: `"use cache"` implementado en analytics; POS operando en tiempo real.
 
-### 2. Optimización del Dashboard
-- **Simplificación**: Se eliminó el `CashSessionManager` del dashboard principal para evitar redundancia y centralizar la operación diaria en la vista del cajero.
-- **Feedback en Tiempo Real**: El encabezado del POS ahora muestra dinámicamente si hay un turno activo y la hora de apertura.
-
-### 3. Estabilidad y Offline
-- **Validación de Sesión**: El sistema ahora bloquea la facturación si no hay una caja abierta, guiando al usuario al tab de turno.
-- **RPC Robusta**: Se actualizó la función `create_sale_v1` en PostgreSQL para soportar el vínculo opcional/obligatorio con sesiones de caja.
-
-## 🛠 Estado Técnico
-- **Componentes**: `POSContainer`, `CashierTab`, `CartPanel`, `ProductGrid`.
-- **Backend**: Update RPC `create_sale_v1`, nuevas acciones en `actions/cash.ts`.
-- **Frontend**: Integración de `Tabs` de shadcn/ui y `date-fns` para formateo de tiempos.
-
-## 🏁 Próximos pasos recomendados
-1. **Verificación de Totales**: Realizar un arqueo completo probando todos los métodos de pago (Efectivo, Tarjetas, Transferencia).
-2. **GitHub Push**: Realizar el primer commit de esta versión estable a la rama `main`.
-3. **Reportes PDF**: (Pendiente) Generación de comprobante de arqueo al cerrar el turno.
+## 🛠 Próximos Pasos (Próxima Sesión)
+- [ ] Auditoría profunda de costos en Recetas vs Precios de Compra.
+- [ ] Implementar soporte 100% Offline con IndexedDB.
+- [ ] **Planificación Transbank**: Integración de Webpay Plus mediante SDK oficial de Node.js (Ambiente de Integración).
+- [ ] Configurar GitHub Projects.
 
 ---
-*Sesión finalizada exitosamente. El flujo de caja es ahora intuitivo y centralizado.*
+*Este archivo debe ser actualizado al final de cada sesión de desarrollo.*

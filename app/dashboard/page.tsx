@@ -26,7 +26,7 @@ async function WelcomeMessage() {
   const profile = profileData as any
 
   if (profile?.rol === "cajero") {
-    redirect("/dashboard/pos")
+    redirect("/dashboard/erp")
   }
 
   return (
@@ -48,7 +48,7 @@ export default async function DashboardPage() {
         </Suspense>
 
         <div className="flex gap-2">
-          <Link href="/dashboard/pos">
+          <Link href="/dashboard/erp">
             <button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 gap-2">
               <ShoppingCart className="h-4 w-4" />
               Nueva Venta

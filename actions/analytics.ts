@@ -60,6 +60,10 @@ export async function getDashboardStats() {
         ) as unknown as ProductWithStock[]
         const stockCriticoCount = criticalItems.length
 
+        const sinStockCount = (allProducts || []).filter((p) =>
+            (p.stock_actual !== null) && Number(p.stock_actual) === 0
+        ).length
+
         return {
             success: true,
             data: {
@@ -67,6 +71,7 @@ export async function getDashboardStats() {
                 countToday,
                 percentageChange: Math.round(percentageChange),
                 stockCritico: stockCriticoCount,
+                sinStock: sinStockCount,
                 totalYesterday,
                 criticalItems: criticalItems.slice(0, 5) // Send some items for the alert
             }

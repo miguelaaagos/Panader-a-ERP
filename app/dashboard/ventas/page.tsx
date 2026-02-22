@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { getRecentSales, anularVenta } from "@/actions/sales"
 import { getSession } from "@/actions/auth"
-import { SalesList } from "@/components/pos/sales-list"
+import { SalesList } from "@/components/erp/sales-list"
 import { RoleGuard } from "@/components/auth/RoleGuard"
 import { FileText, Search, RefreshCcw, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { SaleDetailsModal } from "@/components/pos/sale-details-modal"
+import { SaleDetailsModal } from "@/components/erp/sale-details-modal"
 
 export default function VentasPage() {
     const [sales, setSales] = useState<any[]>([])
@@ -95,7 +95,7 @@ export default function VentasPage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Historial de Ventas</h1>
-                    <p className="text-muted-foreground italic">Registro de todas las transacciones realizadas en el POS.</p>
+                    <p className="text-muted-foreground italic">Registro de todas las transacciones realizadas en el ERP.</p>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={() => tenantId && fetchSales(tenantId)} disabled={loading}>

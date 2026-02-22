@@ -13,7 +13,10 @@ import {
     Users,
     Settings,
     LogOut,
-    FileText
+    FileText,
+    Inbox,
+    Wallet,
+    TrendingUp
 } from "lucide-react";
 import { useLogout } from "@refinedev/core";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -28,10 +31,10 @@ export function Sidebar({ className }: SidebarProps) {
 
     const routes = [
         {
-            label: "Caja",
+            label: "ERP",
             icon: ShoppingCart,
-            href: "/dashboard/pos",
-            active: pathname.startsWith("/dashboard/pos"),
+            href: "/dashboard/erp",
+            active: pathname.startsWith("/dashboard/erp"),
             permission: "sales.create" as Permission,
         },
         {
@@ -45,8 +48,22 @@ export function Sidebar({ className }: SidebarProps) {
             label: "Inventario",
             icon: Package,
             href: "/dashboard/inventario",
-            active: pathname.startsWith("/dashboard/inventario"),
+            active: pathname === "/dashboard/inventario",
             permission: "inventory.view" as Permission,
+        },
+        {
+            label: "Ingresos",
+            icon: Inbox,
+            href: "/dashboard/inventario/ingresos",
+            active: pathname.startsWith("/dashboard/inventario/ingresos"),
+            permission: "inventory.view" as Permission,
+        },
+        {
+            label: "Gastos",
+            icon: Wallet,
+            href: "/dashboard/gastos",
+            active: pathname.startsWith("/dashboard/gastos"),
+            permission: "sales.view_all" as Permission, // Or another relevant permission
         },
         {
             label: "Recetas",
@@ -68,6 +85,13 @@ export function Sidebar({ className }: SidebarProps) {
             href: "/dashboard/ventas",
             active: pathname.startsWith("/dashboard/ventas"),
             permission: "sales.view_all" as Permission,
+        },
+        {
+            label: "Reportes",
+            icon: TrendingUp,
+            href: "/dashboard/reportes/financiero",
+            active: pathname.startsWith("/dashboard/reportes/financiero"),
+            permission: "analytics.view_full" as Permission,
         },
         {
             label: "Usuarios",

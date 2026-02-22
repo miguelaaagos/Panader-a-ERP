@@ -162,6 +162,20 @@ if (error || !claims) {
 // claims contiene: sub (user id), email, role, etc.
 ```
 
+### Password Reset & OTP Flow (PKCE)
+
+Para flujos de recuperación de contraseña o verificación de email:
+1. **Solicitud**: Usar `resetPasswordForEmail` redirigiendo a `/auth/confirm?next=/reset-password`.
+2. **Confirmación**: La ruta `/auth/confirm` captura el `token_hash` y usa `supabase.auth.verifyOtp`.
+3. **Reseteo**: Si la verificación es exitosa, se establece la sesión y se redirige al usuario a `/reset-password` para que use `supabase.auth.updateUser({ password: '...' })`.
+
+```typescript
+// En /auth/confirm/route.ts
+const { error } = await supabase.auth.verifyOtp({ type, token_hash })
+if (!error) redirect(next)
+```
+```
+
 ## Arquitectura de Carpetas
 
 ```
@@ -176,7 +190,7 @@ src/
 │   ├── dashboard/
 │   │   ├── layout.tsx
 │   │   ├── page.tsx
-│   │   └── settings/page.tsx
+│   │   └── erp/page.tsx
 │   ├── auth/confirm/route.ts         # PKCE callback
 │   └── api/                          # API routes
 ├── components/
@@ -226,6 +240,8 @@ npx supabase gen types typescript --project-id "YOUR_PROJECT_ID" > src/types/dat
 pnpm typecheck  # tsc --noEmit
 pnpm lint       # eslint .
 pnpm format     # prettier --write .
+pnpm test       # vitest (unit)
+pnpm exec playwright test # Playwright (E2E)
 npx react-doctor # Auditoría de calidad React 19
 ```
 
@@ -288,6 +304,13 @@ export async function updateProduct(id: string) {
 - Variables descriptivas (`isLoading`, `hasError`)
 - `const objects` o `as const` en vez de enums
 
+## Estándares de Datos
+
+### Identificadores Correlativos per Tenant
+- Las entidades locales que requieran numeración secuencial (ej. Ventas, Facturas) DEBEN usar un correlativo independiente por cada `tenant_id`.
+- El formato inicial debe ser `000` e incrementar de a uno.
+- La lógica de generación se centraliza en funciones de base de datos (`SECURITY DEFINER`) para garantizar atomicidad.
+
 ## 🎨 UI/UX y Estándares de Diseño
 
 1. **Notificaciones y Feedback**: 
@@ -305,6 +328,17 @@ export async function updateProduct(id: string) {
 5. **Modo Oscuro (Dark Mode)**:
    - Respetar las variables CSS (`hsl(var(--foreground))`, `hsl(var(--background))`, `hsl(var(--muted))`).
    - Evitar colores fijos (ej. `#000` o `white`) que rompan el contraste en dark mode.
+6. **Métricas de Inventario y Cards de Dashboard**:
+   - Tarjetas de "Stock Crítico" (naranja/ámbar) y "Sin Stock" (rojo) deben enlazar directamente al inventario aplicando los filtros correspondientes mediante query params (ej. `?stock=bajo`, `?stock=sin_stock`).
+
+## 🧪 Testing Standards
+
+1. **Flujos Matemáticos y de Negocio (Vital)**: SIEMPRE verificar que los cálculos matemáticos (producción, costos, ventas) y los flujos que modifiquen estado (como **aumentar o restar inventario**) funcionen a la perfección con la lógica esperada. Es OBLIGATORIO escribir pruebas unitarias (Jest/Vitest) para cualquier lógica matemática o de negocio antes de darla por completada.
+2. **Selección de Elementos**: SIEMPRE usar `data-testid` para elementos interactivos en E2E.
+   - Ejemplo: `<button data-testid="submit-sale">Cobrar</button>`
+3. **Web-First Assertions**: Priorizar `expect(locator).toBeVisible()` sobre esperas manuales en Playwright.
+4. **Autenticación**: Usar el estado persistido en `playwright/.auth/user.json` para evitar logins repetitivos en E2E.
+5. **Mobile First**: Validar siempre que el menú Hamburguesa funcione en perfiles móviles.
 
 ## Protocolo de Sincronización del Agente
 1. Cada vez que se actualice el `README.md`, el agente DEBE actualizar el `TODO.md` con el resumen del hito actual.
@@ -312,3 +346,4 @@ export async function updateProduct(id: string) {
 3. Se debe priorizar el uso de GitHub Projects para estados macro, pero `TODO.md` es la verdad técnica para el Agente.
 4. Antes de dar por finalizada una tarea compleja, ejecutar `npx react-doctor` para asegurar calidad de código React 19.
 5. Usar el workflow `/sync-docs` para mantener la coherencia entre documentos.
+```

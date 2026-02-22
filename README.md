@@ -1,6 +1,6 @@
-# 🥖 POS Panadería - Sistema de Punto de Venta
+# 🥖 ERP Panadería - Sistema de Gestión Integral
 
-> Sistema integral de gestión y punto de venta diseñado para optimizar la operación diaria de panaderías y pastelerías, con control total de inventario, producción y flujo de caja en tiempo real.
+> Sistema integral de gestión (ERP) diseñado para optimizar la operación diaria de panaderías y pastelerías, con control total de inventario, producción, ventas y flujo de caja en tiempo real.
 
 [![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.2.4-blue)](https://reactjs.org/)
@@ -12,7 +12,7 @@
 
 ## 📋 Funcionalidades Principales
 
-### 🛒 Centro de Ventas (POS)
+### 🛒 Módulo de Ventas (ERP)
 *   **Gestión de Turnos Activa**: Control de apertura y cierre de caja con arqueo automatizado.
 *   **Historial de Turnos**: Consulta detallada de sesiones pasadas, ventas realizadas y balances por método de pago.
 *   **Interfaz Táctil y Rápida**: Organización por categorías, búsqueda inteligente y soporte para escáner de códigos de barras.
@@ -39,7 +39,7 @@ El sistema ha sido diseñado priorizando la integridad de los datos y la segurid
 *   **Seguridad a Nivel de Datos (RLS)**: Cada consulta a la base de datos está protegida por políticas de *Row Level Security*, asegurando que el personal solo acceda a la información que le corresponde.
 *   **Validación en Servidor**: Todas las operaciones críticas (ventas, ajustes de stock, cierres de caja) se ejecutan mediante *Server Actions*, eliminando la manipulación de datos en el cliente.
 *   **Integridad Reforzada**: Uso de funciones de base de datos (RPC) para garantizar transacciones atómicas.
-*   **Aceleración por Caché**: Implementación de `"use cache"` de Next.js 16 para una respuesta instantánea y reducción de latencia en el Dashboard y POS.
+*   **Aceleración por Caché**: Implementación de `"use cache"` de Next.js 16 para una respuesta instantánea y reducción de latencia en el Dashboard y ERP.
 
 ---
 
@@ -54,7 +54,7 @@ El sistema ha sido diseñado priorizando la integridad de los datos y la segurid
 ---
 ## 🚀 Funcionalidades Completas (Versión 1.0)
 
-### 🏪 Punto de Venta (POS) Profesional
+### 🏪 Sistema ERP Profesional
 -   **Interfaz Optimizada**: Diseño limpio y rápido para pantallas táctiles.
 -   **Múltiples Métodos de Pago**: Efectivo, Débito, Crédito y Transferencia.
 -   **Recargo Automático**: Cálculo automático del 19% IVA para pagos con tarjeta.
@@ -72,6 +72,11 @@ El sistema ha sido diseñado priorizando la integridad de los datos y la segurid
 -   **Métricas en Vivo**: Ventas diarias, métodos de pago y rendimiento de productos.
 -   **Historial de Ventas**: Registro detallado de cada transacción con opción de anulación segura.
 -   **Restauración de Stock**: Al anular una venta, el stock se devuelve automáticamente al inventario.
+-   **Reportes Financieros (SII)**: Cálculo automático de IVA Débito, IVA Crédito y Utilidad Neta mensual basados en ingresos y gastos con facturas.
+
+### 💳 Control de Gastos Operativos
+-   **Registro de Compras**: Gestión de gastos y comprobantes.
+-   **Automatización de Ingresos**: Integración automática de gastos al ingresar mercancía de proveedores al inventario.
 
 ---
 
@@ -104,6 +109,6 @@ pnpm typecheck
 
 ---
 
-**Versión**: 1.0.1 (Stack 2026 Compliant)  
-**Estado**: Producción / Auth Estabilizado  
-**Última actualización**: 20 de febrero de 2026 — Ajustes de responsividad móvil (POS, Inventario, Ventas) y corrección de auth para agregar cajeros.  
+**Versión**: 1.1.0 (ERP Migration Complete)  
+**Estado**: Producción / RLS Estabilizado / ERP Brand  
+**Última actualización**: 20 de febrero de 2026 — Migración completa de POS a ERP (Rutas, Componentes, Store y UI). Saneamiento total de políticas RLS.  

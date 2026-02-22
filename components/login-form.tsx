@@ -92,7 +92,7 @@ export function LoginForm({
                 </div>
               )}
               <Button type="submit" className="w-full h-11 text-lg font-medium" disabled={isPending || !mounted}>
-                {isPending ? "Cargando..." : "Ingresar al POS"}
+                {isPending ? 'Ingresando...' : 'Ingresar al ERP'}
               </Button>
             </div>
             <div className="mt-6 text-center text-sm text-muted-foreground">

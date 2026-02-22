@@ -2,7 +2,7 @@
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, LayoutDashboard, ShoppingCart, Package, ChefHat, Utensils, Users, Settings, LogOut, FileText } from "lucide-react";
+import { Menu, LayoutDashboard, ShoppingCart, Package, ChefHat, Utensils, Users, Settings, LogOut, FileText, Inbox, Wallet, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLogout } from "@refinedev/core";
@@ -19,10 +19,10 @@ export function MobileSidebar() {
 
     const routes = [
         {
-            label: "Caja",
+            label: "ERP",
             icon: ShoppingCart,
-            href: "/dashboard/pos",
-            active: pathname.startsWith("/dashboard/pos"),
+            href: "/dashboard/erp",
+            active: pathname.startsWith("/dashboard/erp"),
             permission: "sales.create" as Permission,
         },
         {
@@ -36,8 +36,22 @@ export function MobileSidebar() {
             label: "Inventario",
             icon: Package,
             href: "/dashboard/inventario",
-            active: pathname.startsWith("/dashboard/inventario"),
+            active: pathname === "/dashboard/inventario",
             permission: "inventory.view" as Permission,
+        },
+        {
+            label: "Ingresos",
+            icon: Inbox,
+            href: "/dashboard/inventario/ingresos",
+            active: pathname.startsWith("/dashboard/inventario/ingresos"),
+            permission: "inventory.view" as Permission,
+        },
+        {
+            label: "Gastos",
+            icon: Wallet,
+            href: "/dashboard/gastos",
+            active: pathname.startsWith("/dashboard/gastos"),
+            permission: "sales.view_all" as Permission,
         },
         {
             label: "Recetas",
@@ -59,6 +73,13 @@ export function MobileSidebar() {
             href: "/dashboard/ventas",
             active: pathname.startsWith("/dashboard/ventas"),
             permission: "sales.view_all" as Permission,
+        },
+        {
+            label: "Reportes",
+            icon: TrendingUp,
+            href: "/dashboard/reportes/financiero",
+            active: pathname.startsWith("/dashboard/reportes/financiero"),
+            permission: "analytics.view_full" as Permission,
         },
         {
             label: "Usuarios",

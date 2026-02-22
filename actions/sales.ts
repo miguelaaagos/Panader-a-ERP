@@ -86,7 +86,7 @@ export async function createSale(data: SaleFormData) {
             return { success: false, error: rpcError.message }
         }
 
-        revalidatePath("/dashboard/pos")
+        revalidatePath("/dashboard/erp")
         revalidatePath("/dashboard/inventario")
         revalidatePath("/dashboard/ventas")
         revalidateTag('sales', 'default')

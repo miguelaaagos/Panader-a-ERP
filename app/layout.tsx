@@ -12,8 +12,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "POS Panadería Chile | Punto de Venta Artisanal",
-  description: "Sistema POS premium para panaderías artesanales chilenas",
+  title: "ERP Panadería Chile | Gestión Artisanal",
+  description: "Sistema ERP premium para panaderías artesanales chilenas",
 };
 
 const geistSans = Geist({

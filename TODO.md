@@ -7,7 +7,7 @@
 
 ## Tareas Completadas [x]
 - [x] Establecer y documentar estándares UI/UX (Notificaciones, Gráficos PowerBI style, Tablas móviles, Dark mode) en GEMINI.md y skills.
-- [x] Optimizar la responsividad móvil en tablas de Inventario, Ventas y Punto de Venta (POS).
+- [x] Optimizar la responsividad móvil en tablas de Inventario, Ventas y ERP.
 - [x] Solucionar error 500 en creación de usuarios e incorporar estado visual de notificaciones (Toaster).
 - [x] Consolidar `proxy.ts` y eliminar `middleware.ts`.
 - [x] Actualizar clientes de Supabase SSR con `getClaims()` en Server Actions.
@@ -20,12 +20,20 @@
 - [x] Implementar flujo de trabajo `/run-app` y `/sync-docs`.
 - [x] Ejecutar auditoría `react-doctor` (92/100) y aplicar optimizaciones de performance.
 - [x] Corregir error `AuthApiError: Refresh Token Not Found` en `proxy.ts`.
+- [x] **Saneamiento de RLS**: Eliminación de recursividad infinita en políticas de `usuarios` y `ventas` mediante el uso de funciones `SECURITY DEFINER`.
+- [x] **Infraestructura de Testing**: Integración completa de Playwright (E2E y Component testing) con auth global.
+- [x] **Módulo de Gastos Operativos**: UI y Backend (Supabase + Actions) para registro de tickets de gastos.
+- [x] **Reportes Financieros (SII)**: Dashboard integrado con Recharts para IVA Débito, Crédito, Ventas y Gastos.
 
 ## Tareas Pendientes [ ]
-- [ ] Revisión de políticas RLS para nuevas tablas de arqueo de caja.
-- [ ] Testing integral del flujo de POS con el nuevo sistema de caché.
-- [ ] Configurar GitHub Projects para seguimiento visual de tareas.
+- [ ] Auditoría profunda de cálculos de costos en recetas vs precios de insumos.
 - [ ] Implementar soporte 100% Offline (PWA) con IndexedDB para carga total de catálogo y sincronización en segundo plano.
+- [x] Ejecución de pruebas iniciales con Playwright (Salud del sistema)
+- [x] Configuración de Global Auth Setup para tests rápidos
+- [ ] **Integración Transbank (Webpay Plus)**:
+    - [ ] Configurar ambiente de Integration (Sandbox) y llaves en `.env`.
+    - [ ] Implementar flujo de pago: `create` (Server Action) -> Redirección -> `commit` (API Route/Action).
+    - [ ] Integrar con el flujo de cierre de venta en el ERP.
 
 ## Notas para el Agente
 - Leer este archivo AL INICIO de cada sesión.

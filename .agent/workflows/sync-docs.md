@@ -13,6 +13,10 @@ Este flujo asegura que la documentación técnica (`TODO.md`) y la documentació
    - Agrega un nuevo hito en `Estado Actual` con la fecha y el resumen de lo logrado.
    - Actualiza las `Notas para el Agente` si hay nuevos patrones o reglas descubiertos.
 
-3. **Verificación**:
+3. **Actualizar SESSION_SUMMARY.md**:
+   - Este es el log de la sesión actual (changelog).
+   - Resume los logros técnicos, los "gotchas" encontrados y el estado en el que dejas el proyecto para la siguiente sesión o PC.
+
+4. **Verificación**:
    - Revisa que ambos archivos sean coherentes entre sí.
    - Si el cambio incluyó código React complejo, ejecuta `npx react-doctor` antes de cerrar el hito.

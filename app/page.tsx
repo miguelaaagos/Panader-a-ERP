@@ -10,7 +10,7 @@ export default function Home() {
         <nav className="w-full flex justify-center border-b border-white/10 h-20 items-center">
           <div className="w-full max-w-7xl flex justify-between items-center p-3 px-6">
             <div className="flex gap-2 items-center font-serif text-2xl text-white font-bold">
-              <span>🥐</span> Panadería POS
+              <span>🥐</span> Panadería ERP
             </div>
             <Suspense>
               <AuthButton />
@@ -36,7 +36,7 @@ export default function Home() {
         </div>
 
         <footer className="w-full py-10 flex flex-col md:flex-row items-center justify-between px-10 text-white/60 text-sm gap-4 border-t border-white/10 bg-black/20">
-          <p>© 2026 Panadería POS Chile. Todos los derechos reservados.</p>
+          <p>© 2026 Panadería ERP Chile. Todos los derechos reservados.</p>
           <div className="flex items-center gap-6">
             <ThemeSwitcher />
             <p>Hecho con ❤️ para panaderos</p>

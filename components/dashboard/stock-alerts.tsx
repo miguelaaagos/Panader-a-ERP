@@ -42,7 +42,7 @@ export function StockAlerts({ items }: StockAlertsProps) {
                 ))}
 
                 <Link
-                    href="/dashboard/inventario"
+                    href="/dashboard/inventario?stock=bajo"
                     className="flex items-center justify-center gap-1 text-xs text-amber-700 dark:text-amber-400 font-bold mt-2 hover:underline"
                 >
                     Gestionar inventario

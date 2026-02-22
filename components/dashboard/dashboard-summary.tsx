@@ -8,7 +8,7 @@ export async function DashboardSummary() {
     const stats = statsRes.success ? statsRes.data : null
 
     return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
             <Card className="border-primary/10 shadow-sm">
                 <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                     <CardTitle className="text-sm font-medium text-muted-foreground">Ventas Hoy</CardTitle>
@@ -60,7 +60,7 @@ export async function DashboardSummary() {
                 </CardContent>
             </Card>
 
-            <Link href="/dashboard/inventario" className="block h-full">
+            <Link href="/dashboard/inventario?stock=bajo" className="block h-full">
                 <Card className={`h-full border-primary/10 shadow-sm transition-all hover:ring-2 hover:ring-primary/20 ${stats?.stockCritico ? 'border-amber-500/50 bg-amber-50/50 dark:bg-amber-950/20 hover:border-amber-500' : 'hover:bg-muted/50'}`}>
                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                         <CardTitle className="text-sm font-medium text-muted-foreground">Stock Crítico</CardTitle>
@@ -74,14 +74,29 @@ export async function DashboardSummary() {
                     </CardContent>
                 </Card>
             </Link>
+
+            <Link href="/dashboard/inventario?stock=sin_stock" className="block h-full">
+                <Card className={`h-full border-primary/10 shadow-sm transition-all hover:ring-2 hover:ring-destructive/20 ${stats?.sinStock ? 'border-destructive/50 bg-destructive/10 hover:border-destructive' : 'hover:bg-muted/50'}`}>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">Sin Stock</CardTitle>
+                        <AlertTriangle className={`h-4 w-4 ${stats?.sinStock ? 'text-destructive' : 'text-muted-foreground'}`} />
+                    </CardHeader>
+                    <CardContent>
+                        <div className={`text-2xl font-bold font-serif ${stats?.sinStock ? 'text-destructive' : ''}`}>
+                            {stats?.sinStock ?? 0}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">Totalmente agotados</p>
+                    </CardContent>
+                </Card>
+            </Link>
         </div>
     )
 }
 
 export function DashboardSummarySkeleton() {
     return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
+        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
+            {Array.from({ length: 5 }).map((_, i) => (
                 <Card key={i} className="border-primary/10 shadow-sm animate-pulse">
                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                         <div className="h-4 w-24 bg-muted rounded" />

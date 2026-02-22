@@ -1,4 +1,5 @@
 "use server"
+
 import { validateRequest } from "@/lib/server/auth"
 
 export async function getSession() {

@@ -280,3 +280,23 @@ export async function getCategories() {
     }
 }
 
+export async function getProducts() {
+    try {
+        const { supabase, profile } = await validateRequest('inventory.view')
+
+        const { data, error } = await supabase
+            .from("productos")
+            .select("id, nombre, codigo, unidad_medida, costo_unitario")
+            .eq("tenant_id", profile.tenant_id)
+            .eq("activo", true)
+            .order("nombre", { ascending: true })
+
+        if (error) {
+            throw error
+        }
+        return { success: true, data }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
+    }
+}
+

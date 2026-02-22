@@ -58,6 +58,17 @@ export default function InventarioPage() {
     const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null)
 
     useEffect(() => {
+        if (typeof window !== "undefined") {
+            const params = new URLSearchParams(window.location.search)
+            if (params.get("stock") === "bajo") {
+                setStockFiltro("bajo")
+            } else if (params.get("stock") === "sin_stock") {
+                setStockFiltro("sin_stock")
+            }
+        }
+    }, [])
+
+    useEffect(() => {
         fetchProductos()
         fetchCategorias()
     }, [])
@@ -101,6 +112,16 @@ export default function InventarioPage() {
             // Si el producto no tiene categoria_id (null), no coincidirá con un ID.
             filtered = filtered.filter(p => p.categoria_id === categoriaFiltro)
         }
+
+        // Ordenamiento: Agotados al final
+        filtered.sort((a, b) => {
+            const aSinStock = a.unidad_medida === 'unidades' ? (a.stock_actual || 0) <= 0 : (a.stock_actual || 0) <= 0;
+            const bSinStock = b.unidad_medida === 'unidades' ? (b.stock_actual || 0) <= 0 : (b.stock_actual || 0) <= 0;
+
+            if (aSinStock && !bSinStock) return 1;
+            if (!aSinStock && bSinStock) return -1;
+            return 0; // mantener orden previo (alfabético por nombre desde la base de datos)
+        })
 
         setFilteredProductos(filtered)
         setCurrentPage(1) // Reset a primera página cuando cambian filtros
@@ -393,10 +414,17 @@ export default function InventarioPage() {
                                     const margenValor = venta - costo
 
                                     return (
-                                        <TableRow key={producto.id}>
+                                        <TableRow key={producto.id} className={sinStock ? "opacity-60 grayscale-[0.5] hover:opacity-100 transition-opacity bg-red-50/10" : ""}>
                                             <TableCell className="font-medium">
-                                                <div className="flex flex-col">
-                                                    <span>{producto.nombre}</span>
+                                                <div className="flex flex-col gap-1 items-start">
+                                                    <div className="flex items-center gap-2">
+                                                        <span>{producto.nombre}</span>
+                                                        {sinStock && (
+                                                            <Badge variant="destructive" className="text-[10px] px-1.5 h-4 leading-none uppercase tracking-wider">
+                                                                Agotado
+                                                            </Badge>
+                                                        )}
+                                                    </div>
                                                     <span className="sm:hidden text-xs text-muted-foreground font-normal">
                                                         Venta: ${venta.toLocaleString("es-CL")}
                                                     </span>

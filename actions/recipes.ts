@@ -314,7 +314,7 @@ export async function getRecipeDetail(id: string) {
                 *,
                 ingredientes:receta_ingredientes(
                     *,
-                    producto:productos!ingrediente_id(nombre, unidad_medida, costo_unitario)
+                    producto:productos!ingrediente_id(nombre, unidad_medida, costo_unitario, stock_actual)
                 )
             `)
             .eq("id", id)

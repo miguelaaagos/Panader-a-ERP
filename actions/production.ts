@@ -107,103 +107,16 @@ export async function completeProductionOrder(id: string) {
     try {
         const { supabase, profile } = await validateRequest('production.manage')
 
-        // 1. Obtener la orden y detalles de la receta
-        const { data: order, error: orderError } = await supabase
-            .from("ordenes_produccion")
-            .select("*, receta:recetas(*, ingredientes:receta_ingredientes(*))")
-            .eq("id", id)
-            .eq("tenant_id", profile.tenant_id)
-            .single()
+        // 1. Llamada atómica al RPC
+        const { error: rpcError } = await supabase.rpc('complete_production_v1', {
+            p_order_id: id,
+            p_tenant_id: profile.tenant_id
+        })
 
-        if (orderError || !order) throw new Error("Orden no encontrada")
-        if (order.estado !== "pendiente") throw new Error("La orden ya no está pendiente")
-
-        const recipe = order.receta
-        if (!recipe || !recipe.ingredientes || recipe.ingredientes.length === 0) {
-            throw new Error("La receta no tiene ingredientes configurados")
+        if (rpcError) {
+            console.error("RPC Production Error:", rpcError)
+            return { success: false, error: rpcError.message }
         }
-
-        const factor = order.cantidad_a_producir / recipe.rendimiento
-
-        interface RecipeIngredient {
-            ingrediente_id: string
-            cantidad: number
-        }
-
-        // 2. Validar Stock de ingredientes
-        const ingredientIds = (recipe.ingredientes as RecipeIngredient[]).map((i) => i.ingrediente_id)
-        const { data: products, error: productsError } = await supabase
-            .from("productos")
-            .select("id, nombre, stock_actual, unidad_medida")
-            .in("id", ingredientIds)
-
-        if (productsError) throw productsError
-
-        type ProductType = {
-            id: string
-            nombre: string
-            stock_actual: number
-            unidad_medida: string
-        }
-
-        const stockMap = new Map((products as ProductType[]).map((p: ProductType) => [p.id, p]))
-        const missingIngredients: string[] = []
-
-        for (const ing of (recipe.ingredientes as RecipeIngredient[])) {
-            const product = stockMap.get(ing.ingrediente_id)
-            const requiredAmount = ing.cantidad * factor
-            if (!product || Number(product.stock_actual) < requiredAmount) {
-                missingIngredients.push(product?.nombre || "Ingrediente desconocido")
-            }
-        }
-
-        if (missingIngredients.length > 0) {
-            throw new Error(`Stock insuficiente para: ${missingIngredients.join(", ")}`)
-        }
-
-        // 3. Ejecutar actualizaciones (Simulando transacción)
-        // Restar ingredientes
-        for (const ing of (recipe.ingredientes as RecipeIngredient[])) {
-            const requiredAmount = ing.cantidad * factor
-            const { error: updateIngError } = await supabase.rpc('decrement_stock', {
-                product_id: ing.ingrediente_id,
-                amount: requiredAmount
-            })
-            // Si el RPC no existe, usaremos una actualización normal (menos optimizado/seguro pero funcional)
-            if (updateIngError) {
-                const currentStock = Number(stockMap.get(ing.ingrediente_id)?.stock_actual || 0)
-                await supabase
-                    .from("productos")
-                    .update({ stock_actual: currentStock - requiredAmount })
-                    .eq("id", ing.ingrediente_id)
-            }
-        }
-
-        // Sumar producto terminado
-        const { data: finishedProduct } = await supabase
-            .from("productos")
-            .select("stock_actual")
-            .eq("id", order.producto_id)
-            .single()
-
-        await supabase
-            .from("productos")
-            .update({ stock_actual: Number(finishedProduct?.stock_actual || 0) + order.cantidad_a_producir })
-            .eq("id", order.producto_id)
-
-        // 4. Finalizar orden
-        const { error: finalUpdateError } = await supabase
-            .from("ordenes_produccion")
-            .update({
-                estado: "completada",
-                fecha_completada: new Date().toISOString(),
-                cantidad_producida: order.cantidad_a_producir,
-                costo_ingredientes: (recipe.costo_total ?? 0) * factor, // Snapshot de costo
-                updated_at: new Date().toISOString()
-            })
-            .eq("id", id)
-
-        if (finalUpdateError) throw finalUpdateError
 
         revalidatePath("/dashboard/produccion")
         revalidatePath("/dashboard/inventario")
