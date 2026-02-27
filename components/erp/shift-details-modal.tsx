@@ -23,6 +23,7 @@ interface PastSession {
     fecha_cierre: string | null
     monto_inicial: number
     monto_final_real: number | null
+    diferencia?: number
     estado: string
     observaciones: string | null
     usuarios?: { nombre_completo: string } | null

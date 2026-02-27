@@ -4,6 +4,7 @@ import { useGetIdentity } from "@refinedev/core";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { MobileSidebar } from "./mobile-sidebar";
+import Link from "next/link";
 
 export function Topbar() {
     const { data: user } = useGetIdentity<{ name: string; email: string; avatar_url?: string }>();
@@ -16,7 +17,7 @@ export function Topbar() {
 
             <div className="flex items-center gap-4">
                 <ThemeSwitcher />
-                <div className="flex items-center gap-2">
+                <Link href="/dashboard/perfil" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                     <div className="text-right hidden sm:block">
                         <p className="text-sm font-medium leading-none">{user?.name || "Usuario"}</p>
                         <p className="text-xs text-muted-foreground">{user?.email}</p>
@@ -25,7 +26,7 @@ export function Topbar() {
                         <AvatarImage src={user?.avatar_url} />
                         <AvatarFallback>{user?.name?.charAt(0) || "U"}</AvatarFallback>
                     </Avatar>
-                </div>
+                </Link>
             </div>
         </header>
     );

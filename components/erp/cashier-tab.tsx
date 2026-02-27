@@ -126,8 +126,19 @@ export function CashierTab({ onSessionChange, onStartSale }: CashierTabProps) {
             toast.error("Ingrese el monto final contado")
             return
         }
+
+        const finalAmount = Number(montoFinal)
+        const difference = finalAmount - expectedCash
+
+        if (Math.abs(difference) > 0) {
+            const confirmed = window.confirm(
+                `Existe una diferencia de $${difference.toLocaleString('es-CL')} entre el monto contado y el esperado ($${expectedCash.toLocaleString('es-CL')}).\n\n¿Estás seguro que deseas cerrar la caja con este descuadre?`
+            )
+            if (!confirmed) return
+        }
+
         setClosing(true)
-        const res = await closeCashSession(Number(montoFinal), observaciones)
+        const res = await closeCashSession(finalAmount, observaciones)
         if (res.success) {
             toast.success("Caja cerrada correctamente")
             setMontoFinal("")

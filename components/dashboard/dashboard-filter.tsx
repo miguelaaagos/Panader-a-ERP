@@ -2,57 +2,83 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { subMonths, format, startOfMonth } from "date-fns"
-import { es } from "date-fns/locale"
 
 export function DashboardFilter() {
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    const currentMonth = searchParams.get("month") || undefined
-    const currentYear = searchParams.get("year") || undefined
+    const currentMonth = searchParams.get("month") || "all"
+    const currentYear = searchParams.get("year") || "all"
 
-    const monthsList = Array.from({ length: 12 }).map((_, i) => {
-        const d = subMonths(startOfMonth(new Date()), i)
-        return {
-            value: `${format(d, "MM")}-${format(d, "yyyy")}`,
-            label: format(d, "MMMM yyyy", { locale: es }).replace(/^\w/, c => c.toUpperCase())
-        }
-    })
+    const years = ["2024", "2025", "2026"]
+    const months = [
+        { value: "all", label: "Todos los meses" },
+        { value: "01", label: "Enero" },
+        { value: "02", label: "Febrero" },
+        { value: "03", label: "Marzo" },
+        { value: "04", label: "Abril" },
+        { value: "05", label: "Mayo" },
+        { value: "06", label: "Junio" },
+        { value: "07", label: "Julio" },
+        { value: "08", label: "Agosto" },
+        { value: "09", label: "Septiembre" },
+        { value: "10", label: "Octubre" },
+        { value: "11", label: "Noviembre" },
+        { value: "12", label: "Diciembre" },
+    ]
 
-    const defaultValue = currentMonth && currentYear
-        ? `${currentMonth.padStart(2, '0')}-${currentYear}`
-        : monthsList[0]?.value || ""
-
-    const handleValueChange = (val: string) => {
-        const [m, y] = val.split("-")
+    const handleYearChange = (year: string) => {
         const params = new URLSearchParams(searchParams.toString())
-
-        const isCurrent = val === monthsList[0]?.value
-
-        if (isCurrent) {
-            params.delete("month")
+        if (year === "all") {
             params.delete("year")
+            params.delete("month")
         } else {
-            if (m) params.set("month", m)
-            if (y) params.set("year", y)
+            params.set("year", year)
         }
+        router.push(`?${params.toString()}`)
+    }
 
+    const handleMonthChange = (month: string) => {
+        const params = new URLSearchParams(searchParams.toString())
+        if (month === "all") {
+            params.delete("month")
+        } else {
+            params.set("month", month)
+            // Si selecciona mes pero no hay año, ponemos el actual por defecto
+            if (!params.has("year") || params.get("year") === "all") {
+                params.set("year", new Date().getFullYear().toString())
+            }
+        }
         router.push(`?${params.toString()}`)
     }
 
     return (
-        <Select value={defaultValue} onValueChange={handleValueChange}>
-            <SelectTrigger className="w-[180px] bg-background">
-                <SelectValue placeholder="Seleccionar mes" />
-            </SelectTrigger>
-            <SelectContent>
-                {monthsList.map(m => (
-                    <SelectItem key={m.value} value={m.value}>
-                        {m.label}
-                    </SelectItem>
-                ))}
-            </SelectContent>
-        </Select>
+        <div className="flex gap-2">
+            <Select value={currentYear} onValueChange={handleYearChange}>
+                <SelectTrigger className="w-[125px] bg-background font-bold">
+                    <SelectValue placeholder="Año" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Año Actual</SelectItem>
+                    {years.map(y => (
+                        <SelectItem key={y} value={y}>{y}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+
+            <Select
+                value={currentMonth}
+                onValueChange={handleMonthChange}
+            >
+                <SelectTrigger className="w-[160px] bg-background font-bold">
+                    <SelectValue placeholder="Mes" />
+                </SelectTrigger>
+                <SelectContent>
+                    {months.map(m => (
+                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        </div>
     )
 }

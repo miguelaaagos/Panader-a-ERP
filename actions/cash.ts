@@ -65,12 +65,25 @@ export async function closeCashSession(montoFinalReal: number, observaciones?: s
             throw new Error("No hay una sesión abierta para cerrar.")
         }
 
-        // 2. Cerrar sesión
+        // 2. Obtener resumen de ventas real del turno
+        const summaryRes = await getSessionSummary(session.id)
+        if (!summaryRes.success || !summaryRes.summary) {
+            throw new Error("No se pudo obtener el resumen de ventas del turno.")
+        }
+
+        const summary = summaryRes.summary
+        const montoEsperadoEfectivo = Number(session.monto_inicial) + Number(summary.efectivo)
+        const diferencia = montoFinalReal - montoEsperadoEfectivo
+
+        // 3. Cerrar sesión con todas las métricas
         const { error } = await supabase
             .from("arqueos_caja")
             .update({
                 fecha_cierre: new Date().toISOString(),
                 monto_final_real: montoFinalReal,
+                monto_ventas_efectivo: summary.efectivo,
+                monto_ventas_otros: summary.total - summary.efectivo,
+                diferencia: diferencia,
                 estado: 'cerrado',
                 observaciones: session.observaciones ? `${session.observaciones} | Cierre: ${observaciones}` : observaciones
             })

@@ -481,7 +481,7 @@ export default function InventarioPage() {
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-1">
-                                                    <RoleGuard permission="inventory.adjust_stock">
+                                                    <RoleGuard permission="inventory.restock">
                                                         <StockAdjuster
                                                             producto={producto}
                                                             onSuccess={fetchProductos}

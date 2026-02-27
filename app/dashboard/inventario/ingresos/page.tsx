@@ -53,10 +53,11 @@ export default function HistorialIngresosPage() {
                         <p className="text-muted-foreground mt-1 text-sm">Registro de toda la mercancía y materias primas recibidas.</p>
                     </div>
 
-                    <RoleGuard permission="inventory.edit">
+                    <RoleGuard permission="inventory.restock">
                         <Link href="/dashboard/inventario/ingresos/nuevo">
-                            <Button className="w-full sm:w-auto">
-                                <Plus className="mr-2 h-4 w-4" /> Registrar Ingreso
+                            <Button className="gap-2">
+                                <Plus className="h-4 w-4" />
+                                Registrar Ingreso
                             </Button>
                         </Link>
                     </RoleGuard>

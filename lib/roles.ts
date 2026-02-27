@@ -7,6 +7,7 @@ export const PERMISSIONS = {
     'inventory.delete': ['admin'],
     'inventory.view': ['admin', 'cajero', 'panadero'],
     'inventory.adjust_stock': ['admin'],
+    'inventory.restock': ['admin', 'cajero'],
 
     // Sales permissions
     'sales.create': ['admin', 'cajero'],
@@ -32,6 +33,9 @@ export const PERMISSIONS = {
 
     // Settings
     'settings.view': ['admin'],
+
+    // Shift management
+    'shifts.manage': ['admin', 'cajero'],
 } as const;
 
 export type Permission = keyof typeof PERMISSIONS;

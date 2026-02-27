@@ -233,12 +233,12 @@ export function POSContainer() {
                     </div>
                 )}
 
-                <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:h-[calc(100vh-210px)] min-h-[500px]">
+                <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 items-start">
                     {/* Sector Productos (Collapsible on Mobile) */}
                     <div className={cn(
                         "lg:col-span-7 xl:col-span-8 flex flex-col bg-muted/20 p-4 rounded-xl border border-dashed border-muted-foreground/20 transition-all",
                         !isMobileProductsOpen && "max-h-[70px] lg:max-h-none overflow-hidden pb-0",
-                        isMobileProductsOpen && "h-[60vh] lg:h-full"
+                        isMobileProductsOpen && "h-[60vh] lg:h-[calc(100vh-210px)]"
                     )}>
                         <div
                             className="flex items-center justify-between mb-4 cursor-pointer lg:cursor-default"
@@ -275,7 +275,7 @@ export function POSContainer() {
                     </div>
 
                     {/* Sector Carrito */}
-                    <div className="lg:col-span-5 xl:col-span-4 h-full min-h-[400px]">
+                    <div className="lg:col-span-5 xl:col-span-4 h-fit">
                         <CartPanel
                             items={items}
                             onUpdateQuantity={(id, delta) => {

@@ -30,15 +30,15 @@ export function CartPanel({ items, onUpdateQuantity, onRemoveItem, onCheckout, t
     // The provided `Code Edit` snippet was incomplete and syntactically invalid for this purpose.
 
     return (
-        <div className="flex flex-col h-full border rounded-lg bg-background shadow-sm overflow-hidden">
+        <div className="flex flex-col h-fit max-h-[calc(100vh-210px)] border rounded-lg bg-background shadow-sm overflow-hidden">
             <div className="p-4 bg-muted/30 border-b flex items-center gap-2">
                 <ShoppingBasket className="h-5 w-5 text-primary" />
                 <h2 className="font-bold text-lg">Carrito de Venta</h2>
             </div>
 
-            <ScrollArea className="flex-1 p-4">
+            <ScrollArea className="max-h-[calc(100vh-420px)] overflow-y-auto p-4">
                 {items.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground opacity-60 italic">
+                    <div className="flex flex-col items-center justify-center h-[120px] text-muted-foreground opacity-60 italic">
                         <ShoppingBasket className="h-12 w-12 mb-2 stroke-1" />
                         <p>El carrito está vacío</p>
                     </div>

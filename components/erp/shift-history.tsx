@@ -16,6 +16,7 @@ interface PastSession {
     fecha_cierre: string
     monto_inicial: number
     monto_final_real: number
+    diferencia?: number
     estado: string
     observaciones: string | null
     usuarios?: { nombre_completo: string } | null
@@ -119,8 +120,13 @@ export function ShiftHistory() {
                                 </div>
 
                                 <div className="text-right shrink-0">
-                                    <div className="flex items-center gap-1 justify-end text-sm font-black">
-                                        <span className="text-primary">${sess.monto_final_real?.toLocaleString("es-CL") || "0"}</span>
+                                    <div className="flex flex-col items-end gap-1">
+                                        <span className="text-primary font-black text-sm">${sess.monto_final_real?.toLocaleString("es-CL") || "0"}</span>
+                                        {sess.diferencia !== undefined && sess.diferencia !== 0 && (
+                                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${sess.diferencia < 0 ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>
+                                                {sess.diferencia > 0 ? '+' : ''}{sess.diferencia.toLocaleString("es-CL")}
+                                            </span>
+                                        )}
                                     </div>
                                     <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">
                                         Monto Final

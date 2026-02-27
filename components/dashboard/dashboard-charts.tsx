@@ -22,6 +22,11 @@ const PeakHoursChart = dynamic(() => import("./peak-hours-chart").then(mod => mo
     loading: () => <div className="lg:col-span-2 h-[350px] bg-muted animate-pulse rounded-xl" />
 })
 
+const PaymentMethodChart = dynamic(() => import("./payment-method-chart").then(mod => mod.PaymentMethodChart), {
+    ssr: false,
+    loading: () => <div className="h-[350px] bg-muted animate-pulse rounded-xl" />
+})
+
 interface SalesTrendItem {
     date: string
     total: number
@@ -44,14 +49,20 @@ interface PeakHourItem {
     ingresos: number
 }
 
+interface PaymentMethodItem {
+    name: string
+    value: number
+}
+
 interface DashboardChartsProps {
     salesTrend: SalesTrendItem[]
     topProducts: TopProductItem[]
     topProductsUnits: TopProductUnitItem[]
     peakHours: PeakHourItem[]
+    paymentMethods: PaymentMethodItem[]
 }
 
-export function DashboardCharts({ salesTrend, topProducts, topProductsUnits, peakHours }: DashboardChartsProps) {
+export function DashboardCharts({ salesTrend, topProducts, topProductsUnits, peakHours, paymentMethods }: DashboardChartsProps) {
     return (
         <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
             <div className="lg:col-span-2">
@@ -65,6 +76,9 @@ export function DashboardCharts({ salesTrend, topProducts, topProductsUnits, pea
             </div>
             <div className="w-full">
                 <TopProductsUnitsChart data={topProductsUnits} />
+            </div>
+            <div className="w-full">
+                <PaymentMethodChart data={paymentMethods} />
             </div>
         </div>
     )

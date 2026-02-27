@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server"
 import { Suspense } from "react"
 import Link from "next/link"
 import { ShoppingCart, Package, ChefHat, FileText } from "lucide-react"
+import { format } from "date-fns"
+import { es } from "date-fns/locale"
 
 import { DashboardSummary, DashboardSummarySkeleton } from "@/components/dashboard/dashboard-summary"
 import { DashboardChartsContainer, DashboardChartsSkeleton } from "@/components/dashboard/dashboard-charts-container"
@@ -30,13 +32,19 @@ async function WelcomeMessage({ month, year }: { month?: number, year?: number }
     redirect("/dashboard/erp")
   }
 
+  const periodText = month && year
+    ? `Visualizando métricas de ${format(new Date(year, month - 1), "MMMM yyyy", { locale: es })}.`
+    : year
+      ? `Visualizando métricas del año ${year}.`
+      : "Resumen de actividad para tu panadería hoy."
+
   return (
     <div className="flex flex-col gap-1">
       <h1 className="text-3xl font-serif text-primary md:text-4xl">
         Hola, {profile?.nombre_completo || claimsData?.claims?.email?.split('@')[0]}!
       </h1>
       <p className="text-muted-foreground">
-        {month && year ? `Visualizando métricas históricas de tu panadería (\u00B7 ${month}/${year}).` : "Resumen de actividad para tu panadería hoy."}
+        {periodText}
       </p>
     </div>
   )

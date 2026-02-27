@@ -95,15 +95,6 @@ export function LoginForm({
                 {isPending ? 'Ingresando...' : 'Ingresar al ERP'}
               </Button>
             </div>
-            <div className="mt-6 text-center text-sm text-muted-foreground">
-              ¿No tienes una cuenta?{" "}
-              <Link
-                href="/register"
-                className="text-primary font-medium underline underline-offset-4 hover:text-primary/80"
-              >
-                Regístrate
-              </Link>
-            </div>
           </form>
         </CardContent>
       </Card>

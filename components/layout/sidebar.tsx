@@ -16,7 +16,8 @@ import {
     FileText,
     Inbox,
     Wallet,
-    TrendingUp
+    TrendingUp,
+    User
 } from "lucide-react";
 import { useLogout } from "@refinedev/core";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -106,6 +107,12 @@ export function Sidebar({ className }: SidebarProps) {
             href: "/dashboard/configuracion",
             active: pathname.startsWith("/dashboard/configuracion"),
             permission: "settings.view" as Permission,
+        },
+        {
+            label: "Mi Perfil",
+            icon: User,
+            href: "/dashboard/perfil",
+            active: pathname === "/dashboard/perfil",
         },
     ];
 

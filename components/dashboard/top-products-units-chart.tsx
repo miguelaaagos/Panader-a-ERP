@@ -1,7 +1,8 @@
-"use client"
-
+import { useState } from "react"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell, LabelList } from "recharts"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface TopProductUnitItem {
     nombre: string
@@ -20,27 +21,33 @@ const COLORS = [
     'hsl(var(--primary)/0.2)'
 ]
 
+const ITEMS_PER_PAGE = 5
+
 export function TopProductsUnitsChart({ data }: TopProductsUnitsChartProps) {
+    const [currentPage, setCurrentPage] = useState(0)
+
+    const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE)
+    const paginatedData = data.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE)
+
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Top Productos (30 días)</CardTitle>
-                <CardDescription>Por unidades vendidas.</CardDescription>
+        <Card className="flex flex-col h-full">
+            <CardHeader className="pb-2">
+                <CardTitle className="text-xl">Top Unidades Vendidas</CardTitle>
+                <CardDescription>Por cantidad neta de productos.</CardDescription>
             </CardHeader>
-            <CardContent className="pl-2">
-                <div className="h-[300px] min-h-[300px] w-full min-w-0">
+            <CardContent className="flex-1 pb-2 pl-2">
+                <div className="h-[300px] w-full min-w-0">
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={data} layout="vertical" margin={{ top: 5, right: 40, left: 20, bottom: 5 }}>
+                        <BarChart data={paginatedData} layout="vertical" margin={{ top: 5, right: 60, left: 10, bottom: 5 }}>
                             <XAxis type="number" hide />
                             <YAxis
                                 dataKey="nombre"
                                 type="category"
-                                fontSize={12}
+                                fontSize={11}
                                 tickLine={false}
                                 axisLine={false}
-                                width={100}
+                                width={110}
                                 tick={{ fill: 'hsl(var(--foreground))' }}
-                                stroke="hsl(var(--border))"
                             />
                             <Tooltip
                                 cursor={{ fill: 'transparent' }}
@@ -48,22 +55,19 @@ export function TopProductsUnitsChart({ data }: TopProductsUnitsChartProps) {
                                     backgroundColor: "hsl(var(--background))",
                                     border: "1px solid hsl(var(--border))",
                                     borderRadius: "8px",
-                                    color: "hsl(var(--foreground))"
+                                    fontSize: "12px"
                                 }}
-                                itemStyle={{
-                                    color: "hsl(var(--foreground))"
-                                }}
-                                formatter={(value: number | string | undefined) => [`${value} unidades`, "Total"]}
+                                formatter={(value: any) => [`${value || 0} unidades`, "Total"]}
                             />
                             <Bar dataKey="cantidad" radius={[0, 4, 4, 0]}>
                                 <LabelList
                                     dataKey="cantidad"
                                     position="right"
                                     fill="hsl(var(--foreground))"
-                                    fontSize={12}
+                                    fontSize={10}
                                     formatter={(value: any) => Number(value) > 0 ? value : ''}
                                 />
-                                {data.map((entry, index) => (
+                                {paginatedData.map((entry, index) => (
                                     <Cell key={`cell-${entry.nombre}`} fill={COLORS[index % COLORS.length]} />
                                 ))}
                             </Bar>
@@ -71,6 +75,33 @@ export function TopProductsUnitsChart({ data }: TopProductsUnitsChartProps) {
                     </ResponsiveContainer>
                 </div>
             </CardContent>
+            {totalPages > 1 && (
+                <CardFooter className="flex items-center justify-between pt-0 pb-4 border-t px-6 mt-auto">
+                    <div className="text-xs text-muted-foreground">
+                        Página {currentPage + 1} de {totalPages} ({data.length} total)
+                    </div>
+                    <div className="flex gap-2">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
+                            disabled={currentPage === 0}
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
+                            disabled={currentPage === totalPages - 1}
+                        >
+                            <ChevronRight className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </CardFooter>
+            )}
         </Card>
     )
 }

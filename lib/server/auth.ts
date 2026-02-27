@@ -11,6 +11,7 @@ export interface AuthContext {
         tenant_id: string
         rol: UserRole
         nombre_completo: string
+        email: string
     }
 }
 

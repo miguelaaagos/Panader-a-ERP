@@ -9,12 +9,17 @@ import { toast } from "sonner"
 import { Package, Plus, Minus, Loader2 } from "lucide-react"
 import { adjustStock } from "@/actions/inventory"
 
+import { Permission } from "@/lib/roles"
+import { useUserRole } from "@/hooks/useUserRole"
+
 interface StockAdjusterProps {
     producto: any
     onSuccess: () => void
 }
 
 export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
+    const { can } = useUserRole()
+    const isRestockOnly = can("inventory.restock") && !can("inventory.adjust_stock")
     const [open, setOpen] = useState(false)
     const [adjustment, setAdjustment] = useState("")
     const [loading, setLoading] = useState(false)
@@ -48,6 +53,10 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
             toast.error("Ingresa un número válido")
             return
         }
+        if (isRestockOnly && delta < 0) {
+            toast.error("Solo tienes permiso para agregar stock (reposición)")
+            return
+        }
         handleAdjust(delta)
     }
 
@@ -72,7 +81,7 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
                             variant="outline"
                             size="sm"
                             onClick={() => handleAdjust(-1)}
-                            disabled={loading || (producto.stock_actual || 0) === 0}
+                            disabled={loading || isRestockOnly || (producto.stock_actual || 0) === 0}
                             className="flex-1"
                         >
                             <Minus className="w-4 h-4 mr-1" />
@@ -95,7 +104,7 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
                             variant="outline"
                             size="sm"
                             onClick={() => handleAdjust(-10)}
-                            disabled={loading || (producto.stock_actual || 0) === 0}
+                            disabled={loading || isRestockOnly || (producto.stock_actual || 0) === 0}
                             className="flex-1"
                         >
                             -10
