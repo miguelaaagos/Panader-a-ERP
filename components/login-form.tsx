@@ -95,33 +95,39 @@ export function LoginForm({
                   className="bg-background/50 border-border/50 focus:border-primary/50"
                 />
               </div>
-            </Card>
+              <Button type="submit" className="w-full h-11 text-lg font-medium" disabled={isPending || !mounted}>
+                {isPending ? 'Ingresando...' : 'Ingresar al ERP'}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
 
-            <Dialog open={!!error} onOpenChange={(open) => !open && setError(null)}>
-              <DialogContent className="sm:max-w-md border-destructive/20 outline-none">
-                <DialogHeader className="flex flex-col items-center gap-2 pt-4">
-                  <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center mb-2">
-                    <AlertCircle className="h-8 w-8 text-destructive" />
-                  </div>
-                  <DialogTitle className="text-2xl font-bold text-destructive">Error de Acceso</DialogTitle>
-                  <DialogDescription className="text-center text-muted-foreground pt-2 px-2">
-                    {error === "Invalid login credentials" || error === "Error de autenticación"
-                      ? "Las credenciales ingresadas no son correctas. Por favor, verifica tu correo y contraseña e intenta nuevamente."
-                      : error}
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter className="sm:justify-center mt-4">
-                  <Button
-                    type="button"
-                    variant="default"
-                    onClick={() => setError(null)}
-                    className="px-8 w-full sm:w-auto font-medium"
-                  >
-                    Reintentar
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
-          );
+      <Dialog open={!!error} onOpenChange={(open) => !open && setError(null)}>
+        <DialogContent className="sm:max-w-md border-destructive/20 outline-none">
+          <DialogHeader className="flex flex-col items-center gap-2 pt-4">
+            <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center mb-2">
+              <AlertCircle className="h-8 w-8 text-destructive" />
+            </div>
+            <DialogTitle className="text-2xl font-bold text-destructive">Error de Acceso</DialogTitle>
+            <DialogDescription className="text-center text-muted-foreground pt-2 px-2">
+              {error === "Invalid login credentials" || error === "Error de autenticación"
+                ? "Las credenciales ingresadas no son correctas. Por favor, verifica tu correo y contraseña e intenta nuevamente."
+                : error}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center mt-4">
+            <Button
+              type="button"
+              variant="default"
+              onClick={() => setError(null)}
+              className="px-8 w-full sm:w-auto font-medium"
+            >
+              Reintentar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 }
