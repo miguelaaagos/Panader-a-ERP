@@ -1,9 +1,9 @@
 # TODO: Sincronización de Desarrollo (Calama - Antofagasta)
 
 ## Estado Actual: Documentación & Calidad (Febrero 2026)
-- **Fecha**: 2026-02-26
+- **Fecha**: 2026-02-27
 - **Ubicación**: Antofagasta
-- **Hito**: Ajustes visuales, formatting en Recharts, corrección de desfase en gráfico de Flujo de Caja y refactorización UI en POS/Reportes.
+- **Hito**: Corrección de permisos de Cajero (Ingresos/Stock), acceso global a Mi Perfil y mejora UX con Modal de Error en Login.
 
 ## Tareas Completadas [x]
 - [x] Establecer y documentar estándares UI/UX (Notificaciones, Gráficos PowerBI style, Tablas móviles, Dark mode) en GEMINI.md y skills.
@@ -31,6 +31,9 @@
 - [x] **Refactorización POS**: Ocultar el desglose de IVA por método de pago individual en el checkout, simplificando a "IVA 19% incluido" en el global. Cambios de "ERP" a "Ventas" en la Sidebar.
 - [x] **Gráficos Financieros**: Corrección del desfase (offset) en el eje X del gráfico de Flujo de Caja combinando barras de Ventas/Gastos en una sola con renderizado condicional.
 - [x] **Mejoras UI Modal Recetas**: Agregado Quick Create de insumos, rediseño con variante Dark Mode, margen sugerido funcional.
+- [x] Corregir permisos de rol Cajero para permitir el registro de Ingresos de inventario y Ajuste de Stock.
+- [x] Garantizar visibilidad de "Mi Perfil" en la Sidebar para todos los roles.
+- [x] Reemplazar mensaje de error en texto plano por un Modal de Diálogo elegante (shadcn) en el Login.
 ## Tareas Pendientes [ ]
 - [ ] **Módulo Financiero**: Añadir gestión de "Gastos Fijos" del local (arriendo, luz, agua, sueldos) para integrarlos en el cálculo de Utilidad Neta del Dashboard.
 - [ ] Auditoría profunda de cálculos de costos en recetas vs precios de insumos.

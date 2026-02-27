@@ -109,7 +109,7 @@ pnpm typecheck
 
 ---
 
-**Versión**: 1.2.1 (UI/UX Refinements)  
+**Versión**: 1.2.2 (UI/UX & Auth Refinements)  
 **Estado**: Desarrollo Activo (Rama `desarrollo`) / Producción Estable  
-**Última actualización**: 26 de febrero de 2026 — Corrección de desfase y paddings en el gráfico de Flujo de Caja, ajustes de legibilidad y formato `es-CL` en Recharts, simplificación del checkout POS (IVA global), renombrado de enlaces en la Sidebar y Mejoras UI Modal Recetas (Quick Create Insumos, margen sugerido y Dark Mode).
+**Última actualización**: 27 de febrero de 2026 — Corrección de permisos de Cajero (acceso a Ingresos y Ajuste de Stock), visibilidad global del apartado Mi Perfil en la Sidebar y mejora UX con componente Dialog estructurado para el manejo de errores en el Login.
 
