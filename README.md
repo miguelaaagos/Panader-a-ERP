@@ -109,7 +109,7 @@ pnpm typecheck
 
 ---
 
-**Versión**: 1.2.0 (ERP Core & Auth Recovery Complete)  
+**Versión**: 1.2.1 (UI/UX Refinements)  
 **Estado**: Desarrollo Activo (Rama `desarrollo`) / Producción Estable  
-**Última actualización**: 22 de febrero de 2026 — Eliminación de errores de RPC (`create_sale_v1`), sincronización total del esquema de ventas e inventario, integración del flujo de recuperación de contraseñas (PKCE) y limpieza del repositorio (eliminación rama `vercel`).
+**Última actualización**: 26 de febrero de 2026 — Corrección de desfase y paddings en el gráfico de Flujo de Caja, ajustes de legibilidad y formato `es-CL` en Recharts, simplificación del checkout POS (IVA global), renombrado de enlaces en la Sidebar y Mejoras UI Modal Recetas (Quick Create Insumos, margen sugerido y Dark Mode).
 

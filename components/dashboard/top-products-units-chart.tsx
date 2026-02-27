@@ -61,6 +61,7 @@ export function TopProductsUnitsChart({ data }: TopProductsUnitsChartProps) {
                                     position="right"
                                     fill="hsl(var(--foreground))"
                                     fontSize={12}
+                                    formatter={(value: any) => Number(value) > 0 ? value : ''}
                                 />
                                 {data.map((entry, index) => (
                                     <Cell key={`cell-${entry.nombre}`} fill={COLORS[index % COLORS.length]} />

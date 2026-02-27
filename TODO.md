@@ -1,9 +1,9 @@
 # TODO: Sincronización de Desarrollo (Calama - Antofagasta)
 
 ## Estado Actual: Documentación & Calidad (Febrero 2026)
-- **Fecha**: 2026-02-21
+- **Fecha**: 2026-02-26
 - **Ubicación**: Antofagasta
-- **Hito**: Sistema estabilizado con pnpm y validado con react-doctor.
+- **Hito**: Ajustes visuales, formatting en Recharts, corrección de desfase en gráfico de Flujo de Caja y refactorización UI en POS/Reportes.
 
 ## Tareas Completadas [x]
 - [x] Establecer y documentar estándares UI/UX (Notificaciones, Gráficos PowerBI style, Tablas móviles, Dark mode) en GEMINI.md y skills.
@@ -27,7 +27,10 @@
 - [x] **Estabilización Core ERP**: Resolución holística de inconsistencias de esquema (errores `total null`, enum states) reescribiendo `create_sale_v1` RPC.
 - [x] **Flujo Auth PKCE**: Implementación completa de recuperación de contraseña (`forgot-password`, `reset-password`, actions).
 - [x] **Limpieza de Repositorio**: Eliminación de rama `vercel` y consolidación de trabajo en la nueva rama `desarrollo`.
-
+- [x] **UI/UX en Reportes y Dashboard**: Corrección de solapamiento de textos en Recharts, formateo `es-CL`, exclusión de labels en 0 y remoción de ambigüedad en tributos (IVA Ventas / IVA Compras).
+- [x] **Refactorización POS**: Ocultar el desglose de IVA por método de pago individual en el checkout, simplificando a "IVA 19% incluido" en el global. Cambios de "ERP" a "Ventas" en la Sidebar.
+- [x] **Gráficos Financieros**: Corrección del desfase (offset) en el eje X del gráfico de Flujo de Caja combinando barras de Ventas/Gastos en una sola con renderizado condicional.
+- [x] **Mejoras UI Modal Recetas**: Agregado Quick Create de insumos, rediseño con variante Dark Mode, margen sugerido funcional.
 ## Tareas Pendientes [ ]
 - [ ] **Módulo Financiero**: Añadir gestión de "Gastos Fijos" del local (arriendo, luz, agua, sueldos) para integrarlos en el cálculo de Utilidad Neta del Dashboard.
 - [ ] Auditoría profunda de cálculos de costos en recetas vs precios de insumos.

@@ -120,12 +120,6 @@ export function POSContainer() {
         try {
             setSubmitting(true)
 
-            // Calcular recargo si es tarjeta (19%)
-            let surcharge = 0
-            if (checkoutData.metodo_pago === "tarjeta_debito" || checkoutData.metodo_pago === "tarjeta_credito") {
-                surcharge = Math.round(total * 0.19)
-            }
-
             const result = await createSale({
                 ...checkoutData,
                 arqueo_id: activeSession.id,
@@ -135,8 +129,7 @@ export function POSContainer() {
                     precio_unitario: item.precio_venta,
                     descuento: 0
                 })),
-                // Enviamos el recargo como un descuento negativo para que se sume al total
-                descuento_global: -surcharge
+                descuento_global: 0
             })
 
             if (result.success) {
@@ -156,13 +149,6 @@ export function POSContainer() {
             }
         } catch (error: unknown) {
             console.error("Checkout crash, saving offline:", error)
-            const errorMessage = error instanceof Error ? error.message : "Error desconocido"
-
-            // Calcular recargo si es tarjeta (19%) para la venta offline
-            let surcharge = 0
-            if (checkoutData.metodo_pago === "tarjeta_debito" || checkoutData.metodo_pago === "tarjeta_credito") {
-                surcharge = Math.round(total * 0.19)
-            }
 
             // Si hay un error de red o similar, guardamos en la cola offline
             const offlineData = {
@@ -174,8 +160,7 @@ export function POSContainer() {
                     precio_unitario: item.precio_venta,
                     descuento: 0
                 })),
-                // Enviamos el recargo como un descuento negativo para que se sume al total
-                descuento_global: -surcharge
+                descuento_global: 0
             }
 
             saveOfflineSale(offlineData)

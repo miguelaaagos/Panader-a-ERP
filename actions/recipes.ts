@@ -314,7 +314,7 @@ export async function getRecipeDetail(id: string) {
                 *,
                 ingredientes:receta_ingredientes(
                     *,
-                    producto:productos!ingrediente_id(nombre, unidad_medida, costo_unitario, stock_actual)
+                    producto:productos!ingrediente_id(nombre, unidad_medida, unidad_medida_base, costo_unitario, factor_conversion, stock_actual)
                 )
             `)
             .eq("id", id)
@@ -344,6 +344,49 @@ export async function deleteRecipe(id: string) {
         revalidatePath("/dashboard/recetas")
         return { success: true }
     } catch (error: any) {
+        return { success: false, error: error?.message || String(error) }
+    }
+}
+
+/**
+ * Crea un ingrediente rápidamente desde el modal de recetas
+ */
+export async function createQuickIngredient(data: {
+    nombre: string,
+    unidad_medida: string,
+    unidad_medida_base: string | null,
+    factor_conversion: number | null,
+    costo_unitario: number
+}) {
+    try {
+        const { supabase, profile } = await validateRequest('recipes.manage') // Asumimos permiso equivalente por simplicidad, o inv.manage
+
+        const insertData = {
+            tenant_id: profile.tenant_id,
+            nombre: data.nombre.trim(),
+            unidad_medida: data.unidad_medida as "kg" | "g" | "L" | "ml" | "unidades",
+            unidad_medida_base: data.unidad_medida_base as "kg" | "g" | "L" | "ml" | "unidades" | null,
+            factor_conversion: data.factor_conversion,
+            costo_unitario: data.costo_unitario,
+            tipo: "ingrediente" as const,
+            activo: true,
+            stock_actual: 0,
+            stock_minimo: 0,
+            updated_at: new Date().toISOString()
+        }
+
+        const { data: newObject, error } = await supabase
+            .from("productos")
+            .insert([insertData])
+            .select("id, nombre, unidad_medida, unidad_medida_base, factor_conversion, costo_unitario, tipo, categorias(nombre)")
+            .single()
+
+        if (error) throw error
+
+        revalidatePath("/dashboard/inventario")
+        return { success: true, data: newObject }
+    } catch (error: any) {
+        console.error("Error creating quick ingredient:", error)
         return { success: false, error: error?.message || String(error) }
     }
 }

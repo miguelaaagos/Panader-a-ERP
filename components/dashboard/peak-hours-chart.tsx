@@ -1,31 +1,33 @@
 "use client"
 
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
+import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, LabelList } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
-interface SalesTrendItem {
-    date: string
-    total: number
+interface PeakHourItem {
+    hourIndex: number
+    hourLabel: string
+    transacciones: number
+    ingresos: number
 }
 
-interface SalesTrendChartProps {
-    data: SalesTrendItem[]
+interface PeakHoursChartProps {
+    data: PeakHourItem[]
 }
 
-export function SalesTrendChart({ data }: SalesTrendChartProps) {
+export function PeakHoursChart({ data }: PeakHoursChartProps) {
     return (
         <Card className="lg:col-span-2">
             <CardHeader>
-                <CardTitle>Ventas Últimos 14 Días</CardTitle>
-                <CardDescription>Rendimiento diario de ingresos.</CardDescription>
+                <CardTitle>Horarios Peak (Últimos 30 días)</CardTitle>
+                <CardDescription>Volumen de transacciones distribuidas por hora del día.</CardDescription>
             </CardHeader>
             <CardContent className="pl-2">
                 <div className="h-[300px] min-h-[300px] w-full min-w-0">
                     <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={data} margin={{ top: 25, right: 20, left: 10, bottom: 5 }}>
+                        <BarChart data={data} margin={{ top: 25, right: 20, left: 10, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
                             <XAxis
-                                dataKey="date"
+                                dataKey="hourLabel"
                                 fontSize={12}
                                 tickLine={false}
                                 axisLine={false}
@@ -33,13 +35,13 @@ export function SalesTrendChart({ data }: SalesTrendChartProps) {
                                 stroke="hsl(var(--border))"
                             />
                             <YAxis
+                                yAxisId="left"
                                 fontSize={12}
                                 tickLine={false}
                                 axisLine={false}
                                 tick={{ fill: 'hsl(var(--foreground))' }}
                                 stroke="hsl(var(--border))"
-                                width={80}
-                                tickFormatter={(value) => new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value)}
+                                allowDecimals={false}
                             />
                             <Tooltip
                                 contentStyle={{
@@ -51,26 +53,29 @@ export function SalesTrendChart({ data }: SalesTrendChartProps) {
                                 itemStyle={{
                                     color: "hsl(var(--foreground))"
                                 }}
-                                formatter={(value: number | string | undefined) => [new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(Number(value || 0)), "Total"]}
+                                formatter={(value: any, name: any) => {
+                                    if (name === "ingresos") return [new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(Number(value || 0)), "Ingresos Totales"]
+                                    if (name === "transacciones") return [value, "N° Ventas"]
+                                    return [value, name]
+                                }}
                             />
-                            <Line
-                                type="monotone"
-                                dataKey="total"
-                                stroke="hsl(var(--primary))"
-                                strokeWidth={2}
-                                dot={{ fill: "hsl(var(--primary))", r: 4 }}
-                                activeDot={{ r: 6, strokeWidth: 0 }}
+                            <Bar
+                                yAxisId="left"
+                                dataKey="transacciones"
+                                fill="hsl(var(--primary))"
+                                radius={[4, 4, 0, 0]}
+                                maxBarSize={40}
                             >
                                 <LabelList
-                                    dataKey="total"
+                                    dataKey="transacciones"
                                     position="top"
                                     offset={10}
                                     fill="hsl(var(--foreground))"
                                     fontSize={12}
-                                    formatter={(value: any) => Number(value) > 0 ? new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(Number(value)) : ''}
+                                    formatter={(value: any) => Number(value) > 0 ? value : ''}
                                 />
-                            </Line>
-                        </LineChart>
+                            </Bar>
+                        </BarChart>
                     </ResponsiveContainer>
                 </div>
             </CardContent>

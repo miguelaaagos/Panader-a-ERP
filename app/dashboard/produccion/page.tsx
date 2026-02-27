@@ -27,6 +27,7 @@ export default function ProduccionPage() {
                 cantidad_a_producir: o.cantidad_a_producir,
                 estado: o.estado as ProductionOrder["estado"],
                 notas: o.notas,
+                receta_id: o.receta_id,
                 receta: {
                     nombre: o.receta?.nombre || "N/A",
                     rendimiento: o.receta?.rendimiento || 1,

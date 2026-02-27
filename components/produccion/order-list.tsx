@@ -15,6 +15,7 @@ export type ProductionOrder = {
     cantidad_a_producir: number
     estado: "pendiente" | "en_proceso" | "completada" | "cancelada"
     notas: string | null
+    receta_id: string
     receta: { nombre: string, rendimiento: number, costo_total: number | null }
     producto: { nombre: string, unidad_medida: string }
     usuario: { nombre_completo: string }
@@ -28,7 +29,11 @@ interface OrderListProps {
     processingId: string | null
 }
 
+import { ProductionPreviewDialog } from "./production-preview-dialog"
+import { useState } from "react"
+
 export function OrderList({ orders, loading, onComplete, onCancel, processingId }: OrderListProps) {
+    const [previewOrder, setPreviewOrder] = useState<ProductionOrder | null>(null)
     const getStatusBadge = (status: string) => {
         switch (status) {
             case "pendiente":
@@ -99,7 +104,7 @@ export function OrderList({ orders, loading, onComplete, onCancel, processingId 
                                                 <Button
                                                     size="sm"
                                                     className="h-8 bg-green-600 hover:bg-green-700"
-                                                    onClick={() => onComplete(order.id)}
+                                                    onClick={() => setPreviewOrder(order)}
                                                     disabled={processingId === order.id}
                                                 >
                                                     {processingId === order.id ? <Loader2 className="h-3 w-3 animate-spin" /> : "Completar"}
@@ -113,6 +118,16 @@ export function OrderList({ orders, loading, onComplete, onCancel, processingId 
                     ))}
                 </TableBody>
             </Table>
+            <ProductionPreviewDialog
+                open={!!previewOrder}
+                onOpenChange={(op: boolean) => !op && setPreviewOrder(null)}
+                order={previewOrder}
+                onConfirm={(id: string) => {
+                    setPreviewOrder(null);
+                    onComplete(id);
+                }}
+                isProcessing={processingId === previewOrder?.id}
+            />
         </div>
     )
 }

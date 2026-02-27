@@ -3,15 +3,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, FileText, ArrowUpRight, AlertTriangle } from "lucide-react"
 import Link from "next/link"
 
-export async function DashboardSummary() {
-    const statsRes = await getDashboardStats()
+export async function DashboardSummary({ month, year }: { month?: number, year?: number }) {
+    const statsRes = await getDashboardStats(month, year)
     const stats = statsRes.success ? statsRes.data : null
 
     return (
-        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
+        <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
             <Card className="border-primary/10 shadow-sm">
                 <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">Ventas Hoy</CardTitle>
+                    <CardTitle className="text-sm font-medium text-muted-foreground">
+                        {stats?.isHistorical ? "Ventas del Mes" : "Ventas Hoy"}
+                    </CardTitle>
                     <TrendingUp className="h-4 w-4 text-primary" />
                 </CardHeader>
                 <CardContent>
@@ -60,6 +62,19 @@ export async function DashboardSummary() {
                 </CardContent>
             </Card>
 
+            <Card className="border-primary/10 shadow-sm">
+                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">IVA Mensual</CardTitle>
+                    <FileText className="h-4 w-4 text-amber-600" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold font-serif text-amber-600">
+                        ${Math.round(stats?.ivaMonth ?? 0).toLocaleString('es-CL')}
+                    </div>
+                    <p className="text-[10px] text-muted-foreground mt-1">19% de Ventas ($ {(stats?.totalMonth ?? 0).toLocaleString('es-CL')})</p>
+                </CardContent>
+            </Card>
+
             <Link href="/dashboard/inventario?stock=bajo" className="block h-full">
                 <Card className={`h-full border-primary/10 shadow-sm transition-all hover:ring-2 hover:ring-primary/20 ${stats?.stockCritico ? 'border-amber-500/50 bg-amber-50/50 dark:bg-amber-950/20 hover:border-amber-500' : 'hover:bg-muted/50'}`}>
                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -95,8 +110,8 @@ export async function DashboardSummary() {
 
 export function DashboardSummarySkeleton() {
     return (
-        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
-            {Array.from({ length: 5 }).map((_, i) => (
+        <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
+            {Array.from({ length: 6 }).map((_, i) => (
                 <Card key={i} className="border-primary/10 shadow-sm animate-pulse">
                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                         <div className="h-4 w-24 bg-muted rounded" />

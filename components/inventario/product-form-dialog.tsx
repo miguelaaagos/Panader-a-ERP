@@ -457,6 +457,11 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                                         placeholder="0"
                                     />
                                 </div>
+                                {parseFloat(formData.costo_unitario) > 0 && (
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        Costo con IVA (19%): <strong className="text-foreground">${Math.round(parseFloat(formData.costo_unitario) * 1.19).toLocaleString()}</strong>
+                                    </p>
+                                )}
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="margen">Margen %</Label>
@@ -474,9 +479,10 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                                         className="px-3"
                                         onClick={() => {
                                             const costo = parseFloat(formData.costo_unitario) || 0
+                                            const costoConIva = costo * 1.19
                                             const margin = parseFloat(formData.margen_deseado) || 0
                                             if (margin > 0 && margin < 100) {
-                                                const sugerido = Math.round(costo / (1 - margin / 100))
+                                                const sugerido = Math.round(costoConIva / (1 - margin / 100))
                                                 setFormData({ ...formData, precio_venta: sugerido.toString() })
                                             }
                                         }}

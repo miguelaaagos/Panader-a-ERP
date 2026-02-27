@@ -1,7 +1,7 @@
 -- Function to safely complete a production order:
 -- 1. Validates order exists and is pending
 -- 2. Checks sufficient stock for all ingredients
--- 3. Atomically decreases ingredient stocks
+-- 3. Atomically decreases ingredient stocks (USING CONVERSION FACTOR)
 -- 4. Atomically increases resulting product stock
 -- 5. Marks order as completed and stores ingredient cost
 
@@ -56,13 +56,16 @@ BEGIN
             ri.cantidad,
             p.nombre,
             p.stock_actual,
-            p.costo_unitario
+            p.costo_unitario,
+            p.factor_conversion
         FROM receta_ingredientes ri
         JOIN productos p ON p.id = ri.ingrediente_id
         WHERE ri.receta_id = v_recipe.id
         FOR UPDATE OF p -- Lock products!
     LOOP
-        v_required_amount := v_ingredient.cantidad * v_factor;
+        -- La cantidad de la receta referida a la "unidad base". 
+        -- Para calcular cuánto se descuenta del "stock_actual" (que está en unidad_compra), dividimos.
+        v_required_amount := (v_ingredient.cantidad * v_factor) / COALESCE(v_ingredient.factor_conversion, 1);
         
         IF COALESCE(v_ingredient.stock_actual, 0) < v_required_amount THEN
             IF v_missing_ingredients != '' THEN
@@ -71,6 +74,7 @@ BEGIN
             v_missing_ingredients := v_missing_ingredients || v_ingredient.nombre;
         END IF;
 
+        -- El costo total utiliza el amount ya convertido a la unidad principal (que es el costo referencial)
         v_total_cost := v_total_cost + (v_required_amount * COALESCE(v_ingredient.costo_unitario, 0));
     END LOOP;
 
@@ -80,11 +84,15 @@ BEGIN
 
     -- 4. Deduct ingredients
     FOR v_ingredient IN 
-        SELECT ingrediente_id, cantidad
-        FROM receta_ingredientes
-        WHERE receta_id = v_recipe.id
+        SELECT 
+            ri.ingrediente_id, 
+            ri.cantidad,
+            p.factor_conversion
+        FROM receta_ingredientes ri
+        JOIN productos p ON p.id = ri.ingrediente_id
+        WHERE ri.receta_id = v_recipe.id
     LOOP
-        v_required_amount := v_ingredient.cantidad * v_factor;
+        v_required_amount := (v_ingredient.cantidad * v_factor) / COALESCE(v_ingredient.factor_conversion, 1);
         
         UPDATE productos
         SET 

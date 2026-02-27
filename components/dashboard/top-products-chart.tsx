@@ -53,7 +53,7 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
                                 itemStyle={{
                                     color: "hsl(var(--foreground))"
                                 }}
-                                formatter={(value: number | string | undefined) => [`$${Number(value || 0).toLocaleString('es-CL')}`, "Total"]}
+                                formatter={(value: number | string | undefined) => [new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(Number(value || 0)), "Total"]}
                             />
                             <Bar dataKey="total" radius={[0, 4, 4, 0]}>
                                 <LabelList
@@ -61,7 +61,7 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
                                     position="right"
                                     fill="hsl(var(--foreground))"
                                     fontSize={12}
-                                    formatter={(value: any) => `$${Number(value) >= 1000 ? (Number(value) / 1000).toFixed(1) + 'k' : value}`}
+                                    formatter={(value: any) => Number(value) > 0 ? new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(Number(value)) : ''}
                                 />
                                 {data.map((entry, index) => (
                                     <Cell key={`cell-${entry.nombre}`} fill={COLORS[index % COLORS.length]} />

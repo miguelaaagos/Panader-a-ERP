@@ -11,6 +11,7 @@ import { Loader2, TrendingUp, TrendingDown, Landmark, Wallet, Calculator } from 
 import {
     BarChart,
     Bar,
+    Cell,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -61,22 +62,21 @@ export default function ReporteFinancieroPage() {
 
     const formatter = new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" })
 
-    // Datos para el gráfico
     const chartData = [
         {
-            name: "Ingresos Brutos",
-            Ventas: Math.round(reporte.ventas.bruto || 0),
-            Gastos: 0,
+            name: "Ventas Totales",
+            Total: Math.round(reporte.ventas.bruto || 0),
+            fill: "hsl(var(--primary))"
         },
         {
-            name: "Gastos y Compras",
-            Ventas: 0,
-            Gastos: Math.round(reporte.gastos.bruto || 0),
+            name: "Compras y Gastos",
+            Total: Math.round(reporte.gastos.bruto || 0),
+            fill: "hsl(var(--destructive))"
         },
         {
             name: "Utilidad Neta",
-            Ventas: Math.round(reporte.utilidad.neta > 0 ? reporte.utilidad.neta : 0),
-            Gastos: Math.round(reporte.utilidad.neta < 0 ? Math.abs(reporte.utilidad.neta) : 0),
+            Total: Math.round(Math.abs(reporte.utilidad.neta)),
+            fill: reporte.utilidad.neta >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))"
         }
     ]
 
@@ -113,7 +113,7 @@ export default function ReporteFinancieroPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{formatter.format(reporte.ventas.bruto)}</div>
-                        <p className="text-xs text-muted-foreground">Incluye IVA Débito: {formatter.format(reporte.ventas.iva_debito)}</p>
+                        <p className="text-xs text-muted-foreground">Incluye IVA: {formatter.format(reporte.ventas.iva_debito)}</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -123,7 +123,7 @@ export default function ReporteFinancieroPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{formatter.format(reporte.gastos.bruto)}</div>
-                        <p className="text-xs text-muted-foreground">Incluye IVA Crédito: {formatter.format(reporte.gastos.iva_credito)}</p>
+                        <p className="text-xs text-muted-foreground">Incluye IVA: {formatter.format(reporte.gastos.iva_credito)}</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -148,7 +148,7 @@ export default function ReporteFinancieroPage() {
                             {formatter.format(reporte.impuestos.iva_a_pagar > 0 ? reporte.impuestos.iva_a_pagar : reporte.impuestos.iva_a_favor)}
                         </div>
                         <p className="text-xs opacity-70">
-                            Débito: {formatter.format(reporte.ventas.iva_debito)} | Crédito: {formatter.format(reporte.gastos.iva_credito)}
+                            Ventas: {formatter.format(reporte.ventas.iva_debito)} | Compras: {formatter.format(reporte.gastos.iva_credito)}
                         </p>
                     </CardContent>
                 </Card>
@@ -160,28 +160,29 @@ export default function ReporteFinancieroPage() {
                         <CardTitle>Flujo de Caja - Resumen</CardTitle>
                     </CardHeader>
                     <CardContent className="pl-2">
-                        <div className="h-[300px]">
+                        <div className="h-[350px] min-h-[350px]">
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                <BarChart data={chartData} margin={{ top: 40, right: 30, left: 20, bottom: 25 }} barSize={60}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
-                                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickMargin={15} padding={{ left: 60, right: 60 }} />
                                     <YAxis
                                         stroke="hsl(var(--muted-foreground))"
                                         fontSize={12}
                                         tickLine={false}
                                         axisLine={false}
-                                        tickFormatter={(value) => `$${value.toLocaleString()}`}
+                                        tickFormatter={(value) => `$${value.toLocaleString('es-CL')}`}
+                                        width={75}
                                     />
                                     <Tooltip
                                         cursor={{ fill: 'hsl(var(--muted))', opacity: 0.4 }}
-                                        formatter={(value: any) => [formatter.format(Number(value)), ""]}
+                                        formatter={(value: any) => [formatter.format(Number(value)), "Total"]}
                                         contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
                                     />
-                                    <Bar dataKey="Ventas" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]}>
-                                        <LabelList dataKey="Ventas" position="top" formatter={(val: any) => Number(val) > 0 ? formatter.format(Number(val)) : ""} fontSize={11} fill="hsl(var(--foreground))" />
-                                    </Bar>
-                                    <Bar dataKey="Gastos" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]}>
-                                        <LabelList dataKey="Gastos" position="top" formatter={(val: any) => Number(val) > 0 ? formatter.format(Number(val)) : ""} fontSize={11} fill="hsl(var(--foreground))" />
+                                    <Bar dataKey="Total" radius={[4, 4, 0, 0]}>
+                                        {chartData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                                        ))}
+                                        <LabelList dataKey="Total" position="top" offset={10} formatter={(val: any) => Number(val) > 0 ? formatter.format(Number(val)) : ""} fontSize={11} fill="hsl(var(--foreground))" />
                                     </Bar>
                                 </BarChart>
                             </ResponsiveContainer>
@@ -193,7 +194,7 @@ export default function ReporteFinancieroPage() {
                     <CardHeader>
                         <CardTitle>Detalle Tributario Mensual (SII)</CardTitle>
                         <CardDescription>
-                            El IVA Débito es generado por tus Ventas, el IVA Crédito por tus compras y gastos con factura.
+                            El IVA de tus ventas se descuenta con el IVA de tus compras y gastos con factura.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -208,11 +209,11 @@ export default function ReporteFinancieroPage() {
                             </div>
                             <div className="border-t border-border pt-4">
                                 <div className="flex justify-between items-center mb-2">
-                                    <span className="text-sm">(+) IVA Débito (19%)</span>
+                                    <span className="text-sm">(+) IVA Ventas (19%)</span>
                                     <span className="font-medium">{formatter.format(reporte.ventas.iva_debito)}</span>
                                 </div>
                                 <div className="flex justify-between items-center mb-4">
-                                    <span className="text-sm">(-) IVA Crédito (19%)</span>
+                                    <span className="text-sm">(-) IVA Compras (19%)</span>
                                     <span className="font-medium">{formatter.format(reporte.gastos.iva_credito)}</span>
                                 </div>
                                 <div className={`flex justify-between items-center p-3 rounded-md ${reporte.impuestos.iva_a_pagar > 0 ? 'bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-100' : 'bg-emerald-100 text-emerald-900 dark:bg-emerald-900/30 dark:text-emerald-100'}`}>

@@ -31,7 +31,7 @@ export function Sidebar({ className }: SidebarProps) {
 
     const routes = [
         {
-            label: "ERP",
+            label: "Ventas",
             icon: ShoppingCart,
             href: "/dashboard/erp",
             active: pathname.startsWith("/dashboard/erp"),
