@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Database } from "@/types/supabase";
+import { Database } from "@/types/database.types";
 
 type Usuario = Database["public"]["Tables"]["usuarios"]["Row"];
 

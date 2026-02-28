@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { registrarGasto, getCategoriasGastos } from "@/actions/gastos"
+import { registrarGasto, getCategoriasGastos, crearCategoriaGasto } from "@/actions/gastos"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { toast } from "sonner"
-import { Loader2, ArrowLeft } from "lucide-react"
+import { Loader2, ArrowLeft, Plus } from "lucide-react"
 import Link from "next/link"
 import { Textarea } from "@/components/ui/textarea"
 
@@ -19,10 +20,17 @@ export default function NuevoGastoPage() {
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
 
+    // Nueva categoría state
+    const [openDialog, setOpenDialog] = useState(false)
+    const [nuevaCatNombre, setNuevaCatNombre] = useState("")
+    const [nuevaCatDesc, setNuevaCatDesc] = useState("")
+    const [creandoCat, setCreandoCat] = useState(false)
+
     // Form state
     const [descripcion, setDescripcion] = useState("")
     const [categoriaId, setCategoriaId] = useState<string>("none")
     const [tipoDocumento, setTipoDocumento] = useState<"Factura" | "Boleta" | "Recibo" | "Otro">("Boleta")
+    const [tipoGasto, setTipoGasto] = useState<"fijo" | "variable">("variable")
     const [montoTotal, setMontoTotal] = useState("")
     const [montoNeto, setMontoNeto] = useState(0)
     const [montoIva, setMontoIva] = useState(0)
@@ -38,6 +46,26 @@ export default function NuevoGastoPage() {
         }
         fetchCategorias()
     }, [])
+
+    const handleCrearCategoria = async () => {
+        if (!nuevaCatNombre.trim()) {
+            toast.error("El nombre es obligatorio")
+            return
+        }
+        setCreandoCat(true)
+        const res = await crearCategoriaGasto(nuevaCatNombre, nuevaCatDesc)
+        if (res.success && res.data) {
+            toast.success("Categoría creada")
+            setCategorias(prev => [...prev, res.data].sort((a, b) => a.nombre.localeCompare(b.nombre)))
+            setCategoriaId(res.data.id)
+            setOpenDialog(false)
+            setNuevaCatNombre("")
+            setNuevaCatDesc("")
+        } else {
+            toast.error(res.error)
+        }
+        setCreandoCat(false)
+    }
 
     const handleMontoTotalChange = (val: string) => {
         setMontoTotal(val)
@@ -89,23 +117,30 @@ export default function NuevoGastoPage() {
 
         setSubmitting(true)
 
-        const reqData = {
-            descripcion,
-            categoria_id: categoriaId !== "none" ? categoriaId : undefined,
-            monto_neto: parseFloat(montoNeto.toFixed(2)),
-            monto_iva: parseFloat(montoIva.toFixed(2)),
-            monto_total: numMonto,
-            tipo_documento: tipoDocumento,
-            fecha_gasto: new Date(fechaGasto || new Date().toISOString()).toISOString()
-        }
+        try {
+            const reqData = {
+                descripcion,
+                categoria_id: categoriaId !== "none" ? categoriaId : undefined,
+                monto_neto: parseFloat(montoNeto.toFixed(2)),
+                monto_iva: parseFloat(montoIva.toFixed(2)),
+                monto_total: numMonto,
+                tipo_documento: tipoDocumento,
+                tipo_gasto: tipoGasto,
+                fecha_gasto: new Date(fechaGasto || new Date().toISOString()).toISOString()
+            }
 
-        const res = await registrarGasto(reqData)
+            const res = await registrarGasto(reqData)
 
-        if (res.success) {
-            toast.success("Gasto registrado correctamente")
-            router.push("/dashboard/gastos")
-        } else {
-            toast.error("Error al registrar: " + res.error)
+            if (res.success) {
+                toast.success("Gasto registrado correctamente")
+                router.push("/dashboard/gastos")
+            } else {
+                toast.error("Error al registrar: " + res.error)
+            }
+        } catch (error: any) {
+            toast.error("Ocurrió un error inesperado al guardar el gasto")
+            console.error(error)
+        } finally {
             setSubmitting(false)
         }
     }
@@ -139,7 +174,41 @@ export default function NuevoGastoPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label>Categoría de Gasto</Label>
+                            <div className="flex items-center justify-between">
+                                <Label>Categoría de Gasto</Label>
+                                <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+                                    <DialogTrigger asChild>
+                                        <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-primary">
+                                            <Plus className="h-3 w-3 mr-1" />
+                                            Nueva Categoría
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Añadir Categoría</DialogTitle>
+                                            <DialogDescription>
+                                                Crea una nueva clasificación para tus gastos.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="space-y-4 py-4">
+                                            <div className="space-y-2">
+                                                <Label>Nombre</Label>
+                                                <Input value={nuevaCatNombre} onChange={e => setNuevaCatNombre(e.target.value)} placeholder="Ej. Transporte, Insumos..." />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Descripción (Opcional)</Label>
+                                                <Input value={nuevaCatDesc} onChange={e => setNuevaCatDesc(e.target.value)} placeholder="Detalle adicional..." />
+                                            </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <Button variant="outline" onClick={() => setOpenDialog(false)}>Cancelar</Button>
+                                            <Button onClick={handleCrearCategoria} disabled={creandoCat}>
+                                                {creandoCat ? "Guardando..." : "Guardar Categoría"}
+                                            </Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
                             <Select value={categoriaId} onValueChange={setCategoriaId} disabled={loading}>
                                 <SelectTrigger>
                                     <SelectValue placeholder={loading ? "Cargando..." : "Selecciona..."} />
@@ -175,6 +244,19 @@ export default function NuevoGastoPage() {
                                     <SelectItem value="Factura">Factura (Calcula IVA Crédito 19%)</SelectItem>
                                     <SelectItem value="Recibo">Recibo / Vales</SelectItem>
                                     <SelectItem value="Otro">Otro</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Tipo de Gasto</Label>
+                            <Select value={tipoGasto} onValueChange={(val: "fijo" | "variable") => setTipoGasto(val)}>
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="variable">Gasto Variable (Mercadería, Insumos)</SelectItem>
+                                    <SelectItem value="fijo">Costo Fijo (Arriendo, Sueldos, Luz)</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

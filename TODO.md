@@ -3,7 +3,7 @@
 ## Estado Actual: Documentación & Calidad (Febrero 2026)
 - **Fecha**: 2026-02-27
 - **Ubicación**: Antofagasta
-- **Hito**: Corrección de permisos de Cajero (Ingresos/Stock), acceso global a Mi Perfil y mejora UX con Modal de Error en Login.
+- **Hito**: Mejora de UX en Gastos Operativos (Categorías) y workflow de testing pre-push (`/sync-docs`).
 
 ## Tareas Completadas [x]
 - [x] Establecer y documentar estándares UI/UX (Notificaciones, Gráficos PowerBI style, Tablas móviles, Dark mode) en GEMINI.md y skills.
@@ -34,10 +34,13 @@
 - [x] Corregir permisos de rol Cajero para permitir el registro de Ingresos de inventario y Ajuste de Stock.
 - [x] Garantizar visibilidad de "Mi Perfil" en la Sidebar para todos los roles.
 - [x] Reemplazar mensaje de error en texto plano por un Modal de Diálogo elegante (shadcn) en el Login.
+- [x] **Módulo Financiero**: Añadir gestión de "Gastos" del local con modal de creación rápida de categorías.
+- [x] Refactorización de workflow `/sync-docs` para forzar `pnpm typecheck`, `lint`, `vitest` y `playwright` pre-push.
 ## Tareas Pendientes [ ]
-- [ ] **Módulo Financiero**: Añadir gestión de "Gastos Fijos" del local (arriendo, luz, agua, sueldos) para integrarlos en el cálculo de Utilidad Neta del Dashboard.
+- [ ] Integración de Gastos Fijos (sueldos, luz, agua) al Dashboard Financiero.
 - [ ] Auditoría profunda de cálculos de costos en recetas vs precios de insumos.
 - [ ] Implementar soporte 100% Offline (PWA) con IndexedDB para carga total de catálogo y sincronización en segundo plano.
+- [ ] Solucionar error de resolución de `eslint-plugin-react` con ESLint 9 Flat Config + PNPM.
 - [x] Ejecución de pruebas iniciales con Playwright (Salud del sistema)
 - [x] Configuración de Global Auth Setup para tests rápidos
 - [ ] **Integración Transbank (Webpay Plus)**:

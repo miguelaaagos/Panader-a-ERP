@@ -17,7 +17,8 @@ import {
     Inbox,
     Wallet,
     TrendingUp,
-    User
+    User,
+    Clock
 } from "lucide-react";
 import { useLogout } from "@refinedev/core";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -81,7 +82,7 @@ export function Sidebar({ className }: SidebarProps) {
             permission: "production.view" as Permission,
         },
         {
-            label: "Ventas",
+            label: "Historial Ventas",
             icon: FileText,
             href: "/dashboard/ventas",
             active: pathname.startsWith("/dashboard/ventas"),
@@ -93,6 +94,12 @@ export function Sidebar({ className }: SidebarProps) {
             href: "/dashboard/reportes/financiero",
             active: pathname.startsWith("/dashboard/reportes/financiero"),
             permission: "analytics.view_full" as Permission,
+        },
+        {
+            label: "Asistencia",
+            icon: Clock,
+            href: "/dashboard/asistencia",
+            active: pathname.startsWith("/dashboard/asistencia"),
         },
         {
             label: "Usuarios",

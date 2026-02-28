@@ -53,7 +53,7 @@ export async function getReporteFinancieroMensual(monthISO?: string) {
         // 2. Obtener Gastos del Mes
         const { data: gastosData, error: gastosError } = await supabase
             .from("gastos")
-            .select("monto_neto, monto_iva, monto_total")
+            .select("monto_neto, monto_iva, monto_total, tipo_gasto")
             .eq("tenant_id", profile.tenant_id)
             .gte("fecha_gasto", startStr)
             .lte("fecha_gasto", endStr)
@@ -64,10 +64,24 @@ export async function getReporteFinancieroMensual(monthISO?: string) {
         let totalIvaCredito = 0
         let totalGastosBruto = 0
 
+        // Diferenciar gastos
+        let totalFijosBruto = 0
+        let totalFijosNeto = 0
+        let totalVariablesBruto = 0
+        let totalVariablesNeto = 0
+
         gastosData.forEach(g => {
             totalGastosNeto += Number(g.monto_neto || 0)
             totalIvaCredito += Number(g.monto_iva || 0)
             totalGastosBruto += Number(g.monto_total || 0)
+
+            if (g.tipo_gasto === 'fijo') {
+                totalFijosBruto += Number(g.monto_total || 0)
+                totalFijosNeto += Number(g.monto_neto || 0)
+            } else {
+                totalVariablesBruto += Number(g.monto_total || 0)
+                totalVariablesNeto += Number(g.monto_neto || 0)
+            }
         })
 
         // Resumen
@@ -84,15 +98,19 @@ export async function getReporteFinancieroMensual(monthISO?: string) {
             gastos: {
                 bruto: totalGastosBruto,
                 neto: totalGastosNeto,
-                iva_credito: totalIvaCredito
+                iva_credito: totalIvaCredito,
+                fijos_bruto: totalFijosBruto,
+                fijos_neto: totalFijosNeto,
+                variables_bruto: totalVariablesBruto,
+                variables_neto: totalVariablesNeto,
             },
             impuestos: {
                 iva_a_pagar: Math.max(0, totalIvaDebito - totalIvaCredito),
                 iva_a_favor: Math.max(0, totalIvaCredito - totalIvaDebito)
             },
             utilidad: {
-                bruta: (totalVentas - totalIvaDebito) - totalGastosNeto,
-                neta: (totalVentas - totalIvaDebito) - totalGastosNeto // Ajustar si hay otros impuestos como Renta
+                bruta: (totalVentas - totalIvaDebito) - totalVariablesNeto,
+                neta: (totalVentas - totalIvaDebito) - totalVariablesNeto - totalFijosNeto
             }
         }
 

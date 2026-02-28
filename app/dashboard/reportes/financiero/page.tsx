@@ -105,7 +105,7 @@ export default function ReporteFinancieroPage() {
 
             {loading && <div className="text-sm text-muted-foreground animate-pulse">Actualizando datos...</div>}
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Ventas Totales (Bruto)</CardTitle>
@@ -118,24 +118,34 @@ export default function ReporteFinancieroPage() {
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Gastos Operativos (Bruto)</CardTitle>
+                        <CardTitle className="text-sm font-medium">Gastos Variables (Bruto)</CardTitle>
                         <Wallet className="h-4 w-4 text-rose-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{formatter.format(reporte.gastos.bruto)}</div>
-                        <p className="text-xs text-muted-foreground">Incluye IVA: {formatter.format(reporte.gastos.iva_credito)}</p>
+                        <div className="text-2xl font-bold">{formatter.format(reporte.gastos.variables_bruto)}</div>
+                        <p className="text-xs text-muted-foreground">Insumos, compras, etc.</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Utilidad Neta</CardTitle>
+                        <CardTitle className="text-sm font-medium">Costos Fijos (Bruto)</CardTitle>
+                        <Landmark className="h-4 w-4 text-rose-600" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{formatter.format(reporte.gastos.fijos_bruto)}</div>
+                        <p className="text-xs text-muted-foreground">Sueldos, arriendos, luz.</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Utilidad Neta del Mes</CardTitle>
                         <Calculator className="h-4 w-4 text-blue-500" />
                     </CardHeader>
                     <CardContent>
                         <div className={`text-2xl font-bold ${reporte.utilidad.neta >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                             {formatter.format(reporte.utilidad.neta)}
                         </div>
-                        <p className="text-xs text-muted-foreground">Ventas (Neto) - Gastos (Neto)</p>
+                        <p className="text-xs text-muted-foreground">Después de todos los gastos.</p>
                     </CardContent>
                 </Card>
                 <Card className={reporte.impuestos.iva_a_pagar > 0 ? 'border-amber-500/50 bg-amber-500/10' : 'border-emerald-500/50 bg-emerald-500/10'}>

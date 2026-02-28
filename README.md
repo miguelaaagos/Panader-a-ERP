@@ -111,5 +111,5 @@ pnpm typecheck
 
 **Versión**: 1.2.2 (UI/UX & Auth Refinements)  
 **Estado**: Desarrollo Activo (Rama `desarrollo`) / Producción Estable  
-**Última actualización**: 27 de febrero de 2026 — Corrección de permisos de Cajero (acceso a Ingresos y Ajuste de Stock), visibilidad global del apartado Mi Perfil en la Sidebar y mejora UX con componente Dialog estructurado para el manejo de errores en el Login.
+**Última actualización**: 27 de febrero de 2026 — Mejora UX en Módulo de Gastos permitiendo creación de categorías al vuelo y actualización del flujo de trabajo `/sync-docs` para exigir Testing Pre-Push con Vitest y Playwright.
 

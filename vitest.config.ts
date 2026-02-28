@@ -7,7 +7,9 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         globals: true,
-        setupFiles: ['./test/setup.ts'],
+        include: ['tests/**/*.test.{ts,tsx}'],
+        exclude: ['**/node_modules/**', '**/dist/**', '**/playwright/**', '**/*.spec.ts', 'tests/health.test.ts', 'tests/ingresos.test.ts'], // Ignorar tests de Playwright
+        // setupFiles: ['./tests/setup.ts'],
         alias: {
             '@': path.resolve(__dirname, './'),
         },

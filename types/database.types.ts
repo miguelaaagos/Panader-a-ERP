@@ -17,6 +17,7 @@ export type Database = {
       arqueos_caja: {
         Row: {
           created_at: string | null
+          diferencia: number | null
           estado: string
           fecha_apertura: string | null
           fecha_cierre: string | null
@@ -32,6 +33,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          diferencia?: number | null
           estado?: string
           fecha_apertura?: string | null
           fecha_cierre?: string | null
@@ -47,6 +49,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          diferencia?: number | null
           estado?: string
           fecha_apertura?: string | null
           fecha_cierre?: string | null
@@ -70,6 +73,48 @@ export type Database = {
           },
           {
             foreignKeyName: "arqueos_caja_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      asistencias: {
+        Row: {
+          creado_en: string
+          entrada: string
+          id: string
+          salida: string | null
+          tenant_id: string
+          usuario_id: string
+        }
+        Insert: {
+          creado_en?: string
+          entrada?: string
+          id?: string
+          salida?: string | null
+          tenant_id: string
+          usuario_id: string
+        }
+        Update: {
+          creado_en?: string
+          entrada?: string
+          id?: string
+          salida?: string | null
+          tenant_id?: string
+          usuario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asistencias_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asistencias_usuario_id_fkey"
             columns: ["usuario_id"]
             isOneToOne: false
             referencedRelation: "usuarios"
@@ -213,6 +258,7 @@ export type Database = {
           monto_total: number
           tenant_id: string
           tipo_documento: string
+          tipo_gasto: string
           usuario_id: string
         }
         Insert: {
@@ -227,6 +273,7 @@ export type Database = {
           monto_total?: number
           tenant_id: string
           tipo_documento?: string
+          tipo_gasto?: string
           usuario_id: string
         }
         Update: {
@@ -241,6 +288,7 @@ export type Database = {
           monto_total?: number
           tenant_id?: string
           tipo_documento?: string
+          tipo_gasto?: string
           usuario_id?: string
         }
         Relationships: [
@@ -481,7 +529,9 @@ export type Database = {
           tiene_receta: boolean | null
           tipo: Database["public"]["Enums"]["producto_tipo"]
           unidad_medida: Database["public"]["Enums"]["unidad_medida"]
-          unidad_medida_base: Database["public"]["Enums"]["unidad_medida"] | null
+          unidad_medida_base:
+          | Database["public"]["Enums"]["unidad_medida"]
+          | null
           updated_at: string
         }
         Insert: {
@@ -508,7 +558,9 @@ export type Database = {
           tiene_receta?: boolean | null
           tipo: Database["public"]["Enums"]["producto_tipo"]
           unidad_medida: Database["public"]["Enums"]["unidad_medida"]
-          unidad_medida_base?: Database["public"]["Enums"]["unidad_medida"] | null
+          unidad_medida_base?:
+          | Database["public"]["Enums"]["unidad_medida"]
+          | null
           updated_at?: string
         }
         Update: {
@@ -535,7 +587,9 @@ export type Database = {
           tiene_receta?: boolean | null
           tipo?: Database["public"]["Enums"]["producto_tipo"]
           unidad_medida?: Database["public"]["Enums"]["unidad_medida"]
-          unidad_medida_base?: Database["public"]["Enums"]["unidad_medida"] | null
+          unidad_medida_base?:
+          | Database["public"]["Enums"]["unidad_medida"]
+          | null
           updated_at?: string
         }
         Relationships: [

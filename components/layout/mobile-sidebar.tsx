@@ -2,7 +2,7 @@
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, LayoutDashboard, ShoppingCart, Package, ChefHat, Utensils, Users, Settings, LogOut, FileText, Inbox, Wallet, TrendingUp } from "lucide-react";
+import { Menu, LayoutDashboard, ShoppingCart, Package, ChefHat, Utensils, Users, Settings, LogOut, FileText, Inbox, Wallet, TrendingUp, Clock } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLogout } from "@refinedev/core";
@@ -68,7 +68,7 @@ export function MobileSidebar() {
             permission: "production.view" as Permission,
         },
         {
-            label: "Ventas",
+            label: "Historial Ventas",
             icon: FileText,
             href: "/dashboard/ventas",
             active: pathname.startsWith("/dashboard/ventas"),
@@ -80,6 +80,12 @@ export function MobileSidebar() {
             href: "/dashboard/reportes/financiero",
             active: pathname.startsWith("/dashboard/reportes/financiero"),
             permission: "analytics.view_full" as Permission,
+        },
+        {
+            label: "Asistencia",
+            icon: Clock,
+            href: "/dashboard/asistencia",
+            active: pathname.startsWith("/dashboard/asistencia"),
         },
         {
             label: "Usuarios",

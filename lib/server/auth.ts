@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { Permission, hasPermission, UserRole } from "@/lib/roles"
 import type { SupabaseClient } from "@supabase/supabase-js"
-import type { Database } from "@/types/supabase"
+import type { Database } from "@/types/database.types"
 
 export interface AuthContext {
     supabase: SupabaseClient<Database>
