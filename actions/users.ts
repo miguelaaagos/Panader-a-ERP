@@ -15,7 +15,7 @@ interface UserData {
 export async function createUser(data: UserData) {
     try {
         // Validar permisos antes de usar el cliente admin
-        await validateRequest('users.manage')
+        const { profile } = await validateRequest('users.manage')
 
         // Cargar clave secreta desde el nuevo estándar o el legacy
         const secretKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -63,7 +63,8 @@ export async function createUser(data: UserData) {
                     .update({
                         nombre_completo: data.nombre_completo,
                         rol: rol,
-                        activo: true
+                        activo: true,
+                        tenant_id: profile.tenant_id
                     })
                     .eq("id", authData.user.id)
 
@@ -76,7 +77,8 @@ export async function createUser(data: UserData) {
                         id: authData.user.id,
                         nombre_completo: data.nombre_completo,
                         rol: rol,
-                        activo: true
+                        activo: true,
+                        tenant_id: profile.tenant_id
                     })
 
                 if (profileError) throw profileError
@@ -98,7 +100,7 @@ interface UpdateUserData {
 
 export async function updateUser(id: string, data: UpdateUserData) {
     try {
-        const { supabase } = await validateRequest('users.manage')
+        const { supabase, profile } = await validateRequest('users.manage')
 
         const { error } = await supabase
             .from("usuarios")
@@ -110,6 +112,7 @@ export async function updateUser(id: string, data: UpdateUserData) {
                 ...(data.rol ? { rol: data.rol } : {})
             })
             .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
 
         if (error) throw error
         revalidatePath("/dashboard/usuarios")
@@ -121,7 +124,7 @@ export async function updateUser(id: string, data: UpdateUserData) {
 
 export async function toggleUserStatus(id: string, currentStatus: boolean) {
     try {
-        const { supabase, user_id } = await validateRequest('users.manage')
+        const { supabase, user_id, profile } = await validateRequest('users.manage')
 
         // Prevent self-deactivation
         if (user_id === id) {
@@ -132,6 +135,7 @@ export async function toggleUserStatus(id: string, currentStatus: boolean) {
             .from("usuarios")
             .update({ activo: !currentStatus })
             .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
 
         if (error) throw error
         revalidatePath("/dashboard/usuarios")

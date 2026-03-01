@@ -449,10 +449,10 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
                                     <Input
                                         id="costo_unitario"
-                                        type="number"
-                                        min="0"
+                                        type="text"
+                                        inputMode="decimal"
                                         value={formData.costo_unitario}
-                                        onChange={(e) => setFormData({ ...formData, costo_unitario: e.target.value })}
+                                        onChange={(e) => setFormData({ ...formData, costo_unitario: e.target.value.replace(",", ".") })}
                                         className="pl-7"
                                         placeholder="0"
                                     />
@@ -502,10 +502,10 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
                                     <Input
                                         id="precio_venta"
-                                        type="number"
-                                        min="0"
+                                        type="text"
+                                        inputMode="decimal"
                                         value={formData.precio_venta}
-                                        onChange={(e) => setFormData({ ...formData, precio_venta: e.target.value })}
+                                        onChange={(e) => setFormData({ ...formData, precio_venta: e.target.value.replace(",", ".") })}
                                         className="pl-7 font-bold"
                                         placeholder="0"
                                     />
@@ -545,18 +545,20 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                             <Label htmlFor="stock_actual">Stock Actual ({formData.unidad_medida})</Label>
                             <Input
                                 id="stock_actual"
-                                type="number"
+                                type="text"
+                                inputMode="decimal"
                                 value={formData.stock_actual}
-                                onChange={(e) => setFormData({ ...formData, stock_actual: e.target.value })}
+                                onChange={(e) => setFormData({ ...formData, stock_actual: e.target.value.replace(",", ".") })}
                             />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="stock_minimo">Alerta Mínimo ({formData.unidad_medida})</Label>
                             <Input
                                 id="stock_minimo"
-                                type="number"
+                                type="text"
+                                inputMode="decimal"
                                 value={formData.stock_minimo}
-                                onChange={(e) => setFormData({ ...formData, stock_minimo: e.target.value })}
+                                onChange={(e) => setFormData({ ...formData, stock_minimo: e.target.value.replace(",", ".") })}
                             />
                         </div>
                     </div>

@@ -190,21 +190,29 @@ export async function anularVenta(id: string) {
 
 export async function getSaleDetails(id: string) {
     try {
-        const { supabase, profile } = await validateRequest()
+        const { supabase, profile } = await validateRequest('sales.view_own')
 
-        const { data, error } = await supabase
+        let query = supabase
             .from("ventas")
-            .select(`
+            .select(
+                `
                 *,
                 usuario:usuarios(nombre_completo),
                 detalles:venta_detalles(
                     *,
                     producto:productos(nombre, codigo)
                 )
-            `)
+            `
+            )
             .eq("id", id)
             .eq("tenant_id", profile.tenant_id)
-            .single()
+
+        // Admin puede ver cualquier venta del tenant; cajero solo sus ventas.
+        if (!hasPermission(profile.rol, 'sales.view_all')) {
+            query = query.eq("usuario_id", profile.id)
+        }
+
+        const { data, error } = await query.single()
 
         if (error) throw error
         return { success: true, data }

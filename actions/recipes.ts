@@ -58,6 +58,7 @@ export async function upsertRecipe(data: RecipeFormData, recipeId?: string) {
                 .from("recetas")
                 .update(recipeData)
                 .eq("id", currentRecipeId)
+                .eq("tenant_id", tenant_id)
             if (updateError) throw updateError
         } else {
             const { data: newRecipe, error: insertError } = await supabase
@@ -328,16 +329,17 @@ export async function getRecipeDetail(id: string) {
 }
 
 /**
- * Elimina (desactiva) una receta
+ * Cambia el estado (activa/inactiva) de una receta
  */
-export async function deleteRecipe(id: string) {
+export async function toggleRecipeStatus(id: string, activa: boolean) {
     try {
-        const { supabase } = await validateRequest('recipes.manage')
+        const { supabase, profile } = await validateRequest('recipes.manage')
 
         const { error } = await supabase
             .from("recetas")
-            .update({ activa: false })
+            .update({ activa })
             .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
 
         if (error) throw error
 

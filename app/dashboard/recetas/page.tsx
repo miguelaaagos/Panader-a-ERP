@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Search, Utensils, Clock, DollarSign, Plus, Pencil, Trash2, ExternalLink, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { RoleGuard } from "@/components/auth/RoleGuard"
-import { getRecipes, deleteRecipe, getRecipeDetail } from "@/actions/recipes"
+import { getRecipes, toggleRecipeStatus, getRecipeDetail } from "@/actions/recipes"
 import { RecipeFormDialog } from "@/components/recetas/recipe-form-dialog"
 
 interface Recipe {
@@ -89,12 +89,13 @@ export default function RecetasPage() {
         setFetchingDetail(false)
     }
 
-    const handleDelete = async (id: string, nombre: string) => {
-        if (!confirm(`¿Estás seguro de desactivar la receta: ${nombre}?`)) return
+    const handleToggleStatus = async (id: string, nombre: string, currentStatus: boolean) => {
+        const action = currentStatus ? "desactivar" : "activar"
+        if (!confirm(`¿Estás seguro de ${action} la receta: ${nombre}?`)) return
 
-        const result = await deleteRecipe(id)
+        const result = await toggleRecipeStatus(id, !currentStatus)
         if (result.success) {
-            toast.success("Receta desactivada")
+            toast.success(currentStatus ? "Receta desactivada" : "Receta activada")
             fetchRecipes()
         } else {
             toast.error("Error: " + result.error)
@@ -217,10 +218,11 @@ export default function RecetasPage() {
                                                         <Button
                                                             size="icon"
                                                             variant="ghost"
-                                                            className="text-destructive hover:text-destructive/90"
-                                                            onClick={() => handleDelete(recipe.id, recipe.nombre)}
+                                                            className={recipe.activa ? "text-destructive hover:text-destructive/90" : "text-green-600 hover:text-green-700"}
+                                                            title={recipe.activa ? "Desactivar" : "Activar"}
+                                                            onClick={() => handleToggleStatus(recipe.id, recipe.nombre, recipe.activa)}
                                                         >
-                                                            <Trash2 className="h-4 w-4" />
+                                                            {recipe.activa ? <Trash2 className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
                                                         </Button>
                                                     </RoleGuard>
                                                 </div>
