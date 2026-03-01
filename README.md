@@ -67,6 +67,7 @@ El sistema ha sido diseñado priorizando la integridad de los datos y la segurid
 -   **Unidades de Medida**: Soporte para Kg, Gramos, Litros y Unidades con conversiones inteligentes.
 -   **Protección de Datos**: Bloqueo de seguridad para evitar cambios de unidad en productos con ventas históricas.
 -   **Alertas de Stock Bajo**: Indicadores visuales para reabastecimiento.
+-   **Conversión de Unidades en Recetas**: Cálculo de costos en tiempo real con conversión automática kg↔g y L↔ml. El input de cantidad es estable (soporte para decimales y comas). Los datos de la BD (`factor_conversion`, `unidad_medida_base`) están normalizados.
 
 ### 📊 Dashboard y Reportes
 -   **Métricas en Vivo**: Ventas diarias, métodos de pago y rendimiento de productos.
@@ -109,7 +110,6 @@ pnpm typecheck
 
 ---
 
-**Versión**: 1.2.2 (UI/UX & Auth Refinements)  
-**Estado**: Desarrollo Activo (Rama `desarrollo`) / Producción Estable  
-**Última actualización**: 27 de febrero de 2026 — Mejora UX en Módulo de Gastos permitiendo creación de categorías al vuelo y actualización del flujo de trabajo `/sync-docs` para exigir Testing Pre-Push con Vitest y Playwright.
-
+**Version**: 1.2.4 (Unit Conversion Bugfix & Real-time Cost Calculation)  
+**Estado**: Estable / Producción  
+**Última actualización**: 1 de marzo de 2026 — Corrección crítica de cálculo de costos en recetas (12g de harina ahora cuesta ~$9.6, no $9,600). Se unificó la lógica en `getLineCost` → `convertQuantity`, se migró `cantidad` a `string` en el formulario para soporte real-time y decimales, y se normalizaron los `factor_conversion` en la BD (1000 para kg/L).

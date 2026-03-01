@@ -1,9 +1,9 @@
 # TODO: Sincronización de Desarrollo (Calama - Antofagasta)
 
-## Estado Actual: Documentación & Calidad (Febrero 2026)
-- **Fecha**: 2026-02-27
+## Estado Actual: Corrección Crítica de Conversiones (Marzo 2026)
+- **Fecha**: 2026-03-01
 - **Ubicación**: Antofagasta
-- **Hito**: Mejora de UX en Gastos Operativos (Categorías) y workflow de testing pre-push (`/sync-docs`).
+- **Hito**: Corrección de bug crítico en cálculo de costos de recetas (12g a precio de kg). Unificación de lógica de conversión en `lib/utils/units.ts`. Normalización de BD (`factor_conversion = 1000` para todos los productos en kg/L).
 
 ## Tareas Completadas [x]
 - [x] Establecer y documentar estándares UI/UX (Notificaciones, Gráficos PowerBI style, Tablas móviles, Dark mode) en GEMINI.md y skills.
@@ -36,9 +36,12 @@
 - [x] Reemplazar mensaje de error en texto plano por un Modal de Diálogo elegante (shadcn) en el Login.
 - [x] **Módulo Financiero**: Añadir gestión de "Gastos" del local con modal de creación rápida de categorías.
 - [x] Refactorización de workflow `/sync-docs` para forzar `pnpm typecheck`, `lint`, `vitest` y `playwright` pre-push.
+- [x] **Corrección Bug Conversión de Unidades (Recetas)**: `getLineCost` ahora usa `convertQuantity` internamente — 12g a $800/kg = $9.6 (no $9,600).
+- [x] **Input de Cantidad en Tiempo Real**: `cantidad` cambiada a `string` en el estado del formulario para soportar decimales y actualización reactiva sin reseteos.
+- [x] **Normalización de BD**: `UPDATE productos SET factor_conversion = 1000, unidad_medida_base = 'g'` para todos los productos en `kg` con factor incorrecto.
+- [x] **Auditoría de cálculos de costos en recetas vs precios de insumos**: Completado — bug corregido y verificado.
 ## Tareas Pendientes [ ]
 - [ ] Integración de Gastos Fijos (sueldos, luz, agua) al Dashboard Financiero.
-- [ ] Auditoría profunda de cálculos de costos en recetas vs precios de insumos.
 - [ ] Implementar soporte 100% Offline (PWA) con IndexedDB para carga total de catálogo y sincronización en segundo plano.
 - [ ] Solucionar error de resolución de `eslint-plugin-react` con ESLint 9 Flat Config + PNPM.
 - [x] Ejecución de pruebas iniciales con Playwright (Salud del sistema)
@@ -56,3 +59,5 @@
 - Skill activa: `.agent/skills/supabase-ssr/SKILL.md` — siempre consultarla antes de tocar auth.
 - Workflow de arranque: `/run-app` → ejecuta `npm run dev` (usando npm).
 - Estilo CSS: Tailwind v3.4.19 (configuración vía tailwind.config.ts).
+- **`factor_conversion` en BD**: Productos en `kg` deben tener `factor_conversion = 1000` y `unidad_medida_base = 'g'`. El código en `recipe-form-dialog.tsx` fuerza `1000` defensivamente para kg/L, pero la BD debe estar correcta.
+- **`cantidad` en recetas**: Es tipo `string` en el estado local del formulario — usar `parseFloat()` para cálculos, nunca asumir que es `number`.

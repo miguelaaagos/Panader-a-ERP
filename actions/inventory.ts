@@ -55,7 +55,7 @@ export async function createProduct(data: ProductFormData) {
 
 export async function updateProduct(id: string, data: ProductFormData) {
     try {
-        const { supabase } = await validateRequest('inventory.edit')
+        const { supabase, profile } = await validateRequest('inventory.edit')
 
         const validatedData = productSchema.parse(data)
 
@@ -64,16 +64,21 @@ export async function updateProduct(id: string, data: ProductFormData) {
             .from("productos")
             .select("costo_unitario, unit_medida:unidad_medida, stock_actual")
             .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
             .single()
 
         if (fetchError) throw fetchError
 
         // Lógica de conversión de unidades
+        // Si la unidad cambió, el stock y costo deben convertirse desde los valores ACTUALES en BD
+        // para asegurar integridad del cálculo histórico.
+        const unitChanged = currentProduct.unit_medida !== validatedData.unidad_medida
+
         const unitChanges = handleUnitConversion(
             currentProduct.unit_medida as any,
             validatedData.unidad_medida,
-            validatedData.stock_actual,
-            validatedData.costo_unitario
+            unitChanged ? Number(currentProduct.stock_actual) : validatedData.stock_actual,
+            unitChanged ? Number(currentProduct.costo_unitario) : validatedData.costo_unitario
         )
 
         const finalData = {
@@ -86,6 +91,7 @@ export async function updateProduct(id: string, data: ProductFormData) {
             .from("productos")
             .update(finalData)
             .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
 
         if (error) throw error
 
@@ -111,13 +117,14 @@ export async function updateProduct(id: string, data: ProductFormData) {
 
 export async function deleteProduct(id: string) {
     try {
-        const { supabase } = await validateRequest('inventory.delete')
+        const { supabase, profile } = await validateRequest('inventory.delete')
 
         // Soft delete (marcar como inactivo)
         const { error } = await supabase
             .from("productos")
             .update({ activo: false })
             .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
 
         if (error) throw error
 
@@ -131,7 +138,7 @@ export async function deleteProduct(id: string) {
 
 export async function hardDeleteProduct(id: string) {
     try {
-        const { supabase } = await validateRequest('inventory.delete')
+        const { supabase, profile } = await validateRequest('inventory.delete')
 
         // Verificar si hay ventas
         const { count, error: countError } = await supabase
@@ -148,6 +155,7 @@ export async function hardDeleteProduct(id: string) {
             .from("productos")
             .delete()
             .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
 
         if (error) throw error
 
@@ -162,13 +170,14 @@ export async function hardDeleteProduct(id: string) {
 export async function adjustStock(id: string, delta: number) {
     try {
         // adjust_stock permite a admins ajustar manualmente
-        const { supabase } = await validateRequest('inventory.adjust_stock')
+        const { supabase, profile } = await validateRequest('inventory.adjust_stock')
 
         // Obtener stock actual
         const { data: product, error: fetchError } = await supabase
             .from("productos")
             .select("stock_actual")
             .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
             .single()
 
         if (fetchError) throw fetchError
@@ -179,6 +188,7 @@ export async function adjustStock(id: string, delta: number) {
             .from("productos")
             .update({ stock_actual: newStock })
             .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
 
         if (error) throw error
 
@@ -213,12 +223,13 @@ export async function createCategory(nombre: string) {
 
 export async function updateCategory(id: string, nombre: string) {
     try {
-        const { supabase } = await validateRequest('inventory.edit')
+        const { supabase, profile } = await validateRequest('inventory.edit')
 
         const { error } = await supabase
             .from("categorias")
             .update({ nombre })
             .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
 
         if (error) throw error
 
@@ -232,7 +243,7 @@ export async function updateCategory(id: string, nombre: string) {
 
 export async function deleteCategory(id: string) {
     try {
-        const { supabase } = await validateRequest('inventory.delete')
+        const { supabase, profile } = await validateRequest('inventory.delete')
 
         // Verificar si hay productos usando esta categoría
         const { count, error: countError } = await supabase
@@ -249,6 +260,7 @@ export async function deleteCategory(id: string) {
             .from("categorias")
             .delete()
             .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
 
         if (error) throw error
 

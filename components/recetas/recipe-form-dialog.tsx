@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner"
 import { Loader2, Plus, Trash2, Calculator, Info } from "lucide-react"
 import { upsertRecipe, createQuickIngredient, type RecipeFormData } from "@/actions/recipes"
+import { convertQuantity, getLineCost } from "@/lib/utils/units"
 
 interface Producto {
     id: string
@@ -24,10 +25,12 @@ interface Producto {
 
 interface IngredienteSeleccionado {
     ingrediente_id: string
-    cantidad: number
-    costo_unitario: number // Para cálculo local
-    unidad_medida: string
-    factor_conversion: number | null
+    cantidad: string // string para permitir escribir "0." o "12" sin resetear
+    costo_unitario: number // Precio por UNIDAD DE COMPRA (kg, L, un...)
+    unidad_medida_compra: string
+    unidad_medida_base: string | null
+    unidad_seleccionada: string
+    factor_conversion: number // Siempre >= 1
 }
 
 interface RecipeFormDialogProps {
@@ -74,15 +77,32 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                 setRendimiento(recipe.rendimiento.toString())
                 setIngredientes(
                     recipe.ingredientes.map((ing: any) => {
-                        const baseCost = ing.producto.factor_conversion
-                            ? Number(ing.producto.costo_unitario) / ing.producto.factor_conversion
-                            : Number(ing.producto.costo_unitario)
+                        const product = ing.producto
+                        const uComp = product.unidad_medida.toLowerCase()
+                        // Si la unidad es kg o L, el factor SIEMPRE debe ser 1000
+                        // (1 kg = 1000 g, 1 L = 1000 ml), ignorar valores incorrectos en BD
+                        const isMassOrVolume = uComp === "kg" || uComp === "l"
+                        let factor = isMassOrVolume ? 1000 : (product.factor_conversion || 1)
+                        const purchaseCost = product.costo_unitario ?? 0
+
+                        // Determinar la unidad mostrada y cantidad escalada
+                        let unidadMostrada = product.unidad_medida
+                        let cantidadFinal = Number(ing.cantidad) // Siempre en unidad de compra en DB
+
+                        // Si es < 1 y mass/volume, mostramos en gramos/ml para comodidad
+                        if ((uComp === "kg" || uComp === "l") && cantidadFinal < 1) {
+                            unidadMostrada = uComp === "kg" ? "g" : "ml"
+                            cantidadFinal = cantidadFinal * factor
+                        }
+
                         return {
                             ingrediente_id: ing.ingrediente_id,
-                            cantidad: Number(ing.cantidad),
-                            costo_unitario: baseCost,
-                            unidad_medida: ing.producto.unidad_medida_base || ing.producto.unidad_medida,
-                            factor_conversion: ing.producto.factor_conversion
+                            cantidad: parseFloat(cantidadFinal.toFixed(3)).toString(),
+                            costo_unitario: purchaseCost,
+                            unidad_medida_compra: product.unidad_medida,
+                            unidad_medida_base: product.unidad_medida_base || ((uComp === "kg") ? "g" : (uComp === "l" ? "ml" : null)),
+                            unidad_seleccionada: unidadMostrada,
+                            factor_conversion: factor
                         }
                     })
                 )
@@ -106,7 +126,6 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
             const product = products.find(p => p.id === productoId)
             if (product) {
                 // Podríamos buscar el margen actual del producto aquí
-                // Para ahora, asumiremos 0 o lo que venga en el array de productos si agregamos el campo
             }
         }
     }, [productoId, products, isEditing])
@@ -149,7 +168,16 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
 
     // Cálculos dinámicos
     const costoTotal = useMemo(() => {
-        return ingredientes.reduce((acc, ing) => acc + (ing.cantidad * ing.costo_unitario), 0)
+        return ingredientes.reduce((acc, ing) => {
+            const cantidadNum = parseFloat(ing.cantidad.replace(",", ".")) || 0
+            return acc + getLineCost({
+                cantidad: cantidadNum,
+                unidadSeleccionada: ing.unidad_seleccionada,
+                unidadCompra: ing.unidad_medida_compra,
+                factor: ing.factor_conversion,
+                costoCompra: ing.costo_unitario
+            })
+        }, 0)
     }, [ingredientes])
 
     const yieldNum = parseFloat(rendimiento) || 1
@@ -167,7 +195,15 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
         [products, productoId])
 
     const addIngredient = () => {
-        setIngredientes([...ingredientes, { ingrediente_id: "", cantidad: 0, costo_unitario: 0, unidad_medida: "", factor_conversion: null }])
+        setIngredientes([...ingredientes, {
+            ingrediente_id: "",
+            cantidad: "",
+            costo_unitario: 0,
+            unidad_medida_compra: "",
+            unidad_medida_base: null,
+            unidad_seleccionada: "",
+            factor_conversion: 1
+        }])
     }
 
     const removeIngredient = (index: number) => {
@@ -178,6 +214,7 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
         const newIngredientes = [...ingredientes]
         const current = newIngredientes[index]
         if (!current) return
+
         if (field === "ingrediente_id") {
             if (value === "NEW_INGREDIENT") {
                 setCreatingIndex(index)
@@ -185,17 +222,47 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
             }
             const product = products.find(p => p.id === value)
             if (product) {
-                const baseCost = product.factor_conversion
-                    ? (product.costo_unitario ?? 0) / product.factor_conversion
-                    : (product.costo_unitario ?? 0)
+                const uComp = product.unidad_medida.toLowerCase()
+                // Si la unidad es kg o L, el factor SIEMPRE debe ser 1000
+                const isMassOrVolume = uComp === "kg" || uComp === "l"
+                let factor = isMassOrVolume ? 1000 : (product.factor_conversion || 1)
+                const purchaseCost = product.costo_unitario ?? 0
+
                 newIngredientes[index] = {
                     ...current,
                     ingrediente_id: value as string,
-                    costo_unitario: baseCost,
-                    unidad_medida: product.unidad_medida_base || product.unidad_medida,
-                    factor_conversion: product.factor_conversion
+                    costo_unitario: purchaseCost,
+                    unidad_medida_compra: product.unidad_medida,
+                    unidad_medida_base: product.unidad_medida_base || ((uComp === "kg") ? "g" : (uComp === "l" ? "ml" : null)),
+                    unidad_seleccionada: product.unidad_medida,
+                    factor_conversion: factor
                 }
             }
+        } else if (field === "unidad_seleccionada") {
+            const oldValue = current.unidad_seleccionada
+            const newValue = value as string
+            const cantidadNum = parseFloat(current.cantidad.replace(",", ".")) || 0
+
+            const newCantidad = convertQuantity(
+                cantidadNum,
+                oldValue,
+                newValue,
+                current.factor_conversion
+            )
+
+            // Mostrar hasta 3 decimales pero sin ceros innecesarios
+            const cantidadStr = parseFloat(newCantidad.toFixed(3)).toString()
+
+            newIngredientes[index] = {
+                ...current,
+                unidad_seleccionada: newValue,
+                cantidad: cantidadStr
+            }
+            setIngredientes(newIngredientes)
+            return // ← evitar el setIngredientes duplicado al final
+        } else if (field === "cantidad") {
+            // Guardamos el string tal cual para que el input no resetee al escribir
+            newIngredientes[index] = { ...current, cantidad: value.toString() }
         } else {
             newIngredientes[index] = { ...current, [field]: value }
         }
@@ -215,17 +282,18 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
 
                 const newIngredientes = [...ingredientes]
                 const prev = newIngredientes[creatingIndex]
-                const baseCost = createdProduct.factor_conversion
-                    ? (createdProduct.costo_unitario ?? 0) / createdProduct.factor_conversion
-                    : (createdProduct.costo_unitario ?? 0)
+                const factor = createdProduct.factor_conversion || ((createdProduct.unidad_medida === "kg" || createdProduct.unidad_medida === "L") ? 1000 : 1)
+                const purchaseCost = createdProduct.costo_unitario ?? 0
 
                 newIngredientes[creatingIndex] = {
                     ...prev,
                     ingrediente_id: createdProduct.id,
-                    costo_unitario: baseCost,
-                    unidad_medida: createdProduct.unidad_medida_base || createdProduct.unidad_medida,
-                    factor_conversion: createdProduct.factor_conversion,
-                    cantidad: prev?.cantidad || 0
+                    costo_unitario: purchaseCost,
+                    unidad_medida_compra: createdProduct.unidad_medida,
+                    unidad_medida_base: createdProduct.unidad_medida_base,
+                    unidad_seleccionada: createdProduct.unidad_medida,
+                    factor_conversion: factor,
+                    cantidad: prev?.cantidad.toString() || ""
                 }
                 setIngredientes(newIngredientes)
                 toast.success("Ingrediente creado y seleccionado")
@@ -249,17 +317,29 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
         }
 
         setSubmitting(true)
+
+        const ingredientesNormalizados = ingredientes.map((ing, idx) => {
+            const cantidadFinal = convertQuantity(
+                ing.cantidad,
+                ing.unidad_seleccionada,
+                ing.unidad_medida_compra,
+                ing.factor_conversion
+            )
+
+            return {
+                ingrediente_id: ing.ingrediente_id,
+                cantidad: cantidadFinal,
+                orden: idx
+            }
+        })
+
         const data: RecipeFormData = {
             producto_id: productoId,
             nombre: nombre.trim(),
             descripcion: descripcion.trim() || null,
             rendimiento: yieldNum,
             activa: true,
-            ingredientes: ingredientes.map((ing, idx) => ({
-                ingrediente_id: ing.ingrediente_id,
-                cantidad: ing.cantidad,
-                orden: idx
-            })),
+            ingredientes: ingredientesNormalizados,
             margen_deseado: marginNum,
             actualizar_precio_venta: actualizarPrecio
         }
@@ -316,11 +396,10 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                             <div className="space-y-2">
                                 <Label>Rendimiento (unidades producidas) *</Label>
                                 <Input
-                                    type="number"
+                                    type="text"
+                                    inputMode="decimal"
                                     value={rendimiento}
-                                    onChange={e => setRendimiento(e.target.value)}
-                                    step="0.01"
-                                    min="0.01"
+                                    onChange={e => setRendimiento(e.target.value.replace(",", "."))}
                                     required
                                 />
                             </div>
@@ -361,23 +440,65 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                                         <div className="w-24">
                                             <Label className="text-[10px] uppercase text-muted-foreground ml-1">Cantidad</Label>
                                             <Input
-                                                type="number"
-                                                step="0.001"
+                                                type="text"
+                                                inputMode="decimal"
                                                 className="h-9"
                                                 value={ing.cantidad}
-                                                onChange={e => updateIngredient(index, "cantidad", parseFloat(e.target.value) || 0)}
+                                                onChange={e => updateIngredient(index, "cantidad", e.target.value)}
                                             />
                                         </div>
-                                        <div className="w-16">
+                                        <div className="w-24">
                                             <Label className="text-[10px] uppercase text-muted-foreground ml-1">Unid.</Label>
-                                            <div className="h-9 flex items-center px-1 text-sm bg-muted rounded-sm border truncate">
-                                                {ing.unidad_medida || "?"}
-                                            </div>
+                                            <Select
+                                                value={ing.unidad_seleccionada}
+                                                onValueChange={(val) => updateIngredient(index, "unidad_seleccionada", val)}
+                                                disabled={!ing.ingrediente_id}
+                                            >
+                                                <SelectTrigger className="h-9">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {/* Siempre mostrar la unidad de compra */}
+                                                    {ing.unidad_medida_compra && (
+                                                        <SelectItem value={ing.unidad_medida_compra}>
+                                                            {ing.unidad_medida_compra}
+                                                        </SelectItem>
+                                                    )}
+
+                                                    {/* Mostrar unidad base si es distinta */}
+                                                    {ing.unidad_medida_base && ing.unidad_medida_base !== ing.unidad_medida_compra && (
+                                                        <SelectItem value={ing.unidad_medida_base}>
+                                                            {ing.unidad_medida_base}
+                                                        </SelectItem>
+                                                    )}
+
+                                                    {/* Alternativas estándar (g para kg, ml para L) si no existe ya en unidad_medida_base */}
+                                                    {ing.unidad_medida_compra === "kg" && ing.unidad_medida_base !== "g" && (
+                                                        <SelectItem value="g">g</SelectItem>
+                                                    )}
+                                                    {ing.unidad_medida_compra === "L" && ing.unidad_medida_base !== "ml" && (
+                                                        <SelectItem value="ml">ml</SelectItem>
+                                                    )}
+
+                                                    {/* Fallback */}
+                                                    {!ing.unidad_medida_compra && !ing.unidad_medida_base && (
+                                                        <SelectItem value="?">?</SelectItem>
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
                                         <div className="w-24">
                                             <Label className="text-[10px] uppercase text-muted-foreground ml-1">Costo</Label>
                                             <div className="h-9 flex items-center px-2 text-sm font-medium">
-                                                ${(ing.cantidad * ing.costo_unitario).toLocaleString()}
+                                                ${Math.round(
+                                                    getLineCost({
+                                                        cantidad: parseFloat(ing.cantidad.replace(",", ".")) || 0,
+                                                        unidadSeleccionada: ing.unidad_seleccionada,
+                                                        unidadCompra: ing.unidad_medida_compra,
+                                                        factor: ing.factor_conversion,
+                                                        costoCompra: ing.costo_unitario
+                                                    })
+                                                ).toLocaleString()}
                                             </div>
                                         </div>
                                         <Button
@@ -422,12 +543,11 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                                 <Label className="text-xs">Margen de Ganancia (%)</Label>
                                 <div className="flex gap-2">
                                     <Input
-                                        type="number"
+                                        type="text"
+                                        inputMode="decimal"
                                         value={margenDeseado}
-                                        onChange={e => setMargenDeseado(e.target.value)}
+                                        onChange={e => setMargenDeseado(e.target.value.replace(",", "."))}
                                         className="h-8 w-20"
-                                        min="0"
-                                        max="99"
                                     />
                                     <div className="flex-1 text-right self-center">
                                         <span className="text-xs text-muted-foreground mr-2">Sugerido:</span>

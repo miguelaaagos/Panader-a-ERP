@@ -38,7 +38,7 @@ export async function crearCategoriaGasto(nombre: string, descripcion?: string) 
  */
 export async function getCategoriasGastos() {
     try {
-        const { supabase, profile } = await validateRequest()
+        const { supabase, profile } = await validateRequest('inventory.edit')
 
         const { data, error } = await supabase
             .from("categorias_gastos")
@@ -58,7 +58,7 @@ export async function getCategoriasGastos() {
  */
 export async function registrarGasto(data: z.infer<typeof GastoSchema>) {
     try {
-        const { supabase, profile } = await validateRequest()
+        const { supabase, profile } = await validateRequest('inventory.edit')
         const validated = GastoSchema.parse(data)
 
         const { data: result, error } = await supabase
@@ -96,7 +96,7 @@ export async function registrarGasto(data: z.infer<typeof GastoSchema>) {
  */
 export async function getGastos() {
     try {
-        const { supabase, profile } = await validateRequest()
+        const { supabase, profile } = await validateRequest('inventory.edit')
 
         const { data, error } = await supabase
             .from("gastos")

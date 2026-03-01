@@ -105,7 +105,19 @@ export async function getHistorialIngresos() {
  */
 export async function getDetallesIngreso(ingresoId: string) {
     try {
-        const { supabase } = await validateRequest('inventory.view')
+        const { supabase, profile } = await validateRequest('inventory.view')
+
+        // Seguridad: verificar que el ingreso existe y pertenece al tenant
+        const { data: ingresoCheck, error: checkError } = await supabase
+            .from("ingresos_inventario")
+            .select("id")
+            .eq("id", ingresoId)
+            .eq("tenant_id", profile.tenant_id)
+            .single()
+
+        if (checkError || !ingresoCheck) {
+            throw new Error("Ingreso no encontrado o acceso denegado")
+        }
 
         const { data, error } = await supabase
             .from("ingreso_inventario_detalles")

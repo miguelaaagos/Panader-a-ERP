@@ -3,9 +3,30 @@
 import { validateRequest } from "@/lib/server/auth"
 import { revalidatePath } from "next/cache"
 
+async function ensureShiftSessionAccess(sessionId: string) {
+    const { supabase, profile } = await validateRequest('shifts.manage')
+
+    let query = supabase
+        .from("arqueos_caja")
+        .select("id")
+        .eq("id", sessionId)
+        .eq("tenant_id", profile.tenant_id)
+
+    if (profile.rol !== "admin") {
+        query = query.eq("usuario_id", profile.id)
+    }
+
+    const { data, error } = await query.single()
+    if (error || !data) {
+        throw new Error("Turno no encontrado o acceso denegado")
+    }
+
+    return { supabase, profile }
+}
+
 export async function getCurrentCashSession() {
     try {
-        const { supabase, profile } = await validateRequest()
+        const { supabase, profile } = await validateRequest('shifts.manage')
 
         const { data, error } = await supabase
             .from("arqueos_caja")
@@ -25,7 +46,7 @@ export async function getCurrentCashSession() {
 
 export async function openCashSession(montoInicial: number, observaciones?: string) {
     try {
-        const { supabase, profile } = await validateRequest()
+        const { supabase, profile } = await validateRequest('shifts.manage')
 
         // 1. Verificar si ya hay una sesión abierta
         const res = await getCurrentCashSession()
@@ -57,7 +78,7 @@ export async function openCashSession(montoInicial: number, observaciones?: stri
 
 export async function closeCashSession(montoFinalReal: number, observaciones?: string) {
     try {
-        const { supabase, profile } = await validateRequest()
+        const { supabase, profile } = await validateRequest('shifts.manage')
 
         // 1. Obtener sesión actual
         const { session } = await getCurrentCashSession()
@@ -100,7 +121,7 @@ export async function closeCashSession(montoFinalReal: number, observaciones?: s
 
 export async function getSessionSummary(sessionId: string) {
     try {
-        const { supabase } = await validateRequest()
+        const { supabase } = await ensureShiftSessionAccess(sessionId)
 
         // Obtener totales por método de pago
         const { data, error } = await supabase
@@ -136,7 +157,7 @@ export async function getSessionSummary(sessionId: string) {
 
 export async function getRecentShiftSales(sessionId: string, limit = 5) {
     try {
-        const { supabase } = await validateRequest()
+        const { supabase } = await ensureShiftSessionAccess(sessionId)
 
         const { data, error } = await supabase
             .from("ventas")
@@ -155,7 +176,7 @@ export async function getRecentShiftSales(sessionId: string, limit = 5) {
 
 export async function getPastCashSessions(limit = 10) {
     try {
-        const { supabase, profile } = await validateRequest()
+        const { supabase, profile } = await validateRequest('shifts.manage')
 
         const { data, error } = await supabase
             .from("arqueos_caja")
