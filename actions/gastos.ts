@@ -84,7 +84,7 @@ export async function registrarGasto(data: z.infer<typeof GastoSchema>) {
         return { success: true, data: result }
     } catch (error: unknown) {
         if (error instanceof z.ZodError) {
-            return { success: false, error: error.errors.map((e) => e.message).join(", ") }
+            return { success: false, error: error.issues.map((e) => e.message).join(", ") }
         }
         return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
