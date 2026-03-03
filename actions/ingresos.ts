@@ -57,7 +57,7 @@ export async function registrarIngresoInventario(data: z.infer<typeof IngresoSch
         const errorMessage = error instanceof Error
             ? error.message
             : typeof error === 'object' && error !== null && 'message' in error
-                ? error.message
+                ? String((error as Record<string, unknown>).message)
                 : String(error)
         return { success: false, error: errorMessage }
     }

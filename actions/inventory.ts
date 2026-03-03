@@ -46,7 +46,7 @@ export async function createProduct(data: ProductFormData) {
         const errorMessage = error instanceof Error
             ? error.message
             : typeof error === 'object' && error !== null && 'message' in error
-                ? error.message
+                ? String((error as Record<string, unknown>).message)
                 : String(error);
         return { success: false, error: errorMessage }
     }
@@ -106,7 +106,7 @@ export async function updateProduct(id: string, data: ProductFormData) {
         const errorMessage = error instanceof Error
             ? error.message
             : typeof error === 'object' && error !== null && 'message' in error
-                ? error.message
+                ? String((error as Record<string, unknown>).message)
                 : String(error);
         return { success: false, error: errorMessage }
     }
