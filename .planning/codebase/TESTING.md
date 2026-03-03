@@ -6,16 +6,20 @@
 
 El proyecto prioriza **velocidad de desarrollo**. El testing manual es válido y preferido para la mayoría de los cambios. Playwright se reserva para flujos que involucran dinero o stock — errores ahí tienen impacto real en el negocio.
 
-## Framework
+## Frameworks
 
-**E2E:**
-- **Playwright** — configurado en `playwright.config.ts`
+**Unit — Vitest** (`vitest.config.ts`, env jsdom, globals: true)
+- `pnpm test` → corre todos los unit tests
+- Archivos: `tests/*.test.ts`, `lib/**/__tests__/*.test.ts`
+- Tests activos: `financial.test.ts`, `erp-store.test.ts`, `unit-conversions.test.ts`
+- Excluidos del runner: `health.test.ts`, `ingresos.test.ts`, archivos `.spec.ts`
+- Mock de `sonner` para toast en tests de store
+
+**E2E — Playwright** (`playwright.config.ts`)
+- `pnpm exec playwright test --project=chromium`
 - Sesión auth persistida en `playwright/.auth/user.json`
 - Atributo de test: `data-testid`
-
-**Unit (si se necesita):**
-- Vitest — para lógica de negocio matemática (cálculos de costos, totales)
-- No hay setup activo; agregar solo si la lógica lo justifica
+- Local: solo Chromium; CI: Chromium + Firefox + Mobile
 
 ## ¿Cuándo escribir un test?
 
@@ -44,30 +48,32 @@ El proyecto prioriza **velocidad de desarrollo**. El testing manual es válido y
 - Refactors de componentes visuales
 - Ajustes de tipografía o responsividad
 
-## Cómo correr los tests
+## Comandos
 
 ```bash
-# Local: solo Chromium, reporter de lista (rápido)
+# Unit tests (Vitest)
+pnpm test                    # todos los unit tests
+pnpm test financial          # filtrar por nombre
+
+# E2E (Playwright) — flujos críticos
 pnpm exec playwright test --project=chromium
-
-# Con UI del browser (debug)
-pnpm exec playwright test --project=chromium --headed
-
-# Un test específico
+pnpm exec playwright test --project=chromium --headed   # con browser visible
 pnpm exec playwright test tests/auth.e2e.ts --project=chromium
-
-# Modo UI de Playwright (interactivo)
-pnpm exec playwright test --ui
+pnpm exec playwright test --ui                          # modo interactivo
 ```
 
 ## Estructura de tests
 
 ```
 tests/
-├── auth.setup.ts          # Setup de sesión (corre primero)
-├── auth.e2e.ts            # Login, logout, reset password
-├── pos-checkout.e2e.ts    # Flujo completo de venta POS
-└── production.e2e.ts      # Crear lote de producción
+├── financial.test.ts          # Cálculos financieros (IVA, costos fijos/variables)
+├── erp-store.test.ts          # Zustand ERP store (carrito, totales)
+├── health.test.ts             # Ignorado en vitest (es Playwright)
+├── ingresos.test.ts           # Ignorado en vitest (es Playwright)
+└── (futuros .e2e.ts)          # Flujos críticos E2E
+
+lib/utils/__tests__/
+└── unit-conversions.test.ts   # Conversión kg↔g en recetas/inventario
 ```
 
 ## Convenciones

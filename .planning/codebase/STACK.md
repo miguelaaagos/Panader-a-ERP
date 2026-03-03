@@ -31,7 +31,11 @@
 - Sonner — toast notifications
 
 **Testing:**
-- Playwright — E2E para flujos críticos únicamente
+- **Vitest** — unit tests para lógica de negocio (`vitest.config.ts`, env jsdom)
+  - `pnpm test` → `vitest run`
+  - Tests en `tests/*.test.ts` y `lib/**/__tests__/*.test.ts`
+  - Excluye `.spec.ts` (son Playwright) y tests marcados como ignorados
+- **Playwright** — E2E para flujos críticos únicamente
   - Local: solo Chromium (`playwright.config.ts`)
   - CI: Chromium + Firefox + Mobile Chrome
 

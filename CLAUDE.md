@@ -27,20 +27,18 @@ Package manager: **pnpm**
 
 ## Testing — filosofía
 
-**Playwright solo para flujos críticos de negocio**, no para cambios de UI:
+**Vitest** para lógica de negocio. **Playwright** solo para flujos críticos. Manual para todo lo demás.
 
-✅ Usar Playwright para:
-- Auth completo (login → sesión → logout)
-- Checkout POS (carrito → cobro → descuento de stock)
-- Cualquier flujo que mueva dinero o stock
+| Tipo | Cuándo | Comando |
+|---|---|---|
+| Vitest unit | Lógica matemática, store, conversiones | `pnpm test` |
+| Playwright E2E | Auth, checkout POS, flujos con dinero/stock | `pnpm exec playwright test --project=chromium` |
+| Manual | UI, estilos, navegación, features en desarrollo | — |
 
 ❌ No Playwright para:
 - Cambios visuales, estilos, colores
 - Navegación sin mutations
-- Componentes aislados
 - Features nuevas durante desarrollo activo
-
-Para el resto: testing manual es suficiente y más rápido.
 
 ## Arquitectura de carpetas (real)
 
@@ -63,6 +61,7 @@ proxy.ts       → Session refresh (raíz del proyecto)
 pnpm dev              # Dev server (Turbopack)
 pnpm typecheck        # tsc --noEmit
 pnpm lint             # eslint .
+pnpm test                                       # Vitest unit tests
 pnpm exec playwright test --project=chromium   # E2E críticos
 pnpm exec playwright test --project=chromium --headed  # con UI
 ```
