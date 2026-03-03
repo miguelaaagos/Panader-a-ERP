@@ -1,81 +1,94 @@
-# Testing Patterns
+# Testing Strategy
 
-**Analysis Date:** 2024-07-30
+**Updated:** 2026-03-03
 
-## Test Framework
+## Filosofía: velocidad de desarrollo > cobertura total
 
-**Runner:**
-- **Not detected.** No testing framework like Jest, Vitest, or Cypress is present in `package.json` dependencies.
+El proyecto prioriza **velocidad de desarrollo**. El testing manual es válido y preferido para la mayoría de los cambios. Playwright se reserva para flujos que involucran dinero o stock — errores ahí tienen impacto real en el negocio.
 
-**Assertion Library:**
-- **Not detected.**
+## Framework
 
-**Run Commands:**
-- **Not detected.** There are no `test` scripts in `package.json`.
+**E2E:**
+- **Playwright** — configurado en `playwright.config.ts`
+- Sesión auth persistida en `playwright/.auth/user.json`
+- Atributo de test: `data-testid`
 
-## Test File Organization
+**Unit (si se necesita):**
+- Vitest — para lógica de negocio matemática (cálculos de costos, totales)
+- No hay setup activo; agregar solo si la lógica lo justifica
 
-**Location:**
-- **Not applicable.** No test files were found in the codebase.
+## ¿Cuándo escribir un test?
 
-**Naming:**
-- **Not applicable.** No files with `*.test.tsx?` or `*.spec.tsx?` patterns were found.
+### ✅ SÍ — Playwright E2E
 
-**Structure:**
-- **Not applicable.**
+| Flujo | Por qué |
+|---|---|
+| Login → sesión → logout | Auth roto = nadie entra |
+| Checkout POS completo | Mueve dinero y descuenta stock |
+| Crear producción con receta | Descuenta insumos del inventario |
+| Reset de contraseña | Flujo PKCE con Supabase |
 
-## Test Structure
+### ✅ SÍ — Vitest unitario
 
-- **Not applicable.** There are no tests to analyze for structure.
+| Lógica | Por qué |
+|---|---|
+| Cálculo de total con descuento | Error matemático = pérdida de dinero |
+| Generación de correlativo | Debe ser único y secuencial |
+| Validación de Zod schemas | Contrato de datos del negocio |
 
-## Mocking
+### ❌ NO — Testeo manual es suficiente
 
-**Framework:**
-- **Not detected.**
+- Cambios de UI, layout, colores, dark mode
+- Navegación entre páginas sin mutations
+- Nuevas features durante desarrollo activo
+- Refactors de componentes visuales
+- Ajustes de tipografía o responsividad
 
-**Patterns:**
-- **Not applicable.**
+## Cómo correr los tests
 
-**What to Mock:**
-- **Not applicable.**
+```bash
+# Local: solo Chromium, reporter de lista (rápido)
+pnpm exec playwright test --project=chromium
 
-**What NOT to Mock:**
-- **Not applicable.**
+# Con UI del browser (debug)
+pnpm exec playwright test --project=chromium --headed
 
-## Fixtures and Factories
+# Un test específico
+pnpm exec playwright test tests/auth.e2e.ts --project=chromium
 
-- **Not applicable.**
+# Modo UI de Playwright (interactivo)
+pnpm exec playwright test --ui
+```
 
-## Coverage
+## Estructura de tests
 
-**Requirements:**
-- **None enforced.**
+```
+tests/
+├── auth.setup.ts          # Setup de sesión (corre primero)
+├── auth.e2e.ts            # Login, logout, reset password
+├── pos-checkout.e2e.ts    # Flujo completo de venta POS
+└── production.e2e.ts      # Crear lote de producción
+```
 
-**View Coverage:**
-- **Not applicable.**
+## Convenciones
 
-## Test Types
+```typescript
+// Usar data-testid en elementos interactivos críticos
+<button data-testid="btn-checkout">Cobrar</button>
+<input data-testid="input-product-qty" />
 
-**Unit Tests:**
-- **Not implemented.** There is no infrastructure or existing pattern for unit testing components, hooks, or utility functions.
+// Web-first assertions (no esperas manuales)
+await expect(page.getByTestId('toast-success')).toBeVisible()
 
-**Integration Tests:**
-- **Not implemented.** There is no infrastructure for testing how different parts of the application work together.
+// Reutilizar sesión persistida — no loguearse en cada test
+// El archivo playwright/.auth/user.json lo maneja auth.setup.ts
+```
 
-**E2E Tests:**
-- **Not implemented.** No end-to-end testing framework like Cypress or Playwright is configured.
+## CI/CD
 
-## Overall Assessment
-
-The project currently has **no automated testing strategy**. There is no testing framework, no test files, and no scripts for running tests.
-
-**Recommendation:**
-To improve code quality and reduce regressions, a testing strategy should be implemented. A good starting point would be:
-1.  **Introduce a testing framework:** `Vitest` is a modern and fast choice that integrates well with Vite-based projects like Next.js. `Jest` is also a robust and popular option.
-2.  **Add a rendering library:** `@testing-library/react` is the standard for testing React components.
-3.  **Establish a convention:** Decide where test files will live (e.g., co-located with components) and how they will be named (e.g., `component.test.tsx`).
-4.  **Start with critical user paths:** Write unit and integration tests for core features like authentication, POS cart logic (`use-pos-store`), and form submissions.
+En CI (`CI=true`), Playwright corre en Chromium + Firefox + Mobile Chrome.
+Local solo corre Chromium para ser rápido.
 
 ---
 
-*Testing analysis: 2024-07-30*
+*Testing strategy: 2026-03-03*

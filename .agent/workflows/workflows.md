@@ -1,6 +1,170 @@
 # Common Development Workflows
 
-Estos workflows son prompts guardados que puedes invocar con `/workflow-name` en Antigravity.
+Workflows para Antigravity (`/nombre`) y Claude Code. Los nuevos workflows relevantes para este ERP están al inicio.
+
+---
+
+## /audit-performance
+
+Audita una ruta específica por problemas de performance y cold starts.
+
+```
+Voy a auditar la performance de la ruta indicada. Verificaré:
+
+1. ¿La ruta tiene `export const dynamic = 'force-static'` donde corresponde?
+2. ¿Las queries usan `"use cache"` con `cacheTag()` y `cacheLife()`?
+3. ¿Hay Suspense boundaries para datos lentos?
+4. ¿TanStack Query tiene `staleTime` configurado (no 0)?
+5. ¿Los Skeleton components están implementados?
+6. ¿Las imágenes usan `next/image`?
+
+Dame el path de la ruta a auditar y compartire recomendaciones específicas.
+```
+
+---
+
+## /fix-cold-start
+
+Aplica estrategias de mitigación de cold starts en Vercel.
+
+```
+Voy a aplicar las estrategias de la skill `performance` para reducir el impacto de cold starts:
+
+1. Agregar `"use cache"` a las queries del dashboard y catálogos
+2. Configurar `cacheLife('minutes')` según criticidad del dato
+3. Agregar `cacheTag()` para invalidación granular
+4. Crear Suspense boundaries en páginas con datos lentos
+5. Verificar `staleTime` en TanStack Query
+6. Opcionalmente: crear endpoint `/api/health` para warm-up externo
+
+¿En qué ruta o módulo quieres empezar?
+```
+
+---
+
+## /create-feature
+
+Crea una feature CRUD completa para el ERP.
+
+```
+Voy a crear una feature CRUD completa. Necesito que me digas:
+1. Nombre de la entidad (ej: "proveedor", "categoría")
+2. Campos principales
+3. ¿Pertenece a un tenant? (casi siempre sí)
+
+Crearé:
+- Schema SQL con RLS por tenant_id
+- Zod schema para validación
+- TypeScript types desde database.types.ts
+- Server Actions (create, update, delete) en actions/
+- Server Component para listar con "use cache"
+- Client Component para formulario con toast de feedback
+- Page que integra todo con Suspense
+
+Usaré el patrón de la skill domain-erp para filtros de tenant.
+```
+
+---
+
+## /create-rls
+
+Crea políticas RLS para una tabla nueva.
+
+```
+Voy a crear políticas RLS para tu tabla. Necesito:
+
+1. Nombre de la tabla
+2. Columna de tenant (normalmente `tenant_id` = `auth.uid()`)
+3. Operaciones necesarias (SELECT, INSERT, UPDATE, DELETE)
+
+Crearé:
+- `ALTER TABLE ... ENABLE ROW LEVEL SECURITY`
+- Política de aislamiento por tenant con `(select auth.uid())`
+- Índice en `tenant_id` para performance
+- Ejemplo de query del cliente con filtro
+
+Dame los detalles.
+```
+
+---
+
+## /debug-auth
+
+Debuggea problemas de autenticación.
+
+```
+Voy a debuggear tu problema de auth. Verificaré:
+
+1. ¿Usas `@supabase/ssr` (no auth-helpers)?
+2. ¿`proxy.ts` existe en la raíz y exporta `proxy`?
+3. ¿Estás usando `getClaims()` y no `getSession()`?
+4. ¿Las cookies usan `getAll()/setAll()` (no get/set individuales)?
+5. ¿Variables de entorno con el formato nuevo (PUBLISHABLE_KEY)?
+
+Comparte el error o síntoma y verifico qué está mal.
+```
+
+---
+
+## /generate-types
+
+Regenera tipos TypeScript desde Supabase.
+
+```
+Voy a regenerar los tipos de Supabase:
+
+1. ¿Cuál es tu PROJECT_ID? (ej: abcdefghijklmnop)
+
+2. Ejecutaré:
+npx supabase gen types typescript --project-id "PROJECT_ID" > types/database.types.ts
+
+3. Verificaré que los helpers existen en types/index.ts:
+- Tables<T> para rows
+- Insertable<T> para inserts
+- Updatable<T> para updates
+
+¿Listo?
+```
+
+---
+
+## /review-code
+
+Revisa código antes de hacer commit.
+
+```
+Voy a revisar tu código contra el checklist del stack:
+
+✅ Verificando:
+1. No imports de @supabase/auth-helpers-nextjs
+2. No uso de getSession() en servidor
+3. Todos params/cookies/headers tienen await
+4. No hay middleware.ts (debe ser proxy.ts)
+5. TypeScript strict (no 'any')
+6. Server Actions tienen 'use server'
+7. Client Components necesarios tienen 'use client'
+8. Validación con Zod en formularios
+9. Cache tags en queries frecuentes
+10. Toast de feedback en mutaciones
+
+Ejecuta:
+pnpm typecheck && pnpm lint
+
+Y comparte el output.
+```
+
+---
+
+## /sync-docs
+
+Sincroniza README.md y TODO.md tras completar un hito.
+
+```
+Actualizaré README.md y TODO.md:
+1. Verificar TODO.md por tareas pendientes o completadas
+2. Actualizar README.md con el hito completado
+3. Reflejar el cambio en TODO.md
+```
 
 ---
 

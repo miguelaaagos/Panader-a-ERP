@@ -1,76 +1,80 @@
 # Technology Stack
 
-**Analysis Date:** 2025-02-27
+**Analysis Date:** 2026-03-03
 
 ## Languages
 
 **Primary:**
-- TypeScript 5.x - Throughout the entire codebase (`tsconfig.json`, `package.json`).
+- TypeScript 5.9.3 — modo estricto en todo el codebase
 
 ## Runtime
 
 **Environment:**
-- Node.js (implicitly via Next.js 15)
-- Next.js 15.3.1 - Web framework
+- Node.js 18+
+- Next.js 16.1.6 — App Router (NO Pages Router)
 
 **Package Manager:**
-- npm
-- Lockfile: `package-lock.json` present
+- **pnpm** (lockfile: `pnpm-lock.yaml`)
 
 ## Frameworks
 
 **Core:**
-- Next.js 15 - Main application framework using App Router (`app/`).
-- React 19 - UI library.
-- Refine 5.x - Internal CRUD and CRM framework (`@refinedev/core`, `@refinedev/nextjs-router`, `@refinedev/supabase`).
+- Next.js 16.1.6 — framework principal, App Router
+- React 19.2.4 — UI library con Server Components
+- TanStack Query v5 — data fetching y cache en cliente
+- Zustand 5.x — estado global del POS (carrito)
+
+**UI:**
+- ShadCN UI — componentes sobre Radix UI
+- Tailwind CSS v3.4 — utility-first (`tailwind.config.ts`)
+- Recharts 3.x — gráficos del dashboard
+- Sonner — toast notifications
 
 **Testing:**
-- Vitest 4.0.18 - Test runner (`vitest.config.ts`).
-- React Testing Library 16.3.2 - UI testing.
-- JSDOM - Browser environment simulation for tests.
+- Playwright — E2E para flujos críticos únicamente
+  - Local: solo Chromium (`playwright.config.ts`)
+  - CI: Chromium + Firefox + Mobile Chrome
 
 **Build/Dev:**
-- Tailwind CSS 3.4.1 - Styling framework.
-- PostCSS - CSS transformation.
-- Autoprefixer - CSS vendor prefixing.
-- ESLint - Linting (`eslint.config.mjs`).
+- Turbopack — bundler por defecto en dev
+- ESLint — linting (`eslint.config.mjs`, flat config format)
 
 ## Key Dependencies
 
 **Critical:**
-- Supabase SSR - Authentication and database connection handling (`@supabase/ssr`, `@supabase/supabase-js`).
-- Radix UI - Primitive UI components (`@radix-ui/react-*`).
-- Zustand 5.0.11 - State management (`hooks/use-pos-store.ts`).
-- React Hook Form 7.x - Form management (`package.json`).
-- Zod 4.x - Schema validation (`actions/sales.ts`).
+- `@supabase/ssr` — auth SSR y clientes de Supabase
+- `@supabase/supabase-js` — cliente JS
+- `zod` v4.x — validación de formularios y Server Actions
+- `react-hook-form` v7.x — manejo de formularios
 
 **Infrastructure:**
-- Lucide React - Iconography.
-- Recharts 3.7.0 - Data visualization and charts (`components/dashboard/`).
-- Sonner - Toast notifications.
-- Date-fns - Date manipulation.
+- `lucide-react` — iconografía
+- `date-fns` — manipulación de fechas
+- `@radix-ui/react-*` — primitivos UI (via ShadCN)
 
 ## Configuration
 
 **Environment:**
-- Managed via `.env` (seen in `.env.example`).
-- Required: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=   # formato nuevo (2025)
+SUPABASE_SECRET_KEY=                    # solo server-side
+```
 
 **Build:**
-- `next.config.ts` - Configures Next.js behavior (note: currently set to ignore TS/ESLint errors during build).
-- `tsconfig.json` - TypeScript configuration with path alias `@/*` pointing to root.
-- `tailwind.config.ts` - Tailwind CSS configuration.
+- `next.config.ts` — `cacheComponents: true` para habilitar `"use cache"`
+- `tsconfig.json` — strict mode, path alias `@/*` → raíz
+- `proxy.ts` — session refresh de Supabase (reemplaza `middleware.ts`)
 
-## Platform Requirements
-
-**Development:**
-- Node.js 18+ (typical for Next.js 15).
-- Access to a Supabase project.
+## Platform
 
 **Production:**
-- Deployment target likely Vercel or similar Next.js-compatible hosting.
-- Requires Supabase instance for DB and Auth.
+- Vercel (panader-a-erp-b37p.vercel.app) — plan Hobby
+- Supabase — PostgreSQL + Auth + RLS
+
+**Nota cold starts:** El plan Hobby de Vercel hiberna funciones tras ~5 min de inactividad.
+Ver `.agent/skills/performance/SKILL.md` para estrategias de mitigación.
 
 ---
 
-*Stack analysis: 2025-02-27*
+*Stack actualizado: 2026-03-03*
