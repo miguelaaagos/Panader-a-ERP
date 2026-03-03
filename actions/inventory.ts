@@ -271,7 +271,7 @@ export async function getCategories() {
 
         const { data, error } = await supabase
             .from("categorias")
-            .select("*")
+            .select("id, nombre")
             .eq("tenant_id", profile.tenant_id)
             .order("nombre", { ascending: true })
 

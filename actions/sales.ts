@@ -27,14 +27,14 @@ export type SaleFormData = z.infer<typeof saleSchema>
 
 // Replace legacy checkAuth with validateRequest inside functions.
 
-export async function getProductsForPOS(tenant_id: string) {
+export async function getProductsForPOS() {
     try {
         const { supabase, profile } = await validateRequest('sales.create')
 
         const { data, error } = await supabase
             .from("productos")
-            .select("*")
-            .eq("tenant_id", tenant_id)
+            .select("id, nombre, precio_venta, stock_actual, unidad_medida, categoria_id, es_pesable")
+            .eq("tenant_id", profile.tenant_id)
             .eq("activo", true)
             .eq("mostrar_en_pos", true)
             .order("nombre", { ascending: true })

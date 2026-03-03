@@ -6,7 +6,6 @@ import { CartPanel } from "./cart-panel"
 import { CheckoutDialog, CheckoutData } from "./checkout-dialog"
 import { SuccessModal } from "./success-modal"
 import { getProductsForPOS, createSale } from "@/actions/sales"
-import { getCurrentUser } from "@/actions/auth"
 import { getCategories } from "@/actions/inventory"
 import { useERPStore } from '@/hooks/use-erp-store'
 import { cn } from "@/lib/utils"
@@ -48,7 +47,6 @@ export function POSContainer() {
     const [lastTransaction, setLastTransaction] = useState<TransactionRecord | null>(null)
     const [activeSession, setActiveSession] = useState<CashSession | null>(null)
     const [weighingProduct, setWeighingProduct] = useState<Product | null>(null)
-    const [tenantId, setTenantId] = useState<string | null>(null)
     const [activeTab, setActiveTab] = useState("turno")
     const [isMobileProductsOpen, setIsMobileProductsOpen] = useState(true)
 
@@ -60,16 +58,7 @@ export function POSContainer() {
         const init = async () => {
             setLoading(true)
             try {
-                const currentUser = await getCurrentUser()
-                if (currentUser) {
-                    const tid = currentUser.profile.tenant_id
-                    setTenantId(tid)
-                    // Ejecutar fetchSession primero para reducir el parpadeo de la advertencia de caja
-                    await fetchSession()
-                    await Promise.all([fetchProducts(tid), fetchCategories()])
-                } else {
-                    await Promise.all([fetchCategories(), fetchSession()])
-                }
+                await Promise.all([fetchProducts(), fetchCategories(), fetchSession()])
             } finally {
                 setLoading(false)
             }
@@ -91,8 +80,8 @@ export function POSContainer() {
         }
     }
 
-    const fetchProducts = async (tid: string) => {
-        const result = await getProductsForPOS(tid)
+    const fetchProducts = async () => {
+        const result = await getProductsForPOS()
         if (result.success && result.data) {
             const sanitizedProducts: Product[] = result.data.map(p => ({
                 id: p.id,
@@ -142,7 +131,7 @@ export function POSContainer() {
                 setSuccessModalOpen(true)
                 clearCart()
                 setIsCheckoutOpen(false)
-                if (tenantId) fetchProducts(tenantId) // Refrescar stock
+                fetchProducts() // Refrescar stock
             } else {
                 toast.error("Error en la venta: " + result.error)
             }
