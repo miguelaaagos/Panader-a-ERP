@@ -82,7 +82,6 @@ export async function createSale(data: SaleFormData) {
         })
 
         if (rpcError) {
-            console.error("RPC Sale Error:", rpcError)
             return { success: false, error: rpcError.message }
         }
 
@@ -94,7 +93,6 @@ export async function createSale(data: SaleFormData) {
         return { success: true, saleId }
 
     } catch (error: unknown) {
-        console.error("Critical Error in createSale:", error)
         return { success: false, error: error instanceof Error ? error.message : "Error desconocido en el servidor" }
     }
 }
@@ -172,7 +170,6 @@ export async function anularVenta(id: string) {
             })
 
             if (stockError) {
-                console.error(`Error restoring stock for ${detail.producto_id}:`, stockError)
                 throw new Error(`Error al restaurar stock: ${stockError.message}`)
             }
         }
@@ -183,7 +180,6 @@ export async function anularVenta(id: string) {
 
         return { success: true }
     } catch (error: unknown) {
-        console.error("Error anularVenta:", error)
         return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }

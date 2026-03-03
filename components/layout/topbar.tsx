@@ -1,13 +1,16 @@
 "use client";
 
-import { useGetIdentity } from "@refinedev/core";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { MobileSidebar } from "./mobile-sidebar";
 import Link from "next/link";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 export function Topbar() {
-    const { data: user } = useGetIdentity<{ name: string; email: string; avatar_url?: string }>();
+    const { data: currentUser } = useCurrentUser();
+    const user = currentUser
+        ? { name: currentUser.profile.nombre_completo, email: currentUser.profile.email, avatar_url: undefined }
+        : null;
 
     return (
         <header className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10 w-full flex items-center justify-between px-6 gap-4">

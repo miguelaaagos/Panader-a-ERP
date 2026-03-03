@@ -88,7 +88,6 @@ export async function createUser(data: UserData) {
         revalidatePath("/dashboard/usuarios")
         return { success: true }
     } catch (error: unknown) {
-        console.error("Error creating user:", error)
         return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }

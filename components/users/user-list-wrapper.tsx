@@ -14,7 +14,6 @@ export async function UserListWrapper() {
         .order("created_at", { ascending: false })
 
     if (error) {
-        console.error("Error loading profiles:", error)
         return <div className="text-red-500">Error cargando usuarios</div>
     }
 

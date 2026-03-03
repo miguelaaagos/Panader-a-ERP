@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { getRecentSales, anularVenta } from "@/actions/sales"
-import { getSession } from "@/actions/auth"
+import { getCurrentUser } from "@/actions/auth"
 import { SalesList } from "@/components/erp/sales-list"
 import { RoleGuard } from "@/components/auth/RoleGuard"
 import { FileText, Search, RefreshCcw, Download } from "lucide-react"
@@ -24,10 +24,10 @@ export default function VentasPage() {
 
     useEffect(() => {
         const init = async () => {
-            const sessionResult = await getSession()
-            if (sessionResult.success && sessionResult.profile) {
-                setTenantId(sessionResult.profile.tenant_id)
-                fetchSales(sessionResult.profile.tenant_id)
+            const currentUser = await getCurrentUser()
+            if (currentUser) {
+                setTenantId(currentUser.profile.tenant_id)
+                fetchSales(currentUser.profile.tenant_id)
             } else {
                 setLoading(false)
             }

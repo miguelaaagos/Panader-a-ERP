@@ -6,7 +6,7 @@ import { CartPanel } from "./cart-panel"
 import { CheckoutDialog, CheckoutData } from "./checkout-dialog"
 import { SuccessModal } from "./success-modal"
 import { getProductsForPOS, createSale } from "@/actions/sales"
-import { getSession } from "@/actions/auth"
+import { getCurrentUser } from "@/actions/auth"
 import { getCategories } from "@/actions/inventory"
 import { useERPStore } from '@/hooks/use-erp-store'
 import { cn } from "@/lib/utils"
@@ -60,9 +60,9 @@ export function POSContainer() {
         const init = async () => {
             setLoading(true)
             try {
-                const sessionResult = await getSession()
-                if (sessionResult.success && sessionResult.profile) {
-                    const tid = sessionResult.profile.tenant_id
+                const currentUser = await getCurrentUser()
+                if (currentUser) {
+                    const tid = currentUser.profile.tenant_id
                     setTenantId(tid)
                     // Ejecutar fetchSession primero para reducir el parpadeo de la advertencia de caja
                     await fetchSession()
@@ -144,11 +144,9 @@ export function POSContainer() {
                 setIsCheckoutOpen(false)
                 if (tenantId) fetchProducts(tenantId) // Refrescar stock
             } else {
-                console.error("Sale error result:", result.error)
                 toast.error("Error en la venta: " + result.error)
             }
         } catch (error: unknown) {
-            console.error("Checkout crash, saving offline:", error)
 
             // Si hay un error de red o similar, guardamos en la cola offline
             const offlineData = {

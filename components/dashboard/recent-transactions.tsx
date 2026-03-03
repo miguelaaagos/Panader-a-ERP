@@ -30,7 +30,6 @@ export function RecentTransactions() {
             if (error) throw error
             setTransactions(data || [])
         } catch (error) {
-            console.error("Error loading transactions:", error)
         }
     }, [supabase])
 

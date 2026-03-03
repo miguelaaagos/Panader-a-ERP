@@ -62,7 +62,6 @@ export function BakeryStats() {
                 stockCritico
             });
         } catch (error) {
-            console.error("Error loading stats:", error);
         } finally {
             setLoading(false);
         }

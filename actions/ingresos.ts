@@ -46,7 +46,6 @@ export async function registrarIngresoInventario(data: z.infer<typeof IngresoSch
         })
 
         if (error) {
-            console.error("Error from RPC:", error)
             throw new Error(error.message)
         }
 
@@ -54,8 +53,7 @@ export async function registrarIngresoInventario(data: z.infer<typeof IngresoSch
         revalidatePath("/dashboard/inventario/ingresos")
 
         return { success: true, data: result }
-    } catch (error: any) {
-        console.error("Error registrando ingreso de inventario:", error)
+    } catch (error: unknown) {
         const errorMessage = error instanceof Error
             ? error.message
             : typeof error === 'object' && error !== null && 'message' in error
@@ -94,7 +92,7 @@ export async function getHistorialIngresos() {
         if (error) throw error
 
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error)
         return { success: false, error: errorMessage }
     }
@@ -136,7 +134,7 @@ export async function getDetallesIngreso(ingresoId: string) {
         if (error) throw error
 
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error)
         return { success: false, error: errorMessage }
     }

@@ -77,7 +77,6 @@ export function ProductionPreviewDialog({ open, onOpenChange, order, onConfirm, 
                 setInsufficientStock(hasInsufficient)
             }
         } catch (error) {
-            console.error(error)
         } finally {
             setLoading(false)
         }

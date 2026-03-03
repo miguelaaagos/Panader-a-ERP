@@ -37,7 +37,6 @@ export function DeleteProductDialog({ open, onOpenChange, producto, onSuccess }:
 
             setHasVentas((data?.length || 0) > 0)
         } catch (error: any) {
-            console.error("Error checking ventas:", JSON.stringify(error, null, 2))
         } finally {
             setCheckingVentas(false)
         }
@@ -58,7 +57,6 @@ export function DeleteProductDialog({ open, onOpenChange, producto, onSuccess }:
             onSuccess()
             onOpenChange(false)
         } catch (error: any) {
-            console.error("Error deleting product:", error)
             toast.error("Error al eliminar producto", {
                 description: error.message
             })
@@ -84,7 +82,6 @@ export function DeleteProductDialog({ open, onOpenChange, producto, onSuccess }:
             onSuccess()
             onOpenChange(false)
         } catch (error: any) {
-            console.error("Error deactivating product:", error)
             toast.error("Error al desactivar producto", {
                 description: error.message
             })

@@ -167,9 +167,8 @@ export async function upsertRecipe(data: RecipeFormData, recipeId?: string) {
         revalidatePath("/dashboard/inventario")
         return { success: true, id: currentRecipeId }
 
-    } catch (error: any) {
-        console.error("Error in upsertRecipe:", error)
-        return { success: false, error: error?.message || String(error) }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -201,9 +200,8 @@ export async function recalculateRecipesUsingIngredient(ingredienteId: string) {
 
         revalidatePath("/dashboard/recetas")
         return { success: true, count: uniqueRecipeIds.length }
-    } catch (error: any) {
-        console.error("Error recalculating recipes:", error)
-        return { success: false, error: error?.message || String(error) }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -297,8 +295,8 @@ export async function getRecipes() {
 
         if (error) throw error
         return { success: true, data }
-    } catch (error: any) {
-        return { success: false, error: error?.message || String(error) }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -323,8 +321,8 @@ export async function getRecipeDetail(id: string) {
 
         if (error) throw error
         return { success: true, data }
-    } catch (error: any) {
-        return { success: false, error: error?.message || String(error) }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -345,8 +343,8 @@ export async function toggleRecipeStatus(id: string, activa: boolean) {
 
         revalidatePath("/dashboard/recetas")
         return { success: true }
-    } catch (error: any) {
-        return { success: false, error: error?.message || String(error) }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -387,8 +385,7 @@ export async function createQuickIngredient(data: {
 
         revalidatePath("/dashboard/inventario")
         return { success: true, data: newObject }
-    } catch (error: any) {
-        console.error("Error creating quick ingredient:", error)
-        return { success: false, error: error?.message || String(error) }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }

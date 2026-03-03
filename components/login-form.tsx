@@ -1,9 +1,6 @@
 "use client";
 
-import { useLogin } from "@refinedev/core";
-
 import { cn } from "@/lib/utils";
-// import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,8 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React, { useState, useTransition } from "react";
 import {
   Dialog,
   DialogContent,
@@ -26,29 +22,23 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { AlertCircle } from "lucide-react";
+import { loginAction } from "@/actions/auth";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const { mutate: login, isPending } = useLogin();
-  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    login({ email, password }, {
-      onError: (err: unknown) => {
-        const message = err instanceof Error ? err.message : "Error de autenticación";
-        setError(message);
-      },
+    startTransition(async () => {
+      const result = await loginAction(email, password);
+      if (result?.error) setError(result.error);
     });
   };
 
@@ -95,7 +85,7 @@ export function LoginForm({
                   className="bg-background/50 border-border/50 focus:border-primary/50"
                 />
               </div>
-              <Button type="submit" className="w-full h-11 text-lg font-medium" disabled={isPending || !mounted}>
+              <Button type="submit" className="w-full h-11 text-lg font-medium" disabled={isPending}>
                 {isPending ? 'Ingresando...' : 'Ingresar al ERP'}
               </Button>
             </div>

@@ -46,7 +46,6 @@ export function ScannerHandler() {
                 .single()
 
             if (error) {
-                console.error("Error buscando producto:", error)
                 toast.error(`Producto no encontrado: ${barcode}`)
                 return
             }

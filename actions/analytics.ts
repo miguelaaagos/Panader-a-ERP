@@ -134,7 +134,6 @@ export async function getDashboardStats(month?: number, year?: number) {
             }
         }
     } catch (error: unknown) {
-        console.error("Error fetching dashboard stats:", error)
         return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }

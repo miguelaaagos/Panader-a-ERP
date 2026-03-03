@@ -74,11 +74,9 @@ export function ConfigForm() {
                         simbolo_moneda: data.simbolo_moneda || "$",
                     })
                 } else if (result.error) {
-                    console.error("Error cargando configuración:", result.error)
                     toast.error("Error al cargar la configuración")
                 }
             } catch (error) {
-                console.error("Error:", error)
             } finally {
                 setLoading(false)
             }
@@ -98,7 +96,6 @@ export function ConfigForm() {
                 throw new Error(result.error)
             }
         } catch (error: any) {
-            console.error("Error guardando configuración:", error)
             toast.error("Error al guardar: " + error.message)
         } finally {
             setSaving(false)

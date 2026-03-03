@@ -30,7 +30,6 @@ export async function getProductionOrders() {
         if (error) throw error
         return { success: true, data }
     } catch (error: unknown) {
-        console.error("Error fetching production orders:", error)
         return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
@@ -77,7 +76,6 @@ export async function createProductionOrder(data: ProductionOrderFormData) {
         revalidatePath("/dashboard/produccion")
         return { success: true }
     } catch (error: unknown) {
-        console.error("Error creating production order:", error)
         return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
@@ -98,7 +96,6 @@ export async function cancelProductionOrder(id: string) {
         revalidatePath("/dashboard/produccion")
         return { success: true }
     } catch (error: unknown) {
-        console.error("Error cancelling production order:", error)
         return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
@@ -114,7 +111,6 @@ export async function completeProductionOrder(id: string) {
         })
 
         if (rpcError) {
-            console.error("RPC Production Error:", rpcError)
             return { success: false, error: rpcError.message }
         }
 
@@ -123,7 +119,6 @@ export async function completeProductionOrder(id: string) {
         return { success: true }
 
     } catch (error: unknown) {
-        console.error("Error completing production order:", error)
         return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }

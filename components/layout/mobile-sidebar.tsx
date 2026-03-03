@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Menu, LayoutDashboard, ShoppingCart, Package, ChefHat, Utensils, Users, Settings, LogOut, FileText, Inbox, Wallet, TrendingUp, Clock } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useLogout } from "@refinedev/core";
+import { useTransition } from "react";
+import { logoutAction } from "@/actions/auth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Permission } from "@/lib/roles";
 import { cn } from "@/lib/utils";
@@ -14,7 +15,8 @@ import { useState } from "react";
 export function MobileSidebar() {
     const [open, setOpen] = useState(false);
     const pathname = usePathname();
-    const { mutate: logout } = useLogout();
+    const [, startTransition] = useTransition();
+    const logout = () => startTransition(async () => { await logoutAction(); });
     const { can } = useUserRole();
 
     const routes = [

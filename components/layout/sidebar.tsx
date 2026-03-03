@@ -20,7 +20,8 @@ import {
     User,
     Clock
 } from "lucide-react";
-import { useLogout } from "@refinedev/core";
+import { useTransition } from "react";
+import { logoutAction } from "@/actions/auth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Permission } from "@/lib/roles";
 
@@ -28,7 +29,8 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 export function Sidebar({ className }: SidebarProps) {
     const pathname = usePathname();
-    const { mutate: logout } = useLogout();
+    const [, startTransition] = useTransition();
+    const logout = () => startTransition(async () => { await logoutAction(); });
     const { can } = useUserRole();
 
     const routes = [

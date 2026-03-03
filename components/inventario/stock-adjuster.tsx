@@ -38,7 +38,6 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
             setOpen(false)
             setAdjustment("")
         } catch (error: any) {
-            console.error("Error adjusting stock:", error)
             toast.error("Error al ajustar stock", {
                 description: error.message
             })

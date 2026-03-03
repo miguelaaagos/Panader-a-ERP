@@ -69,7 +69,6 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
 
             setCategorias(categoriasWithCount)
         } catch (error: any) {
-            console.error("Error fetching categorias:", error)
             toast.error("Error al cargar categorías")
         } finally {
             setLoading(false)
@@ -95,7 +94,6 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
             fetchCategorias()
             onSuccess()
         } catch (error: any) {
-            console.error("Error creating category:", error)
             toast.error("Error al crear categoría", {
                 description: error.message
             })
@@ -124,7 +122,6 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
             fetchCategorias()
             onSuccess()
         } catch (error: any) {
-            console.error("Error updating category:", error)
             toast.error("Error al actualizar categoría", {
                 description: error.message
             })
@@ -157,7 +154,6 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
             fetchCategorias()
             onSuccess()
         } catch (error: any) {
-            console.error("Error deleting category:", error)
             toast.error("Error al eliminar categoría", {
                 description: error.message
             })

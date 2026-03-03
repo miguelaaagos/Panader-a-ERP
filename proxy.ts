@@ -40,7 +40,6 @@ export async function proxy(request: NextRequest) {
       (err as { code: string }).code === "refresh_token_not_found"
 
     if (!isStaleToken) {
-      console.error("[proxy] Unexpected auth error:", err)
     }
 
     // Limpiar cookies de auth inválidas para que el navegador haga logout limpio

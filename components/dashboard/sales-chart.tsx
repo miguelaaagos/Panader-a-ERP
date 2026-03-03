@@ -24,7 +24,6 @@ export function SalesChart() {
                 .eq("anulada", false)
 
             if (error) {
-                console.error("Error en query de ventas:", error)
                 throw error
             }
 
@@ -48,7 +47,6 @@ export function SalesChart() {
 
             setData(chartData)
         } catch (error: any) {
-            console.error("Error loading chart data:", error?.message || error)
             // Establecer datos vacíos en caso de error
             setData([])
         }

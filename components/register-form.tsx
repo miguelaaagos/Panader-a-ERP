@@ -1,6 +1,6 @@
 "use client";
 
-import { useRegister } from "@refinedev/core";
+import React, { useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useState } from "react";
+import { registerAction } from "@/actions/auth";
 
 export function RegisterForm({
     className,
@@ -22,14 +22,14 @@ export function RegisterForm({
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const { mutate: register, isPending } = useRegister();
+    const [isPending, startTransition] = useTransition();
 
     const handleRegister = (e: React.FormEvent) => {
         e.preventDefault();
-        register({ email, password }, {
-            onError: (error: any) => {
-                setError(error?.message || "Error al registrarse");
-            },
+        setError(null);
+        startTransition(async () => {
+            const result = await registerAction(email, password);
+            if (result?.error) setError(result.error);
         });
     };
 

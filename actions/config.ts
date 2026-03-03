@@ -31,7 +31,6 @@ export async function getBusinessConfig() {
 
         return { success: true, data: data || null }
     } catch (error: unknown) {
-        console.error("Error fetching config:", error)
         return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
@@ -73,7 +72,6 @@ export async function updateBusinessConfig(data: ConfigData) {
         revalidatePath("/dashboard/configuracion")
         return { success: true }
     } catch (error: unknown) {
-        console.error("Error updating config:", error)
         return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }

@@ -63,7 +63,6 @@ export function TopProducts() {
 
             setProducts(topProducts)
         } catch (error) {
-            console.error("Error loading top products:", error)
         }
     }
 

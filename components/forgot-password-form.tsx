@@ -42,7 +42,6 @@ export function ForgotPasswordForm({
             }
         } catch (err) {
             toast.error("Ocurrió un error inesperado");
-            console.error(err);
         } finally {
             setIsLoading(false);
         }

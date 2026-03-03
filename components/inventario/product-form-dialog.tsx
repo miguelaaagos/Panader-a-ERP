@@ -88,7 +88,6 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                             setHasSales(true)
                         }
                     } catch (err) {
-                        console.error("Error checking sales history:", err)
                     }
                 }
                 checkSalesHistory()
@@ -146,7 +145,6 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
             if (error) throw error
             setCategorias(data || [])
         } catch (error: any) {
-            console.error("Error fetching categorias:", error)
             toast.error("Error al cargar categorías")
         }
     }
@@ -262,7 +260,6 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
             onSuccess()
 
         } catch (error: any) {
-            console.error("Error saving product:", error)
             toast.error("Error al guardar producto", {
                 description: error.message
             })

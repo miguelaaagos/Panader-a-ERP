@@ -33,11 +33,9 @@ export function OfflineSync() {
                     successCount++
                 } else {
                     failCount++
-                    console.error(`Error syncing sale ${sale.id}:`, result.error)
                 }
             } catch (error) {
                 failCount++
-                console.error(`Critical error syncing sale ${sale.id}:`, error)
             }
         }
 

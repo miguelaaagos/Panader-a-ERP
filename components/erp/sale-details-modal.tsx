@@ -57,7 +57,6 @@ export function SaleDetailsModal({ saleId, isOpen, onClose }: SaleDetailsModalPr
             setSale(result.data)
         } else {
             toast.error("Error al cargar detalles: " + result.error)
-            console.error(result.error)
         }
         setLoading(false)
     }
