@@ -19,7 +19,8 @@ const IngresoSchema = z.object({
     monto_iva: z.number().min(0).default(0),
     total: z.number().min(0).default(0),
     tipo_documento: z.enum(["Factura", "Boleta", "Otro"]).default("Otro"),
-    generar_gasto: z.boolean().default(false)
+    generar_gasto: z.boolean().default(false),
+    proveedor_id: z.string().uuid().optional()
 })
 
 /**
@@ -42,7 +43,8 @@ export async function registrarIngresoInventario(data: z.infer<typeof IngresoSch
             p_monto_iva: validatedData.monto_iva,
             p_total: validatedData.total,
             p_tipo_documento: validatedData.tipo_documento,
-            p_generar_gasto: validatedData.generar_gasto
+            p_generar_gasto: validatedData.generar_gasto,
+            p_proveedor_id: validatedData.proveedor_id || null
         })
 
         if (error) {
@@ -86,6 +88,10 @@ export async function getHistorialIngresos() {
                 generar_gasto,
                 usuario:usuario_id (
                     nombre_completo
+                ),
+                proveedor:proveedor_id (
+                    id,
+                    nombre
                 )
             `)
             .eq("tenant_id", profile.tenant_id)

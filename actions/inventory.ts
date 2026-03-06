@@ -31,17 +31,19 @@ export async function createProduct(data: ProductFormData) {
 
         const validatedData = productSchema.parse(data)
 
-        const { error } = await supabase
+        const { data: newProduct, error } = await supabase
             .from("productos")
             .insert([{
                 ...validatedData,
                 tenant_id: profile.tenant_id
             }])
+            .select("id")
+            .single()
 
         if (error) throw error
 
         revalidatePath("/dashboard/inventario")
-        return { success: true }
+        return { success: true, id: newProduct.id as string }
     } catch (error: any) {
         console.error("Error creating product:", error)
         const errorMessage = error instanceof Error

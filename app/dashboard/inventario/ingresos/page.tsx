@@ -21,7 +21,7 @@ export default function HistorialIngresosPage() {
         if (result.success && result.data) {
             setIngresos(result.data)
         } else if (!result.success) {
-            toast.error("Error al cargar el historial de ingresos: " + result.error)
+            toast.error("Error al cargar el historial de compras: " + result.error)
         }
         setLoading(false)
     }, [])
@@ -35,7 +35,7 @@ export default function HistorialIngresosPage() {
             permission="inventory.view"
             fallback={
                 <div className="flex-1 flex items-center justify-center h-[50vh]">
-                    <p className="text-muted-foreground text-lg">No tienes permisos para acceder al historial de ingresos.</p>
+                    <p className="text-muted-foreground text-lg">No tienes permisos para acceder al historial de compras.</p>
                 </div>
             }
         >
@@ -48,16 +48,16 @@ export default function HistorialIngresosPage() {
                                     <ArrowLeft className="h-4 w-4" />
                                 </Button>
                             </Link>
-                            <h2 className="text-3xl font-bold tracking-tight">Historial de Ingresos 📦</h2>
+                            <h2 className="text-3xl font-bold tracking-tight">Historial de Compras</h2>
                         </div>
-                        <p className="text-muted-foreground mt-1 text-sm">Registro de toda la mercancía y materias primas recibidas.</p>
+                        <p className="text-muted-foreground mt-1 text-sm">Registro de toda la mercancia y materias primas recibidas.</p>
                     </div>
 
                     <RoleGuard permission="inventory.restock">
                         <Link href="/dashboard/inventario/ingresos/nuevo">
                             <Button className="gap-2">
                                 <Plus className="h-4 w-4" />
-                                Registrar Ingreso
+                                Nueva Compra
                             </Button>
                         </Link>
                     </RoleGuard>
@@ -65,7 +65,7 @@ export default function HistorialIngresosPage() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Ingresos Recientes</CardTitle>
+                        <CardTitle>Compras Recientes</CardTitle>
                     </CardHeader>
                     <CardContent>
                         {loading ? (
@@ -76,19 +76,21 @@ export default function HistorialIngresosPage() {
                             </div>
                         ) : ingresos.length === 0 ? (
                             <div className="text-center py-10">
-                                <p className="text-muted-foreground">No hay ingresos registrados aún.</p>
+                                <p className="text-muted-foreground">No hay compras registradas aun.</p>
                             </div>
                         ) : (
                             <div className="rounded-md border">
-                                <div className="grid grid-cols-4 md:grid-cols-5 p-4 bg-muted/50 font-medium text-sm border-b">
-                                    <div>Código</div>
+                                <div className="grid grid-cols-4 md:grid-cols-6 p-4 bg-muted/50 font-medium text-sm border-b">
+                                    <div>Codigo</div>
                                     <div>Fecha</div>
                                     <div className="hidden md:block">Usuario</div>
-                                    <div className="col-span-2">Observaciones</div>
+                                    <div className="hidden md:block">Proveedor</div>
+                                    <div className="text-right hidden md:block">Total</div>
+                                    <div>Observaciones</div>
                                 </div>
                                 <div className="divide-y">
                                     {ingresos.map((ingreso) => (
-                                        <div key={ingreso.id} className="grid grid-cols-4 md:grid-cols-5 p-4 text-sm items-center hover:bg-muted/30 transition-colors">
+                                        <div key={ingreso.id} className="grid grid-cols-4 md:grid-cols-6 p-4 text-sm items-center hover:bg-muted/30 transition-colors">
                                             <div className="font-medium text-primary">{ingreso.codigo}</div>
                                             <div className="whitespace-nowrap">
                                                 {format(new Date(ingreso.created_at), "dd MMM yyyy, HH:mm", { locale: es })}
@@ -96,7 +98,13 @@ export default function HistorialIngresosPage() {
                                             <div className="hidden md:block truncate">
                                                 {ingreso.usuario?.nombre_completo || "Desconocido"}
                                             </div>
-                                            <div className="col-span-2 truncate text-muted-foreground" title={ingreso.observaciones}>
+                                            <div className="hidden md:block truncate text-muted-foreground">
+                                                {ingreso.proveedor?.nombre || "-"}
+                                            </div>
+                                            <div className="text-right hidden md:block font-medium">
+                                                {ingreso.total > 0 ? `$${ingreso.total.toLocaleString("es-CL", { maximumFractionDigits: 0 })}` : "-"}
+                                            </div>
+                                            <div className="truncate text-muted-foreground" title={ingreso.observaciones}>
                                                 {ingreso.observaciones || "-"}
                                             </div>
                                         </div>
