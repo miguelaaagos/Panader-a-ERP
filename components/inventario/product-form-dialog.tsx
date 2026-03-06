@@ -38,7 +38,7 @@ interface ProductFormDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     producto?: any // Producto existente para editar (opcional)
-    onSuccess: () => void
+    onSuccess: (newProductId?: string) => void
 }
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -258,8 +258,9 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
             // Cerrar primero para evitar "rebote" visual por re-render del padre
             onOpenChange(false)
 
-            // Luego actualizar datos
-            onSuccess()
+            // Luego actualizar datos, pasando el ID del producto si fue una creación nueva
+            const newId = !isEditing && 'id' in result ? result.id : undefined
+            onSuccess(newId)
 
         } catch (error: any) {
             console.error("Error saving product:", error)
