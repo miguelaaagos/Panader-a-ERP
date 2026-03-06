@@ -1,9 +1,9 @@
 # TODO: Sincronización de Desarrollo (Calama - Antofagasta)
 
-## Estado Actual: Corrección Crítica de Conversiones (Marzo 2026)
-- **Fecha**: 2026-03-01
+## Estado Actual: Consolidación de Ramas + Módulo de Compras (Marzo 2026)
+- **Fecha**: 2026-03-06
 - **Ubicación**: Antofagasta
-- **Hito**: Corrección de bug crítico en cálculo de costos de recetas (12g a precio de kg). Unificación de lógica de conversión en `lib/utils/units.ts`. Normalización de BD (`factor_conversion = 1000` para todos los productos en kg/L).
+- **Hito**: Consolidación total de ramas `main` y `desarrollo`. Cherry-pick de refactorización Ingresos→Compras (`e3bd7ad`). Ambas ramas sincronizadas en commit `9c1aa27`. Pendiente: arreglar error de build en Vercel.
 
 ## Tareas Completadas [x]
 - [x] Establecer y documentar estándares UI/UX (Notificaciones, Gráficos PowerBI style, Tablas móviles, Dark mode) en GEMINI.md y skills.
@@ -40,7 +40,11 @@
 - [x] **Input de Cantidad en Tiempo Real**: `cantidad` cambiada a `string` en el estado del formulario para soportar decimales y actualización reactiva sin reseteos.
 - [x] **Normalización de BD**: `UPDATE productos SET factor_conversion = 1000, unidad_medida_base = 'g'` para todos los productos en `kg` con factor incorrecto.
 - [x] **Auditoría de cálculos de costos en recetas vs precios de insumos**: Completado — bug corregido y verificado.
+- [x] **Consolidación de ramas Git**: `main` y `desarrollo` sincronizadas en `9c1aa27`. Ramas sucias (`pr-1`, `claude/musing-brattain`) depuradas.
+- [x] **Módulo de Compras (ex-Ingresos)**: Cherry-pick de `e3bd7ad` a `main` — renombrado de Ingresos→Compras en sidebar, actions y páginas.
+- [x] **Skill `shell-syntax-rules`**: Creada para prevenir uso de `&&` en PowerShell. Usar `;` o comandos separados.
 ## Tareas Pendientes [ ]
+- [ ] **Arreglar error de build en Vercel** tras merge de refactorización Compras (nuevo chat).
 - [ ] Integración de Gastos Fijos (sueldos, luz, agua) al Dashboard Financiero.
 - [ ] Implementar soporte 100% Offline (PWA) con IndexedDB para carga total de catálogo y sincronización en segundo plano.
 - [ ] Solucionar error de resolución de `eslint-plugin-react` con ESLint 9 Flat Config + PNPM.
@@ -59,5 +63,7 @@
 - Skill activa: `.agent/skills/supabase-ssr/SKILL.md` — siempre consultarla antes de tocar auth.
 - Workflow de arranque: `/run-app` → ejecuta `npm run dev` (usando npm).
 - Estilo CSS: Tailwind v3.4.19 (configuración vía tailwind.config.ts).
-- **`factor_conversion` en BD**: Productos en `kg` deben tener `factor_conversion = 1000` y `unidad_medida_base = 'g'`. El código en `recipe-form-dialog.tsx` fuerza `1000` defensivamente para kg/L, pero la BD debe estar correcta.
-- **`cantidad` en recetas**: Es tipo `string` en el estado local del formulario — usar `parseFloat()` para cálculos, nunca asumir que es `number`.
+- **`factor_conversion` en BD**: Productos en `kg` deben tener `factor_conversion = 1000` y `unidad_medida_base = 'g'`.
+- **`cantidad` en recetas**: Es tipo `string` en el estado local — usar `parseFloat()` para cálculos.
+- **PowerShell**: NUNCA usar `&&` para encadenar comandos. Usar `;` o comandos separados (skill `shell-syntax-rules`).
+- **Rama activa de trabajo**: `desarrollo` (sincronizada con `main` en `9c1aa27`).

@@ -1,26 +1,38 @@
-# Resumen de Sesión - 27 de Febrero de 2026
+# Resumen de Sesión - 6 de Marzo de 2026
 
 ## Logros Técnicos
-1. **Gastos Operativos (Resolución de Bugs)**:
-   - Se arregló un problema crítico de Row Level Security (RLS) en la tabla `gastos` que causaba rechazos silenciosos.
-   - Manejo de excepciones adecuado (`try-catch/finally`) en botones de guardado con feedback visual en pantalla en caso de bloqueos del backend.
 
-2. **UX en Gastos Operativos**:
-   - Se añadió un modal (`Dialog`) "Nueva Categoría" en el formulario de `/gastos/nuevo`. 
-   - A través de *Server Actions* el usuario puede crear categorías al instante sin abandonar la pantalla y sin refrescar.
+1. **Consolidación de Ramas Git**:
+   - Se diagnosticó que `main` y `desarrollo` estaban divergidas tras el merge del PR #1.
+   - Se aplicó cherry-pick del commit `e3bd7ad` (refactorización Ingresos→Compras) directamente a `main`.
+   - Se mergeó `main` en `desarrollo`, dejando ambas ramas sincronizadas en `9c1aa27`.
+   - Se terminaron procesos bloqueantes de Git (`index.lock`) originados por comandos previos.
 
-3. **Pipelines / Workflows**:
-   - Refactorización de `/sync-docs` para incluir una etapa obligatoria de _Testing Pre-Push_.
-   - Se re-configuraron las pruebas E2E en Playwright (`testMatch`) para ignorar archivos `.test.ts` (Vitest) y enfocarse en `.spec.ts` / `.e2e.ts`.
-   - Se ejecutó `pnpm typecheck`, arreglando un bug TS en `tests/erp-store.test.ts`.
-   - Se ejecutó `pnpm test` (Vitest unitarios), pasando sin errores.
-   - Pnpm exec `playwright test` (Playwright E2E), pasando sin errores.
+2. **Módulo de Compras (ex-Ingresos)**:
+   - Se consolidó el commit `e3bd7ad` (`feat(compras): renombrar Ingresos a Compras`) en `main`.
+   - Afecta: `actions/ingresos.ts`, `actions/inventory.ts`, `actions/proveedores.ts`, páginas de inventario, `sidebar.tsx` y scripts de migración SQL.
+
+3. **Skill `shell-syntax-rules`**:
+   - Creada en `.agent/skills/shell-syntax-rules/SKILL.md`.
+   - Regla: NUNCA usar `&&` en PowerShell. Usar `;` o comandos separados.
+   - Añadida también a `GEMINI.md` en el Protocolo de Sincronización.
+
+4. **Revisión de Skills y GEMINI.md**:
+   - Confirmadas activas: `frontend-pos-design`, `playwright-testing`, `nextjs-16-patterns`, `supabase-ssr`, `shell-syntax-rules`.
+   - Stack validado: Next.js 16, React 19, Supabase SSR v0.8.0, Tailwind v3.4.19.
 
 ## Gotchas Encontrados
-- **ESLint 9 + Next.js Flat Config**: Existen problemas de resolución en `pnpm` con `eslint-plugin-react` provocando un Error Code 2. Este linter falla en la terminal actualmente. Se agregó a the TODO list para revisiones de toolings a futuro.
-- **Playwright Match**: La configuración preestablecida estaba recogiendo los Unit Tests de Zustand (`erp-store.test.ts`) provocando crashes en Playwright. Playwright Config ahora aísla archivos E2E/Spec explícitamente.
+- **`index.lock` de Git**: Procesos de `supabase gen types` y `git reset --hard` lanzados en segundo plano bloquearon operaciones Git posteriores. Solución: terminar procesos antes de operar Git.
+- **Cherry-pick con conflictos automáticos**: `9cf7a99` (fix recetas) ya estaba incluido en el merge `742c0c5` de `main`. El intento de cherry-pick redundante fue descartado correctamente.
+- **PowerShell y `&&`**: Sigue siendo un error recurrente. La skill `shell-syntax-rules` previene esto en el futuro.
 
-## Próximos Pasos Sugeridos
-- Completar la visualización/vinculación de los reportes financieros del Dashboard frente a estos nuevos tickets de gastos fijos.
-- Resolver el conflicto de la Flat Config en ESLint 9 y limpiar el error en CI local.
-- Revisar y avanzar en la implementación Transbank.
+## Estado de Ramas al Cierre
+```
+main       → 9c1aa27  feat(compras): Ingresos→Compras ✅
+desarrollo → 9c1aa27  (sincronizado con main) ✅
+```
+
+## Próximos Pasos (Próximo Chat)
+- Arreglar error de build en Vercel tras el merge de la refactorización de Compras.
+- Verificar que la migración SQL de `proveedores` esté aplicada en Supabase producción.
+- Revisar si hay tipos de TypeScript desactualizados tras el rename de Ingresos→Compras.
