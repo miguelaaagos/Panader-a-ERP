@@ -26,6 +26,15 @@ export function OrderFormDialog({ open, onOpenChange, onSuccess }: OrderFormDial
     const [loading, setLoading] = useState(false)
     const [submitting, setSubmitting] = useState(false)
 
+    async function fetchRecipes() {
+        setLoading(true)
+        const result = await getRecipes()
+        if (result.success) {
+            setRecipes(result.data?.filter((r: any) => r.activa) || [])
+        }
+        setLoading(false)
+    }
+
     useEffect(() => {
         if (open) {
             fetchRecipes()
@@ -37,15 +46,6 @@ export function OrderFormDialog({ open, onOpenChange, onSuccess }: OrderFormDial
             setNotas("")
         }
     }, [open])
-
-    async function fetchRecipes() {
-        setLoading(true)
-        const result = await getRecipes()
-        if (result.success) {
-            setRecipes(result.data?.filter((r: unknown) => r.activa) || [])
-        }
-        setLoading(false)
-    }
 
     const handleRecipeChange = async (id: string) => {
         setSelectedRecipeId(id)
@@ -98,7 +98,7 @@ export function OrderFormDialog({ open, onOpenChange, onSuccess }: OrderFormDial
                                 <SelectValue placeholder="Elige una receta..." />
                             </SelectTrigger>
                             <SelectContent>
-                                {recipes.map((r) => (
+                                {recipes.map((r: any) => (
                                     <SelectItem key={r.id} value={r.id}>
                                         {r.nombre} ({r.producto?.nombre})
                                     </SelectItem>
@@ -136,8 +136,8 @@ export function OrderFormDialog({ open, onOpenChange, onSuccess }: OrderFormDial
                         <div className="rounded-md border bg-muted/50 p-3 space-y-2">
                             <Label className="text-xs uppercase text-muted-foreground font-semibold">Insumos Estimados</Label>
                             <div className="space-y-1">
-                                {recipeDetail.ingredientes.map((ing: unknown) => {
-                                    const required = ing.cantidad * factor
+                                {recipeDetail.ingredientes.map((ing: any) => {
+                                    const required = (ing.cantidad || 0) * factor
                                     const isShort = Number(ing.producto?.stock_actual || 0) < required
                                     return (
                                         <div key={ing.id} className="flex justify-between text-xs">
@@ -149,7 +149,7 @@ export function OrderFormDialog({ open, onOpenChange, onSuccess }: OrderFormDial
                                     )
                                 })}
                             </div>
-                            {recipeDetail.ingredientes.some((ing: unknown) => Number(ing.producto?.stock_actual || 0) < (ing.cantidad * factor)) && (
+                            {recipeDetail.ingredientes.some((ing: any) => Number(ing.producto?.stock_actual || 0) < ((ing.cantidad || 0) * factor)) && (
                                 <div className="flex items-center gap-1 text-[10px] text-red-600 mt-2">
                                     <AlertTriangle className="h-3 w-3" />
                                     <span>Stock insuficiente para algunos ingredientes</span>

@@ -41,14 +41,6 @@ export function SaleDetailsModal({ saleId, isOpen, onClose }: SaleDetailsModalPr
     const [sale, setSale] = useState<any>(null)
     const [loading, setLoading] = useState(false)
 
-    useEffect(() => {
-        if (isOpen && saleId) {
-            fetchDetails()
-        } else {
-            setSale(null)
-        }
-    }, [isOpen, saleId])
-
     async function fetchDetails() {
         if (!saleId) return
         setLoading(true)
@@ -61,6 +53,14 @@ export function SaleDetailsModal({ saleId, isOpen, onClose }: SaleDetailsModalPr
         }
         setLoading(false)
     }
+
+    useEffect(() => {
+        if (isOpen && saleId) {
+            fetchDetails()
+        } else {
+            setSale(null)
+        }
+    }, [isOpen, saleId])
 
     const getStatusBadge = (status: string) => {
         switch (status) {

@@ -1,0 +1,250 @@
+﻿
+> @ lint C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software
+> eslint .
+
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\.agent\skills\nextjs-supabase-scaffold\references\proxy.template.ts
+  42:13  warning  'claims' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\actions\analytics.ts
+    4:75  warning  'endOfDay' is defined but never used     @typescript-eslint/no-unused-vars
+  155:19  warning  'ProductBase' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\actions\cash.ts
+  81:27  warning  'profile' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\actions\proveedores.ts
+  94:27  warning  'profile' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\actions\sales.ts
+   6:10  warning  'cacheTag' is defined but never used                                                                   @typescript-eslint/no-unused-vars
+   6:20  warning  'cacheLife' is defined but never used                                                                  @typescript-eslint/no-unused-vars
+  32:27  warning  'profile' is assigned a value but never used                                                           @typescript-eslint/no-unused-vars
+  66:9   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\actions\user-settings.ts
+   7:7  warning  'profileSchema' is assigned a value but only used as a type   @typescript-eslint/no-unused-vars
+  11:7  warning  'passwordSchema' is assigned a value but only used as a type  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\app\dashboard\gastos\gastos-client.tsx
+  40:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\app\dashboard\gastos\nuevo\page.tsx
+  19:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\app\dashboard\inventario\ingresos\nuevo\page.tsx
+  35:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\app\dashboard\inventario\ingresos\page.tsx
+  17:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  19:60  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\app\dashboard\inventario\proveedores\page.tsx
+  13:10  warning  'format' is defined but never used  @typescript-eslint/no-unused-vars
+  38:18  warning  'error' is defined but never used   @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\app\dashboard\page.tsx
+  5:24  warning  'Package' is defined but never used   @typescript-eslint/no-unused-vars
+  5:33  warning  'ChefHat' is defined but never used   @typescript-eslint/no-unused-vars
+  5:42  warning  'FileText' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\app\dashboard\produccion\page.tsx
+  6:10  warning  'ChefHat' is defined but never used      @typescript-eslint/no-unused-vars
+  6:56  warning  'AlertCircle' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\app\dashboard\recetas\page.tsx
+   4:10  warning  'createClient' is defined but never used  @typescript-eslint/no-unused-vars
+  10:28  warning  'Clock' is defined but never used         @typescript-eslint/no-unused-vars
+  10:69  warning  'ExternalLink' is defined but never used  @typescript-eslint/no-unused-vars
+  39:58  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\app\dashboard\reportes\financiero\page.tsx
+  10:31  warning  'TrendingDown' is defined but never used  @typescript-eslint/no-unused-vars
+  19:5   warning  'Legend' is defined but never used        @typescript-eslint/no-unused-vars
+  26:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\app\dashboard\ventas\page.tsx
+   7:10  warning  'RoleGuard' is defined but never used     @typescript-eslint/no-unused-vars
+  17:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\asistencia\CashierAttendanceView.tsx
+  31:18  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+  48:18  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\asistencia\ConfigurarHorariosDialog.tsx
+  76:18  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\asistencia\ConfigurarHorariosUsuarioDialog.tsx
+   55:8   warning  React Hook useEffect has a missing dependency: 'usuarios.length'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  120:18  warning  'err' is defined but never used                                                                                     @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\caja\cash-session-manager.tsx
+  13:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\config\config-form.tsx
+  17:10  warning  'Textarea' is defined but never used  @typescript-eslint/no-unused-vars
+  20:25  warning  'Printer' is defined but never used   @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\dashboard\sales-chart.tsx
+   9:38  warning  Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  13:8   warning  React Hook useEffect has a missing dependency: 'loadChartData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\dashboard\top-products.tsx
+  19:8  warning  React Hook useEffect has a missing dependency: 'loadTopProducts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\erp\Stats.tsx
+  20:8  warning  React Hook useEffect has a missing dependency: 'loadStats'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\erp\cart-panel.tsx
+  5:10  warning  'Separator' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\erp\checkout-dialog.tsx
+  145:10  warning  'Separator' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\erp\offline-sync.tsx
+  4:38  warning  'AlertCircle' is defined but never used  @typescript-eslint/no-unused-vars
+  6:10  warning  'Badge' is defined but never used        @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\erp\sale-details-modal.tsx
+  19:5   warning  'FileText' is defined but never used                                                                             @typescript-eslint/no-unused-vars
+  26:5   warning  'ArrowLeft' is defined but never used                                                                            @typescript-eslint/no-unused-vars
+  41:38  warning  Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+  63:8   warning  React Hook useEffect has a missing dependency: 'fetchDetails'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\erp\sales-list.tsx
+   3:10  warning  'useState' is defined but never used  @typescript-eslint/no-unused-vars
+  20:5   warning  'Clock' is defined but never used     @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\erp\scanner-handler.tsx
+  9:13  warning  'isScannerActive' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\erp\shift-details-modal.tsx
+   16:10  warning  'Separator' is defined but never used                            @typescript-eslint/no-unused-vars
+  217:37  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  217:61  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\erp\shift-history.tsx
+    4:16  warning  'CardHeader' is defined but never used                           @typescript-eslint/no-unused-vars
+    4:28  warning  'CardTitle' is defined but never used                            @typescript-eslint/no-unused-vars
+    4:39  warning  'CardDescription' is defined but never used                      @typescript-eslint/no-unused-vars
+    6:29  warning  'ArrowUpRight' is defined but never used                         @typescript-eslint/no-unused-vars
+    6:43  warning  'ArrowDownRight' is defined but never used                       @typescript-eslint/no-unused-vars
+  149:41  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  149:62  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\erp\weigh-item-dialog.tsx
+   8:27  warning  'Calculator' is defined but never used     @typescript-eslint/no-unused-vars
+  20:12  warning  'mode' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\gastos\gasto-editar-dialog.tsx
+   23:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  137:18  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\inventario\delete-product-dialog.tsx
+  102:8  warning  React Hook useEffect has missing dependencies: 'checkVentasAsociadas' and 'producto'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\inventario\ingreso-detalle-dialog.tsx
+  35:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\inventario\product-form-dialog.tsx
+  13:19  warning  'AlertCircle' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\inventario\stock-adjuster.tsx
+   4:10  warning  'createClient' is defined but never used  @typescript-eslint/no-unused-vars
+  12:10  warning  'Permission' is defined but never used    @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\layout\sidebar.tsx
+  28:11  warning  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\login-form.tsx
+  42:9  warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\produccion\order-form-dialog.tsx
+  21:44  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+  23:54  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+  31:13  error    Error: Cannot access variable before it is declared
+
+`fetchRecipes` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\produccion\order-form-dialog.tsx:31:13
+  29 |     useEffect(() => {
+  30 |         if (open) {
+> 31 |             fetchRecipes()
+     |             ^^^^^^^^^^^^ `fetchRecipes` accessed before it is declared
+  32 |         } else {
+  33 |             // Reset state
+  34 |             setSelectedRecipeId("")
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\produccion\order-form-dialog.tsx:41:5
+  39 |     }, [open])
+  40 |
+> 41 |     async function fetchRecipes() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 42 |         setLoading(true)
+     | ^^^^^^^^^^^^^^^^^^^^^^^^
+> 43 |         const result = await getRecipes()
+     | ^^^^^^^^^^^^^^^^^^^^^^^^
+> 44 |         if (result.success) {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |             setRecipes(result.data?.filter((r: unknown) => r.activa) || [])
+     | ^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |         }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^
+> 47 |         setLoading(false)
+     | ^^^^^^^^^^^^^^^^^^^^^^^^
+> 48 |     }
+     | ^^^^^^ `fetchRecipes` is declared here
+  49 |
+  50 |     const handleRecipeChange = async (id: string) => {
+  51 |         setSelectedRecipeId(id)  react-hooks/immutability
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\produccion\order-list.tsx
+  6:40  warning  'AlertCircle' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\providers\refine-provider.tsx
+  43:25  warning  'data' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\recetas\recipe-form-dialog.tsx
+   45:12  warning  'loading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  145:18  warning  'error' is defined but never used             @typescript-eslint/no-unused-vars
+  305:18  warning  'error' is defined but never used             @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\users\create-user-dialog.tsx
+  36:10  warning  'UserRole' is defined but never used  @typescript-eslint/no-unused-vars
+  73:18  warning  'error' is defined but never used     @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\users\edit-user-dialog.tsx
+  36:10  warning  'UserRole' is defined but never used  @typescript-eslint/no-unused-vars
+  76:18  warning  'error' is defined but never used     @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\users\user-list.tsx
+  54:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\components\users\user-profile-form.tsx
+  70:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  87:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\hooks\use-erp-store.ts
+  18:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\lib\utils\__tests__\unit-conversions.test.ts
+  36:80  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\lib\utils\rut-validator.ts
+  34:10  warning  'calculateDV' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\server\actions\attendance.ts
+  30:31  warning  'parseISO' is defined but never used      @typescript-eslint/no-unused-vars
+  49:54  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\tests\financial.test.ts
+  6:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  6:63  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Migue\OneDrive\Escritorio\POS Panader├¡a Software\tests\ingresos.test.ts
+  2:51  warning  'AppUnit' is defined but never used  @typescript-eslint/no-unused-vars
+
+Ô£û 99 problems (1 error, 98 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+
+ÔÇëELIFECYCLEÔÇë Command failed with exit code 1.

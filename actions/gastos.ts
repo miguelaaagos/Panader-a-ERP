@@ -86,7 +86,7 @@ export async function registrarGasto(data: z.infer<typeof GastoSchema>) {
         return { success: true, data: result }
     } catch (error: unknown) {
         if (error instanceof z.ZodError) {
-            return { success: false, error: error.errors.map((e) => e.message).join(", ") };
+            return { success: false, error: error.issues.map((e) => e.message).join(", ") };
         }
         const message = error instanceof Error ? error.message : String(error);
         return { success: false, error: message };
@@ -274,7 +274,7 @@ export async function updateGasto(id: string, data: Partial<z.infer<typeof Gasto
             throw new Error("No se puede editar un gasto anulado")
         }
 
-        const updateData: unknown = {}
+        const updateData: any = {}
         if (data.descripcion !== undefined) updateData.descripcion = data.descripcion
         if (data.categoria_id !== undefined) updateData.categoria_id = data.categoria_id || null
         if (data.monto_neto !== undefined) updateData.monto_neto = data.monto_neto
@@ -296,7 +296,7 @@ export async function updateGasto(id: string, data: Partial<z.infer<typeof Gasto
         return { success: true }
     } catch (error: unknown) {
         if (error instanceof z.ZodError) {
-            return { success: false, error: error.errors.map((e) => e.message).join(", ") };
+            return { success: false, error: error.issues.map((e) => e.message).join(", ") };
         }
         const message = error instanceof Error ? error.message : String(error);
         return { success: false, error: message };

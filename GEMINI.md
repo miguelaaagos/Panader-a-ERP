@@ -34,7 +34,7 @@
 pnpm dev              # servidor de desarrollo
 pnpm typecheck        # tsc --noEmit
 pnpm test             # vitest
-pnpm gen:types        # regenerar tipos Supabase (UTF-8 garantizado)
+pnpm gen:types        # regenerar tipos Supabase (pnpm dlx - compatible con Windows)
 pnpm lint
 pnpm build
 pnpm exec playwright test

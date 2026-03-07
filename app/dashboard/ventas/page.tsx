@@ -22,6 +22,17 @@ export default function VentasPage() {
     const [selectedSaleId, setSelectedSaleId] = useState<string | null>(null)
     const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
+    async function fetchSales(tenantId: string) {
+        setLoading(true)
+        const result = await getRecentSales(tenantId, 50)
+        if (result.success) {
+            setSales(result.data || [])
+        } else {
+            toast.error("Error al cargar ventas: " + result.error)
+        }
+        setLoading(false)
+    }
+
     useEffect(() => {
         const init = async () => {
             const sessionResult = await getSession()
@@ -34,17 +45,6 @@ export default function VentasPage() {
         }
         init()
     }, [])
-
-    async function fetchSales(tenantId: string) {
-        setLoading(true)
-        const result = await getRecentSales(tenantId, 50)
-        if (result.success) {
-            setSales(result.data || [])
-        } else {
-            toast.error("Error al cargar ventas: " + result.error)
-        }
-        setLoading(false)
-    }
 
     const handleAnular = async (id: string) => {
         if (!confirm("¿Está seguro de anular esta venta? El stock será devuelto al inventario.")) return
