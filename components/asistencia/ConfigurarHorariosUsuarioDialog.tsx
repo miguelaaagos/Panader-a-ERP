@@ -46,7 +46,7 @@ export function ConfigurarHorariosUsuarioDialog() {
                 const supabase = createClient();
                 const { data } = await supabase.from("usuarios").select("id, nombre_completo").eq("activo", true);
                 if (data) {
-                    setUsuarios(data);
+                    setUsuarios(data as { id: string, nombre_completo: string }[]);
                 }
                 setLoadingUsers(false);
             };

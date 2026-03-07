@@ -478,14 +478,14 @@ export function InventarioClient({ initialProductos, categorias, stats, filters,
             <ProductFormDialog
                 open={productFormOpen}
                 onOpenChange={setProductFormOpen}
-                producto={selectedProducto}
+                producto={selectedProducto as any}
                 onSuccess={() => router.refresh()}
             />
 
             <DeleteProductDialog
                 open={deleteDialogOpen}
                 onOpenChange={setDeleteDialogOpen}
-                producto={selectedProducto}
+                producto={selectedProducto as any}
                 onSuccess={() => router.refresh()}
             />
 

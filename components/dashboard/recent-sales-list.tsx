@@ -6,7 +6,7 @@ import Link from "next/link"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 
-interface RecentSale {
+export interface RecentSale {
     id: string
     created_at: string
     total: number

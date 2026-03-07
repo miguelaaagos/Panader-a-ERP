@@ -22,7 +22,7 @@ export default async function GastosPage({ searchParams }: PageProps) {
 
     return (
         <GastosClient
-            initialGastos={initialGastos}
+            initialGastos={initialGastos as any}
             mes={mes}
             anio={anio}
         />

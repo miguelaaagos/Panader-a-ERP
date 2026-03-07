@@ -57,7 +57,7 @@ export function TopProductsUnitsChart({ data }: TopProductsUnitsChartProps) {
                                     borderRadius: "8px",
                                     fontSize: "12px"
                                 }}
-                                formatter={(value: unknown) => [`${value || 0} unidades`, "Total"]}
+                                formatter={(value: unknown) => [`${value || 0} unidades`, "Total"] as [string, string]}
                             />
                             <Bar dataKey="cantidad" radius={[0, 4, 4, 0]}>
                                 <LabelList
@@ -65,7 +65,7 @@ export function TopProductsUnitsChart({ data }: TopProductsUnitsChartProps) {
                                     position="right"
                                     fill="hsl(var(--foreground))"
                                     fontSize={10}
-                                    formatter={(value: unknown) => Number(value) > 0 ? value : ''}
+                                    formatter={(value: unknown) => Number(value) > 0 ? String(value) : ''}
                                 />
                                 {paginatedData.map((entry, index) => (
                                     <Cell key={`cell-${entry.nombre}`} fill={COLORS[index % COLORS.length]} />

@@ -30,7 +30,7 @@ export default function HistorialIngresosPage() {
         setLoading(false)
     }, [])
 
-    const handleAnular = async (ingreso: unknown) => {
+    const handleAnular = async (ingreso: any) => {
         if (!confirm(`¿Estás seguro que deseas ANULAR la compra #${ingreso.codigo}? Esta acción revertirá el stock ingresado y marcará el gasto asociado como anulado. No se puede deshacer.`)) return
 
         setLoading(true)

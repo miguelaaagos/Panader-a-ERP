@@ -54,7 +54,7 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
 
             // Contar productos por categoría
             const categoriasWithCount = await Promise.all(
-                (categoriasData || []).map(async (cat: unknown) => {
+                (categoriasData || []).map(async (cat: any) => {
                     const { count } = await supabase
                         .from("productos")
                         .select("*", { count: "exact", head: true })
@@ -96,8 +96,8 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
             onSuccess()
         } catch (error: unknown) {
             console.error("Error creating category:", error)
-            toast.error("Error al crear categoría", {
-                description: error.message
+            toast.error("Error", {
+                description: error instanceof Error ? error.message : String(error)
             })
         } finally {
             setLoading(false)
@@ -125,8 +125,8 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
             onSuccess()
         } catch (error: unknown) {
             console.error("Error updating category:", error)
-            toast.error("Error al actualizar categoría", {
-                description: error.message
+            toast.error("Error", {
+                description: error instanceof Error ? error.message : String(error)
             })
         } finally {
             setLoading(false)
@@ -158,8 +158,8 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
             onSuccess()
         } catch (error: unknown) {
             console.error("Error deleting category:", error)
-            toast.error("Error al eliminar categoría", {
-                description: error.message
+            toast.error("Error", {
+                description: error instanceof Error ? error.message : String(error)
             })
         } finally {
             setLoading(false)

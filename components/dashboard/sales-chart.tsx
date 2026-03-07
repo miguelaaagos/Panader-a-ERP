@@ -35,10 +35,10 @@ export function SalesChart() {
                 hourlyData[`${i}:00`] = 0
             }
 
-            ventas?.forEach((venta: unknown) => {
+            ventas?.forEach((venta: { created_at: string; total: number | null }) => {
                 const hour = new Date(venta.created_at).getHours()
                 const hourKey = `${hour}:00`
-                hourlyData[hourKey] += venta.total
+                hourlyData[hourKey] = (hourlyData[hourKey] || 0) + (venta.total || 0)
             })
 
             const chartData = Object.entries(hourlyData).map(([hora, total]) => ({
@@ -48,7 +48,7 @@ export function SalesChart() {
 
             setData(chartData)
         } catch (error: unknown) {
-            console.error("Error loading chart data:", error?.message || error)
+            console.error("Error loading chart data:", error instanceof Error ? error.message : "Error desconocido")
             // Establecer datos vacíos en caso de error
             setData([])
         }
@@ -71,7 +71,11 @@ export function SalesChart() {
                     tickFormatter={(value) => `$${value.toLocaleString('es-CL')}`}
                 />
                 <Tooltip
-                    formatter={(value: unknown) => [`$${Number(value || 0).toLocaleString('es-CL')}`, "Ventas"] as [string, string]}
+                    formatter={(value: unknown, name: unknown) => {
+                        const val = Number(value || 0)
+                        if (name === "total") return [new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(val), "Ventas"]
+                        return [String(value), String(name)]
+                    }}
                     cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
                 />
                 <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />

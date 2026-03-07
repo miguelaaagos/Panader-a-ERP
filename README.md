@@ -115,6 +115,6 @@ pnpm typecheck
 
 ---
 
-**Version**: 1.2.5 (Account Audit & Database Sync)  
+**Version**: 1.2.7 (Type Sanitation & Core Stability)  
 **Estado**: Estable / Producción  
-**Última actualización**: 6 de marzo de 2026 — Implementación de Auditoría Contable (Edición de Gastos y Anulación de Compras con reversión de stock). Sincronización total de la base de datos remota con migraciones locales (`horarios_roles`, `proveedores`, `estados`) y regeneración de tipos TypeScript 100% seguros.
+**Última actualización**: 7 de marzo de 2026 — Saneamiento integral de tipos TypeScript (0 errores en pnpm typecheck) en los módulos de Asistencia, Recetas, Inventario, Gastos y Reportes Financieros. Mejora de la estabilidad del sistema mediante el saneamiento de Server Actions y eliminación de accesos a propiedades desconocidas.

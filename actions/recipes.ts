@@ -169,7 +169,8 @@ export async function upsertRecipe(data: RecipeFormData, recipeId?: string) {
 
     } catch (error: unknown) {
         console.error("Error in upsertRecipe:", error)
-        return { success: false, error: error?.message || String(error) }
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        return { success: false, error: errorMessage }
     }
 }
 
@@ -203,14 +204,15 @@ export async function recalculateRecipesUsingIngredient(ingredienteId: string) {
         return { success: true, count: uniqueRecipeIds.length }
     } catch (error: unknown) {
         console.error("Error recalculating recipes:", error)
-        return { success: false, error: error?.message || String(error) }
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        return { success: false, error: errorMessage }
     }
 }
 
 /**
  * Función interna para recalcular el costo de una receta y actualizar el producto destino
  */
-async function recalculateRecipeDetail(recipeId: string, supabase: ReturnType<typeof validateRequest> extends Promise<{ supabase: infer S }> ? S : unknown) {
+async function recalculateRecipeDetail(recipeId: string, supabase: any) {
     // 1. Obtener todos los ingredientes actuales y sus precios actuales
     const { data: recipe, error: recipeError } = await supabase
         .from("recetas")
@@ -298,7 +300,8 @@ export async function getRecipes() {
         if (error) throw error
         return { success: true, data }
     } catch (error: unknown) {
-        return { success: false, error: error?.message || String(error) }
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        return { success: false, error: errorMessage }
     }
 }
 
@@ -324,7 +327,8 @@ export async function getRecipeDetail(id: string) {
         if (error) throw error
         return { success: true, data }
     } catch (error: unknown) {
-        return { success: false, error: error?.message || String(error) }
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        return { success: false, error: errorMessage }
     }
 }
 
@@ -346,7 +350,8 @@ export async function toggleRecipeStatus(id: string, activa: boolean) {
         revalidatePath("/dashboard/recetas")
         return { success: true }
     } catch (error: unknown) {
-        return { success: false, error: error?.message || String(error) }
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        return { success: false, error: errorMessage }
     }
 }
 
@@ -389,6 +394,7 @@ export async function createQuickIngredient(data: {
         return { success: true, data: newObject }
     } catch (error: unknown) {
         console.error("Error creating quick ingredient:", error)
-        return { success: false, error: error?.message || String(error) }
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        return { success: false, error: errorMessage }
     }
 }

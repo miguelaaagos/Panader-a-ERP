@@ -147,9 +147,6 @@ export function CashierAttendanceView({ activeTurn, asistencias }: Props) {
                                     ) : (
                                         asistencias.map((asistencia) => {
                                             const fechaEntrada = new Date(asistencia.entrada);
-                                            // TODO: Types are missing estado and horas_extra in AsistenciaRow for now
-                                            const asis = asistencia as unknown;
-
                                             return (
                                                 <TableRow key={asistencia.id}>
                                                     <TableCell className="font-medium">
@@ -164,13 +161,13 @@ export function CashierAttendanceView({ activeTurn, asistencias }: Props) {
                                                         )}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {asis.estado === "Atraso" || asis.estado === "Incompleto" || asis.estado === "Atraso e Incompleto" ? (
+                                                        {asistencia.estado === "Atraso" || asistencia.estado === "Incompleto" || asistencia.estado === "Atraso e Incompleto" ? (
                                                             <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
-                                                                {asis.estado}
+                                                                {asistencia.estado}
                                                             </span>
-                                                        ) : asis.estado === "En hora" ? (
+                                                        ) : asistencia.estado === "En hora" ? (
                                                             <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                                                                {asis.estado}
+                                                                {asistencia.estado}
                                                             </span>
                                                         ) : (
                                                             <span className="text-muted-foreground text-xs">-</span>
@@ -180,7 +177,7 @@ export function CashierAttendanceView({ activeTurn, asistencias }: Props) {
                                                         {calculateHours(asistencia.entrada, asistencia.salida)}
                                                     </TableCell>
                                                     <TableCell className="text-right font-medium text-amber-600 dark:text-amber-500">
-                                                        {asis.horas_extra > 0 ? `${asis.horas_extra}h` : '-'}
+                                                        {asistencia.horas_extra && asistencia.horas_extra > 0 ? `${asistencia.horas_extra}h` : '-'}
                                                     </TableCell>
                                                 </TableRow>
                                             );

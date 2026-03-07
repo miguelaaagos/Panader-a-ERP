@@ -1,6 +1,6 @@
 import { getRecentSales } from "@/actions/sales"
 import { createClient } from "@/lib/supabase/server"
-import { RecentSalesList } from "./recent-sales-list"
+import { RecentSalesList, RecentSale } from "./recent-sales-list"
 
 export async function RecentSalesContainer() {
     const supabase = await createClient()
@@ -13,13 +13,13 @@ export async function RecentSalesContainer() {
     const sales = res.success ? (res.data || []) : []
 
     // Cast explicitly to match the expected RecentSale interface in client component
-    const normalizedSales = sales.map((sale: unknown) => ({
-        id: sale.id,
-        created_at: sale.created_at,
-        total: sale.total,
-        metodo_pago: sale.metodo_pago,
-        cliente_nombre: sale.cliente_nombre,
-        usuario: sale.usuario
+    const normalizedSales: RecentSale[] = sales.map((sale: any) => ({
+        id: sale.id as string,
+        created_at: sale.created_at as string,
+        total: sale.total as number,
+        metodo_pago: (sale.metodo_pago as string) || "efectivo",
+        cliente_nombre: (sale.cliente_nombre as string | null),
+        usuario: (sale.usuario as { nombre_completo: string } | null)
     }))
 
     return <RecentSalesList sales={normalizedSales} />

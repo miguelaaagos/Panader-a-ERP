@@ -77,7 +77,7 @@ export async function updateProduct(id: string, data: ProductFormData) {
         const unitChanged = currentProduct.unit_medida !== validatedData.unidad_medida
 
         const unitChanges = handleUnitConversion(
-            currentProduct.unit_medida as unknown,
+            currentProduct.unit_medida as any,
             validatedData.unidad_medida,
             unitChanged ? Number(currentProduct.stock_actual) : validatedData.stock_actual,
             unitChanged ? Number(currentProduct.costo_unitario) : validatedData.costo_unitario

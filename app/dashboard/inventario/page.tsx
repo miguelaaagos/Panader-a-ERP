@@ -38,7 +38,7 @@ export default async function InventarioPage({ searchParams }: PageProps) {
         query = query.or(`nombre.ilike.%${q}%,codigo.ilike.%${q}%`)
     }
     if (tipo !== "todos") {
-        query = query.eq("tipo", tipo as unknown)
+        query = query.eq("tipo", tipo as any)
     }
     if (estado === "activos") {
         query = query.eq("activo", true)

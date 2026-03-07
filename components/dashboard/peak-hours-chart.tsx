@@ -54,9 +54,10 @@ export function PeakHoursChart({ data }: PeakHoursChartProps) {
                                     color: "hsl(var(--foreground))"
                                 }}
                                 formatter={(value: unknown, name: unknown) => {
-                                    if (name === "ingresos") return [new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(Number(value || 0)), "Ingresos Totales"]
-                                    if (name === "transacciones") return [value, "N° Ventas"]
-                                    return [value, name]
+                                    const val = Number(value || 0)
+                                    if (name === "ingresos") return [new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(val), "Ingresos Totales"]
+                                    if (name === "transacciones") return [val, "N° Ventas"]
+                                    return [String(value), String(name)]
                                 }}
                             />
                             <Bar
@@ -72,7 +73,7 @@ export function PeakHoursChart({ data }: PeakHoursChartProps) {
                                     offset={10}
                                     fill="hsl(var(--foreground))"
                                     fontSize={12}
-                                    formatter={(value: unknown) => Number(value) > 0 ? value : ''}
+                                    formatter={(value: unknown) => Number(value) > 0 ? String(value) : ''}
                                 />
                             </Bar>
                         </BarChart>

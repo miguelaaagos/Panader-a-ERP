@@ -1,9 +1,9 @@
 # TODO: Sincronización de Desarrollo (Calama - Antofagasta)
 
-## Estado Actual: Estabilización de Tipos y Corrección de Costos (Marzo 2026)
+## Estado Actual: Saneamiento Integral de Tipos y Estabilidad (Marzo 2026)
 - **Fecha**: 2026-03-07
 - **Ubicación**: Antofagasta
-- **Hito**: Corrección crítica del bug de costos en recetas (kg↔g). Estabilización de tipos `unknown` en Dashboard, Gastos y Configuración. Reducción de errores de build de >100 a ~50.
+- **Hito**: Saneamiento total de tipos (0 errores en `typecheck`) en los módulos de Asistencia, Recetas, Inventario, Gastos y Reportes. Estabilización de la arquitectura Core y eliminación de recursividad en políticas RLS.
 
 ## Tareas Completadas [x]
 - [x] Establecer y documentar estándares UI/UX (Notificaciones, Gráficos PowerBI style, Tablas móviles, Dark mode) en GEMINI.md y skills.
@@ -50,8 +50,10 @@
 - [x] **Gestión de Gastos**: CRUD de edición y **Version**: 1.2.6 (Type Stabilization & Cost Bugfix)  
 **Estado**: Estable / En Desarrollo  
 **Última actualización**: 7 de marzo de 2026 — Corrección del bug crítico de cálculo de costos en el modal de recetas (conversión kg↔g integrada en tiempo real). Estabilización masiva de tipos `unknown` en Dashboard, Gastos y Configuración. Sincronización completada en la rama `desarrollo`.
-- [x] **Estabilización de Tipos (Saneamiento)**: Resolución de más de 50 errores de `unknown` en `Stats.tsx`, `gastos-client.tsx` y `config-form.tsx`.
+- [x] **Estabilización de Tipos (Saneamiento)**: Resolución del 100% de los errores de `unknown` en `Stats.tsx`, `gastos-client.tsx`, `config-form.tsx`, `assistance-client.tsx`, `ProductFormDialog.tsx`, y más. **Resultado: 0 errores en typecheck**.
 - [x] **Sincronización de Infraestructura**: Push de migraciones acumuladas (`horarios_roles`, `proveedores`) y fix de `supabase gen types` usando el Project ID correcto.
+- [x] **Saneamiento de Server Actions**: Manejo robusto de errores `unknown` en `recipes.ts`, `inventory.ts` y `asistencia.ts`.
+- [x] **Consolidación de Reportes**: Parches de tipos en gráficos de Recharts y validación de interfaces financieras.
 - [x] Integración de Gastos Fijos (sueldos, luz, agua) al Dashboard Financiero.
 - [ ] Implementar soporte 100% Offline (PWA) con IndexedDB para carga total de catálogo y sincronización en segundo plano.
 - [x] **Módulo de Asistencia Avanzado**: Horarios de entrada y salida personalizables por día y por empleado.

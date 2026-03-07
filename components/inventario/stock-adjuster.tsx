@@ -13,7 +13,12 @@ import { Permission } from "@/lib/roles"
 import { useUserRole } from "@/hooks/useUserRole"
 
 interface StockAdjusterProps {
-    producto: unknown
+    producto: {
+        id: string
+        nombre: string
+        stock_actual: number | null
+        unidad_medida: string
+    }
     onSuccess: () => void
 }
 
@@ -29,33 +34,26 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
     const handleAdjust = async (delta: number) => {
         setLoading(true)
         try {
-            const newStock = (producto as any).stock_actual + delta;
+            const newStock = (producto.stock_actual || 0) + delta;
             const { error } = await supabase
                 .from("productos")
-                .update({ stock_actual: newStock }) // Changed 'stock' to 'stock_actual' based on existing code
-                .eq("id", (producto as any).id)
+                .update({ stock_actual: newStock })
+                .eq("id", producto.id)
 
             if (error) throw error
 
             toast.success("Stock actualizado", {
-                description: `Nuevo stock para ${(producto as any).nombre}: ${newStock} ${(producto as any).unidad_medida}`
+                description: `Nuevo stock para ${producto.nombre}: ${newStock} ${producto.unidad_medida}`
             })
             onSuccess?.()
             setOpen(false)
             setAdjustment("")
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : "Ocurrió un error inesperado"
-            // The original code uses 'sonner' toast (e.g., toast.error).
-            // The provided instruction uses a different toast API (e.g., toast({ title: "Error", ... })).
-            // To maintain syntactic correctness with the existing 'sonner' import,
-            // we'll adapt the message to 'sonner's API. If a different toast library
-            // is intended, its import and usage would need to be updated.
             toast.error("Error", {
                 description: errorMessage,
             })
         } finally {
-            // The instruction specified 'setSubmitting(false)', but 'setLoading' is the state variable defined.
-            // Keeping 'setLoading(false)' to avoid introducing an undefined variable and maintain functionality.
             setLoading(false)
         }
     }
@@ -76,8 +74,8 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button variant="ghost" size="sm" title="Ajustar Stock">
-                    <Package className="w-4 h-4" />
+                <Button variant="ghost" size="sm" title="Ajustar Stock" disabled={loading}>
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Package className="w-4 h-4" />}
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-64">
@@ -85,7 +83,7 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
                     <div>
                         <h4 className="font-medium text-sm mb-1">Ajustar Stock</h4>
                         <p className="text-xs text-muted-foreground">
-                            Stock actual: <strong>{producto.stock_actual?.toFixed(3)} {producto.unidad_medida === 'unidades' ? 'uds' : producto.unidad_medida}</strong>
+                            Stock actual: <strong>{(producto.stock_actual || 0).toFixed(3)} {producto.unidad_medida === 'unidades' ? 'uds' : producto.unidad_medida}</strong>
                         </p>
                     </div>
 
