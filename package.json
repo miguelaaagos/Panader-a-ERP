@@ -6,7 +6,8 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "gen:types": "supabase gen types typescript --project-id mzbiksxetgpogaqncorl > types/database.types.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

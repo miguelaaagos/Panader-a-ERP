@@ -14,8 +14,8 @@
 - Next.js 15.3.1 - Web framework
 
 **Package Manager:**
-- npm
-- Lockfile: `package-lock.json` present
+- pnpm (ÚNICO — nunca npm ni npx directo)
+- Lockfile: `pnpm-lock.yaml` present
 
 ## Frameworks
 
