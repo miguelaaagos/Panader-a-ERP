@@ -332,7 +332,7 @@ export async function signInWithGoogle() {
 
 ```bash
 # Generar tipos TypeScript desde Supabase
-npx supabase gen types typescript --project-id "YOUR_PROJECT_ID" > src/types/database.types.ts
+pnpm gen:types
 ```
 
 **Uso con tipos:**
