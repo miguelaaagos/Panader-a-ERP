@@ -26,7 +26,7 @@ async function WelcomeMessage({ month, year }: { month?: number, year?: number }
     .eq("id", user_id)
     .single()
 
-  const profile = profileData as any
+  const profile = profileData as unknown
 
   if (profile?.rol === "cajero") {
     redirect("/dashboard/erp")

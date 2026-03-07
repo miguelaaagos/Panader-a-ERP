@@ -56,7 +56,7 @@ export async function registrarIngresoInventario(data: z.infer<typeof IngresoSch
         revalidatePath("/dashboard/inventario/ingresos")
 
         return { success: true, data: result }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error registrando ingreso de inventario:", error)
         const errorMessage = error instanceof Error
             ? error.message
@@ -101,7 +101,7 @@ export async function getHistorialIngresos() {
         if (error) throw error
 
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error)
         return { success: false, error: errorMessage }
     }
@@ -143,7 +143,7 @@ export async function getDetallesIngreso(ingresoId: string) {
         if (error) throw error
 
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error)
         return { success: false, error: errorMessage }
     }
@@ -221,7 +221,7 @@ export async function anularIngreso(ingresoId: string) {
         revalidatePath("/dashboard/gastos")
 
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         return { success: false, error: error.message || String(error) }
     }
 }

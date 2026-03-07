@@ -35,7 +35,7 @@ export default function ProveedoresPage() {
             } else if (!result.success) {
                 toast.error("Error al cargar proveedores", { description: result.error })
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             toast.error("Error al cargar la lista")
         } finally {
             setLoading(false)

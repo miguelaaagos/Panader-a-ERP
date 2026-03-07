@@ -148,7 +148,7 @@ export function CashierAttendanceView({ activeTurn, asistencias }: Props) {
                                         asistencias.map((asistencia) => {
                                             const fechaEntrada = new Date(asistencia.entrada);
                                             // TODO: Types are missing estado and horas_extra in AsistenciaRow for now
-                                            const asis = asistencia as any;
+                                            const asis = asistencia as unknown;
 
                                             return (
                                                 <TableRow key={asistencia.id}>

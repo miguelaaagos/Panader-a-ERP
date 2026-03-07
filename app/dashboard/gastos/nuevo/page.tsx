@@ -137,7 +137,7 @@ export default function NuevoGastoPage() {
             } else {
                 toast.error("Error al registrar: " + res.error)
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             toast.error("Ocurrió un error inesperado al guardar el gasto")
             console.error(error)
         } finally {

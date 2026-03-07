@@ -36,7 +36,7 @@ export function DeleteProveedorDialog({
             } else {
                 toast.error(result.error || "No se pudo eliminar el proveedor")
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             toast.error(error.message || "Ocurrió un error inesperado")
         } finally {
             setIsDeleting(false)

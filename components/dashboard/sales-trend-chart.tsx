@@ -67,7 +67,7 @@ export function SalesTrendChart({ data }: SalesTrendChartProps) {
                                     offset={10}
                                     fill="hsl(var(--foreground))"
                                     fontSize={12}
-                                    formatter={(value: any) => Number(value) > 0 ? new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(Number(value)) : ''}
+                                    formatter={(value: unknown) => Number(value) > 0 ? new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(Number(value)) : ''}
                                 />
                             </Line>
                         </LineChart>

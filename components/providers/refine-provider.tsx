@@ -31,7 +31,7 @@ export function RefineProvider({ children }: { children: React.ReactNode }) {
         login: async ({ email, password, providerName }) => {
             if (providerName) {
                 const { error } = await supabase.auth.signInWithOAuth({
-                    provider: providerName as any,
+                    provider: providerName as import("@supabase/supabase-js").Provider,
                 });
                 if (error) {
                     console.error("[AuthProvider] OAuth Error:", error);
@@ -51,12 +51,12 @@ export function RefineProvider({ children }: { children: React.ReactNode }) {
 
                 // Ensure cookies are synchronized by using a hard redirect
                 if (typeof window !== "undefined") {
-                    window.location.href = "/dashboard";
+                    window.location.assign("/dashboard");
                 }
                 return { success: true };
             } catch (err) {
                 console.error("[AuthProvider] Unexpected Error:", err);
-                return { success: false, error: err as any };
+                return { success: false, error: err as Error };
             }
         },
         logout: async () => {

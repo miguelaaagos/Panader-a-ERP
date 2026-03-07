@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ConfigurarHorariosDialog } from "./ConfigurarHorariosDialog";
+import { ConfigurarHorariosUsuarioDialog } from "./ConfigurarHorariosUsuarioDialog";
 import { HorarioRole } from "@/server/actions/horarios";
 
 interface Props {
@@ -112,6 +113,7 @@ export function AdminAttendanceView({ asistencias, currentMonth, currentYear, ho
                         >
                             Limpiar
                         </Button>
+                        <ConfigurarHorariosUsuarioDialog />
                         <ConfigurarHorariosDialog horariosActuales={horariosActuales} />
                     </div>
                 </CardHeader>

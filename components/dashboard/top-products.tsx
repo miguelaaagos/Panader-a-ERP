@@ -41,7 +41,7 @@ export function TopProducts() {
             // Agrupar por producto
             const productMap: { [key: string]: TopProduct } = {}
 
-            data?.forEach((item: any) => {
+            data?.forEach((item: unknown) => {
                 const nombre = item.productos?.nombre || "Producto desconocido"
 
                 if (!productMap[nombre]) {

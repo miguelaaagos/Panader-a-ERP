@@ -36,7 +36,7 @@ export async function updateProfile(data: z.infer<typeof profileSchema>) {
 
         revalidatePath("/dashboard/perfil")
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         return { success: false, error: error.message }
     }
 }
@@ -54,7 +54,7 @@ export async function updatePassword(data: z.infer<typeof passwordSchema>) {
         }
 
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         return { success: false, error: error.message }
     }
 }

@@ -35,7 +35,7 @@ export default function VentasPage() {
         init()
     }, [])
 
-    const fetchSales = async (tenantId: string) => {
+    async function fetchSales(tenantId: string) {
         setLoading(true)
         const result = await getRecentSales(tenantId, 50)
         if (result.success) {

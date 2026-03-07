@@ -51,7 +51,7 @@ export function ProductionPreviewDialog({ open, onOpenChange, order, onConfirm, 
                 const factorOrden = currentOrder.cantidad_a_producir / recipeRender
 
                 let hasInsufficient = false
-                const previewData = data.ingredientes.map((ing: any) => {
+                const previewData = data.ingredientes.map((ing: unknown) => {
                     const factorObj = ing.producto.factor_conversion || 1
                     const reqBase = ing.cantidad * factorOrden
                     const descStock = reqBase / factorObj

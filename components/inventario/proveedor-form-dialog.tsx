@@ -94,7 +94,7 @@ export function ProveedorFormDialog({
             } else {
                 toast.error(result.error || "Ocurrió un error al guardar el proveedor")
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             toast.error(error.message || "Ocurrió un error inesperado")
         } finally {
             setIsSubmitting(false)

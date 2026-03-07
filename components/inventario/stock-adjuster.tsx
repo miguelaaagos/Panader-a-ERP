@@ -13,7 +13,7 @@ import { Permission } from "@/lib/roles"
 import { useUserRole } from "@/hooks/useUserRole"
 
 interface StockAdjusterProps {
-    producto: any
+    producto: unknown
     onSuccess: () => void
 }
 
@@ -37,7 +37,7 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
             onSuccess()
             setOpen(false)
             setAdjustment("")
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error adjusting stock:", error)
             toast.error("Error al ajustar stock", {
                 description: error.message

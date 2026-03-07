@@ -15,7 +15,7 @@ import { format } from "date-fns"
 interface GastoEditarDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    gasto: any | null
+    gasto: unknown | null
     onEdited: () => void
 }
 
@@ -48,8 +48,8 @@ export function GastoEditarDialog({ open, onOpenChange, gasto, onEdited }: Gasto
                 const catId = gasto.categoria?.id || gasto.categoria_id || "none"
                 setCategoriaId(catId)
 
-                setTipoDocumento((gasto.tipo_documento as any) || "Boleta")
-                setTipoGasto((gasto.tipo_gasto as any) || "variable")
+                setTipoDocumento((gasto.tipo_documento as unknown) || "Boleta")
+                setTipoGasto((gasto.tipo_gasto as unknown) || "variable")
                 setMontoTotal(gasto.monto_total?.toString() || "")
                 setMontoNeto(gasto.monto_neto || 0)
                 setMontoIva(gasto.monto_iva || 0)
@@ -134,7 +134,7 @@ export function GastoEditarDialog({ open, onOpenChange, gasto, onEdited }: Gasto
             } else {
                 toast.error("Error al actualizar: " + res.error)
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             toast.error("Ocurrió un error inesperado al guardar")
         } finally {
             setSubmitting(false)
@@ -195,7 +195,7 @@ export function GastoEditarDialog({ open, onOpenChange, gasto, onEdited }: Gasto
                         </div>
                         <div className="space-y-2">
                             <Label>Tipo de Gasto</Label>
-                            <Select value={tipoGasto} onValueChange={(val: any) => setTipoGasto(val)}>
+                            <Select value={tipoGasto} onValueChange={(val: unknown) => setTipoGasto(val)}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="variable">Gasto Variable</SelectItem>

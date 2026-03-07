@@ -55,7 +55,7 @@ export function IngresoDetalleDialog({
             } else {
                 setError(result.error || "No se pudieron cargar los detalles")
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             setError(err.message || "Ocurrió un error inesperado")
         } finally {
             setLoading(false)

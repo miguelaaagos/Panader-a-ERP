@@ -53,7 +53,7 @@ export async function getReporteFinancieroMensual(monthISO?: string) {
         // 2. Obtener Gastos del Mes
         const { data: gastosData, error: gastosError } = await supabase
             .from("gastos")
-            .select("monto_neto, monto_iva, monto_total, tipo_gasto")
+            .select("id, descripcion, monto_neto, monto_iva, monto_total, tipo_gasto")
             .eq("tenant_id", profile.tenant_id)
             .gte("fecha_gasto", startStr)
             .lte("fecha_gasto", endStr)
@@ -103,6 +103,13 @@ export async function getReporteFinancieroMensual(monthISO?: string) {
                 fijos_neto: totalFijosNeto,
                 variables_bruto: totalVariablesBruto,
                 variables_neto: totalVariablesNeto,
+                fijos_detalle: gastosData
+                    .filter(g => g.tipo_gasto === 'fijo')
+                    .map(g => ({
+                        descripcion: g.descripcion,
+                        monto: g.monto_total,
+                        id: g.id
+                    }))
             },
             impuestos: {
                 iva_a_pagar: Math.max(0, totalIvaDebito - totalIvaCredito),
@@ -116,7 +123,7 @@ export async function getReporteFinancieroMensual(monthISO?: string) {
 
         return { success: true, data: resumen }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         return { success: false, error: error.message || String(error) }
     }
 }

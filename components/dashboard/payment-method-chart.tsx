@@ -75,7 +75,7 @@ export function PaymentMethodChart({ data }: PaymentMethodChartProps) {
                                     fontSize: "12px",
                                     fontFamily: 'serif'
                                 }}
-                                formatter={(value: any) => [new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(Number(value || 0)), "Total"]}
+                                formatter={(value: unknown) => [new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(Number(value || 0)), "Total"]}
                                 labelFormatter={(label) => (LABEL_MAP[label.toLowerCase()] || label)}
                             />
                             <Bar
@@ -91,7 +91,7 @@ export function PaymentMethodChart({ data }: PaymentMethodChartProps) {
                                     fontSize={10}
                                     fontWeight="bold"
                                     className="font-serif"
-                                    formatter={(value: any) => Number(value) > 0 ? new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(Number(value)) : ''}
+                                    formatter={(value: unknown) => Number(value) > 0 ? new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(Number(value)) : ''}
                                 />
                                 {sortedData.map((entry, index) => (
                                     <Cell

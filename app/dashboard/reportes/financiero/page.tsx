@@ -133,7 +133,18 @@ export default function ReporteFinancieroPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{formatter.format(reporte.gastos.fijos_bruto)}</div>
-                        <p className="text-xs text-muted-foreground">Sueldos, arriendos, luz.</p>
+                        {reporte.gastos.fijos_detalle?.length > 0 ? (
+                            <div className="mt-2 space-y-1">
+                                {reporte.gastos.fijos_detalle.map((g: unknown) => (
+                                    <div key={g.id} className="text-[10px] flex justify-between text-muted-foreground border-t border-muted pt-1">
+                                        <span className="truncate max-w-[100px]">{g.descripcion}</span>
+                                        <span>{formatter.format(g.monto)}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-xs text-muted-foreground">Sueldos, arriendos, luz.</p>
+                        )}
                     </CardContent>
                 </Card>
                 <Card>
@@ -185,14 +196,14 @@ export default function ReporteFinancieroPage() {
                                     />
                                     <Tooltip
                                         cursor={{ fill: 'hsl(var(--muted))', opacity: 0.4 }}
-                                        formatter={(value: any) => [formatter.format(Number(value)), "Total"]}
+                                        formatter={(value: unknown) => [formatter.format(Number(value)), "Total"]}
                                         contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
                                     />
                                     <Bar dataKey="Total" radius={[4, 4, 0, 0]}>
                                         {chartData.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={entry.fill} />
                                         ))}
-                                        <LabelList dataKey="Total" position="top" offset={10} formatter={(val: any) => Number(val) > 0 ? formatter.format(Number(val)) : ""} fontSize={11} fill="hsl(var(--foreground))" />
+                                        <LabelList dataKey="Total" position="top" offset={10} formatter={(val: unknown) => Number(val) > 0 ? formatter.format(Number(val)) : ""} fontSize={11} fill="hsl(var(--foreground))" />
                                     </Bar>
                                 </BarChart>
                             </ResponsiveContainer>

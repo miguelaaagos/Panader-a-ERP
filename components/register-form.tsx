@@ -27,7 +27,7 @@ export function RegisterForm({
     const handleRegister = (e: React.FormEvent) => {
         e.preventDefault();
         register({ email, password }, {
-            onError: (error: any) => {
+            onError: (error: unknown) => {
                 setError(error?.message || "Error al registrarse");
             },
         });

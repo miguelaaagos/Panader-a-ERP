@@ -54,7 +54,7 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
 
             // Contar productos por categoría
             const categoriasWithCount = await Promise.all(
-                (categoriasData || []).map(async (cat: any) => {
+                (categoriasData || []).map(async (cat: unknown) => {
                     const { count } = await supabase
                         .from("productos")
                         .select("*", { count: "exact", head: true })
@@ -68,7 +68,7 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
             )
 
             setCategorias(categoriasWithCount)
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error fetching categorias:", error)
             toast.error("Error al cargar categorías")
         } finally {
@@ -94,7 +94,7 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
             setNewCategoryName("")
             fetchCategorias()
             onSuccess()
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error creating category:", error)
             toast.error("Error al crear categoría", {
                 description: error.message
@@ -123,7 +123,7 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
             setEditCategoryName("")
             fetchCategorias()
             onSuccess()
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error updating category:", error)
             toast.error("Error al actualizar categoría", {
                 description: error.message
@@ -156,7 +156,7 @@ export function CategoryManagerDialog({ open, onOpenChange, onSuccess }: Categor
             toast.success("Categoría eliminada correctamente")
             fetchCategorias()
             onSuccess()
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error deleting category:", error)
             toast.error("Error al eliminar categoría", {
                 description: error.message

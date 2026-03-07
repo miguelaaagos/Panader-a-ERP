@@ -49,10 +49,11 @@
 - [x] **Auditoría de Compras**: Lógica de anulación con reversión automática de stock y anulación de gastos vinculados.
 - [x] **Gestión de Gastos**: CRUD de edición y estados de anulación visual.
 - [x] **Sincronización de Infraestructura**: Push de migraciones acumuladas (`horarios_roles`, `proveedores`) y fix de `supabase gen types` usando el Project ID correcto.
-- [ ] Integración de Gastos Fijos (sueldos, luz, agua) al Dashboard Financiero.
+- [x] Integración de Gastos Fijos (sueldos, luz, agua) al Dashboard Financiero.
 - [ ] Implementar soporte 100% Offline (PWA) con IndexedDB para carga total de catálogo y sincronización en segundo plano.
-- [ ] **Deuda Técnica (Performance)**: Eliminar `"use client"` de todas las páginas (ej. `/inventario`, `/ventas`) convirtiéndolas a Server Components nativos para mejorar el TTFB (Time to First Byte). Solo usar `"use client"` en sub-componentes interactivos menores.
-- [ ] Solucionar error de resolución de `eslint-plugin-react` con ESLint 9 Flat Config + PNPM.
+- [x] **Módulo de Asistencia Avanzado**: Horarios de entrada y salida personalizables por día y por empleado.
+- [x] **Deuda Técnica (Performance)**: Eliminar `"use client"` de todas las páginas (ej. `/inventario`, `/gastos`) convirtiéndolas a Server Components nativos para mejorar el TTFB (Time to First Byte). Solo usar `"use client"` en sub-componentes interactivos menores.
+- [x] Solucionar error de configuración de `eslint-plugin-react` con ESLint Flat Config, y sanear los warnings/anys del repositorio para lograr build de 0 errores.
 - [x] Ejecución de pruebas iniciales con Playwright (Salud del sistema)
 - [x] Configuración de Global Auth Setup para tests rápidos
 - [ ] **Integración Transbank (Webpay Plus)**:

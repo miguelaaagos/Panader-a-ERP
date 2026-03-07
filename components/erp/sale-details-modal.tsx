@@ -49,7 +49,7 @@ export function SaleDetailsModal({ saleId, isOpen, onClose }: SaleDetailsModalPr
         }
     }, [isOpen, saleId])
 
-    const fetchDetails = async () => {
+    async function fetchDetails() {
         if (!saleId) return
         setLoading(true)
         const result = await getSaleDetails(saleId)
@@ -156,7 +156,7 @@ export function SaleDetailsModal({ saleId, isOpen, onClose }: SaleDetailsModalPr
                                     </div>
                                     <ScrollArea className="max-h-[300px]">
                                         <div className="divide-y">
-                                            {sale.detalles?.map((item: any) => (
+                                            {sale.detalles?.map((item: { id: string, cantidad: number, precio_unitario: number, total: number, producto?: { nombre: string, codigo: string } }) => (
                                                 <div key={item.id} className="grid grid-cols-12 p-3 text-sm items-center hover:bg-muted/30 transition-colors">
                                                     <div className="col-span-6">
                                                         <div className="font-medium">{item.producto?.nombre}</div>

@@ -12,7 +12,7 @@ import { deleteProduct, hardDeleteProduct } from "@/actions/inventory"
 interface DeleteProductDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    producto: any
+    producto: unknown
     onSuccess: () => void
 }
 
@@ -36,7 +36,7 @@ export function DeleteProductDialog({ open, onOpenChange, producto, onSuccess }:
             if (error) throw error
 
             setHasVentas((data?.length || 0) > 0)
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error checking ventas:", JSON.stringify(error, null, 2))
         } finally {
             setCheckingVentas(false)
@@ -57,7 +57,7 @@ export function DeleteProductDialog({ open, onOpenChange, producto, onSuccess }:
             toast.success("Producto eliminado correctamente")
             onSuccess()
             onOpenChange(false)
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error deleting product:", error)
             toast.error("Error al eliminar producto", {
                 description: error.message
@@ -83,7 +83,7 @@ export function DeleteProductDialog({ open, onOpenChange, producto, onSuccess }:
             })
             onSuccess()
             onOpenChange(false)
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error deactivating product:", error)
             toast.error("Error al desactivar producto", {
                 description: error.message

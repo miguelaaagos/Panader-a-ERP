@@ -39,22 +39,41 @@ export async function marcarEntrada() {
         return { success: false, error: "Ya existe un turno activo sin marcar salida." };
     }
 
-    // 1. Verificar si hay un horario designado para el rol
-    const { data: horario } = await supabase
-        .from("horarios_roles")
+    // 1. Obtener día actual de la semana (1-7, Lunes=1)
+    const now = new Date();
+    const jsDay = now.getDay();
+    const dia_semana = jsDay === 0 ? 7 : jsDay;
+
+    // 2. Verificar si hay horario personalizado para este usuario y día
+    let horarioEntrada;
+    const { data: userHorario } = await supabase
+        .from("horarios_usuarios")
         .select("hora_entrada")
         .eq("tenant_id", profile.tenant_id)
-        .eq("rol", profile.rol)
+        .eq("usuario_id", user_id)
+        .eq("dia_semana", dia_semana)
         .maybeSingle();
+
+    if (userHorario && userHorario.hora_entrada) {
+        horarioEntrada = userHorario.hora_entrada;
+    } else {
+        // Fallback: horario del rol
+        const { data: rolHorario } = await supabase
+            .from("horarios_roles")
+            .select("hora_entrada")
+            .eq("tenant_id", profile.tenant_id)
+            .eq("rol", profile.rol)
+            .maybeSingle();
+        if (rolHorario) horarioEntrada = rolHorario.hora_entrada;
+    }
 
     let estado = "En hora"; // Por defecto
 
-    if (horario && horario.hora_entrada) {
-        const now = new Date();
+    if (horarioEntrada) {
         const horaActualString = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
 
         // Comparación simple de cadenas HH:mm asumiendo timezone local
-        if (horaActualString > horario.hora_entrada) {
+        if (horaActualString > horarioEntrada) {
             estado = "Atraso";
         }
     }

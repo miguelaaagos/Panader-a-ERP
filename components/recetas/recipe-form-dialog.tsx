@@ -36,7 +36,7 @@ interface IngredienteSeleccionado {
 interface RecipeFormDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    recipe?: any // Recipe detallada para editar
+    recipe?: unknown // Recipe detallada para editar
     onSuccess: () => void
 }
 
@@ -76,13 +76,13 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                 setDescripcion(recipe.descripcion || "")
                 setRendimiento(recipe.rendimiento.toString())
                 setIngredientes(
-                    recipe.ingredientes.map((ing: any) => {
+                    recipe.ingredientes.map((ing: unknown) => {
                         const product = ing.producto
                         const uComp = product.unidad_medida.toLowerCase()
                         // Si la unidad es kg o L, el factor SIEMPRE debe ser 1000
                         // (1 kg = 1000 g, 1 L = 1000 ml), ignorar valores incorrectos en BD
                         const isMassOrVolume = uComp === "kg" || uComp === "l"
-                        let factor = isMassOrVolume ? 1000 : (product.factor_conversion || 1)
+                        const factor = isMassOrVolume ? 1000 : (product.factor_conversion || 1)
                         const purchaseCost = product.costo_unitario ?? 0
 
                         // Determinar la unidad mostrada y cantidad escalada
@@ -154,7 +154,7 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
         products.filter(p => {
             if (p.tipo !== "producto_terminado" && p.tipo !== "ambos") return false
             if (!p.categorias) return false
-            const catRecord = p.categorias as any
+            const catRecord = p.categorias as unknown
             const nombreCat = Array.isArray(catRecord) ? catRecord[0]?.nombre : catRecord?.nombre
             if (!nombreCat) return false
             const catNombre = String(nombreCat).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -225,7 +225,7 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                 const uComp = product.unidad_medida.toLowerCase()
                 // Si la unidad es kg o L, el factor SIEMPRE debe ser 1000
                 const isMassOrVolume = uComp === "kg" || uComp === "l"
-                let factor = isMassOrVolume ? 1000 : (product.factor_conversion || 1)
+                const factor = isMassOrVolume ? 1000 : (product.factor_conversion || 1)
                 const purchaseCost = product.costo_unitario ?? 0
 
                 newIngredientes[index] = {
@@ -574,7 +574,7 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                                 </Button>
                                 {selectedProduct && (
                                     <div className="text-[10px] text-muted-foreground italic pl-2">
-                                        Precio catálogo: ${Number((selectedProduct as any).precio_venta || 0).toLocaleString()}
+                                        Precio catálogo: ${Number((selectedProduct as unknown).precio_venta || 0).toLocaleString()}
                                     </div>
                                 )}
                             </div>
@@ -633,7 +633,7 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                                     <Label>Se Compra En</Label>
                                     <Select
                                         value={newIngredient.unidad_medida}
-                                        onValueChange={(val: any) => {
+                                        onValueChange={(val: unknown) => {
                                             const base = val === "kg" ? "g" : val === "L" ? "ml" : val
                                             const fact = (val === "kg" || val === "L") ? 1000 : 1
                                             setNewIngredient({ ...newIngredient, unidad_medida: val, unidad_medida_base: base, factor_conversion: fact })
@@ -656,7 +656,7 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                                     <Label>Se Usa En (Receta)</Label>
                                     <Select
                                         value={newIngredient.unidad_medida_base || newIngredient.unidad_medida}
-                                        onValueChange={(val: any) => {
+                                        onValueChange={(val: unknown) => {
                                             let fact = 1;
                                             if (newIngredient.unidad_medida === "kg" && val === "g") fact = 1000;
                                             if (newIngredient.unidad_medida === "L" && val === "ml") fact = 1000;

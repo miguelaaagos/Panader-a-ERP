@@ -37,7 +37,7 @@ interface ProductFormDataUI {
 interface ProductFormDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    producto?: any // Producto existente para editar (opcional)
+    producto?: unknown // Producto existente para editar (opcional)
     onSuccess: (newProductId?: string) => void
 }
 
@@ -115,7 +115,7 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                     costo_unitario: producto.costo_unitario?.toString() || "",
                     stock_actual: producto.stock_actual?.toString() || "0",
                     stock_minimo: producto.stock_minimo?.toString() || "5",
-                    unidad_medida: (producto.unidad_medida as any) || "unidades",
+                    unidad_medida: (producto.unidad_medida as unknown) || "unidades",
                     activo: producto.activo !== undefined ? producto.activo : true,
                     tipo: producto.tipo || "producto_terminado",
                     margen_deseado: calcMargen,
@@ -154,7 +154,7 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
 
             if (error) throw error
             setCategorias(data || [])
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error fetching categorias:", error)
             toast.error("Error al cargar categorías")
         }
@@ -216,7 +216,7 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
 
             setFormData(prev => ({
                 ...prev,
-                unidad_medida: newUnit as any,
+                unidad_medida: newUnit as unknown,
                 stock_actual: (currentStock * factor).toString(),
                 stock_minimo: (currentMinSafe * factor).toString(),
                 // Prices scale inversely to quantity
@@ -226,7 +226,7 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
 
             toast.info(`Valores convertidos de ${oldUnit} a ${newUnit}`)
         } else {
-            setFormData(prev => ({ ...prev, unidad_medida: newUnit as any }))
+            setFormData(prev => ({ ...prev, unidad_medida: newUnit as unknown }))
         }
     }
 
@@ -271,7 +271,7 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
             const newId = !isEditing && 'id' in result ? result.id : undefined
             onSuccess(newId as string | undefined)
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error saving product:", error)
             toast.error("Error al guardar producto", {
                 description: error.message
@@ -337,7 +337,7 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                             <Label htmlFor="tipo">Uso del Producto</Label>
                             <Select
                                 value={formData.tipo}
-                                onValueChange={(value: any) => {
+                                onValueChange={(value: unknown) => {
                                     setFormData(prev => ({
                                         ...prev,
                                         tipo: value,

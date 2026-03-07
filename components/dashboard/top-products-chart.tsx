@@ -57,7 +57,7 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
                                     borderRadius: "8px",
                                     fontSize: "12px"
                                 }}
-                                formatter={(value: any) => [new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(Number(value || 0)), "Total"]}
+                                formatter={(value: unknown) => [new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(Number(value || 0)), "Total"]}
                             />
                             <Bar dataKey="total" radius={[0, 4, 4, 0]}>
                                 <LabelList
@@ -65,7 +65,7 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
                                     position="right"
                                     fill="hsl(var(--foreground))"
                                     fontSize={10}
-                                    formatter={(value: any) => Number(value) > 0 ? new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(Number(value)) : ''}
+                                    formatter={(value: unknown) => Number(value) > 0 ? new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(Number(value)) : ''}
                                 />
                                 {paginatedData.map((entry, index) => (
                                     <Cell key={`cell-${entry.nombre}`} fill={COLORS[index % COLORS.length]} />

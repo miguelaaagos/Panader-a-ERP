@@ -64,7 +64,7 @@ export async function createSale(data: SaleFormData) {
         // 1. Llamada atómica al RPC
         // Esto maneja: Validar stock, Decrementar stock, Insertar Venta e Insertar Detalles en UNA sola transacción.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: saleId, error: rpcError } = await (supabase.rpc as any)('create_sale_v1', {
+        const { data: saleId, error: rpcError } = await (supabase.rpc as unknown)('create_sale_v1', {
             p_tenant_id: tenant_id,
             p_usuario_id: user_id,
             p_cliente_nombre: validated.cliente_nombre ?? null,
