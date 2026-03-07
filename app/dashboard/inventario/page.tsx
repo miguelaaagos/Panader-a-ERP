@@ -160,10 +160,10 @@ export default function InventarioPage() {
 
             setProductos(data || [])
             setFilteredProductos(data || [])
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error en fetchProductos:", error)
             toast.error("Error al cargar productos", {
-                description: error.message
+                description: error instanceof Error ? error.message : String(error)
             })
         } finally {
             setLoading(false)

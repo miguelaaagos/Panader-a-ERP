@@ -44,12 +44,12 @@ export async function createProduct(data: ProductFormData) {
 
         revalidatePath("/dashboard/inventario")
         return { success: true, id: newProduct.id as string }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error creating product:", error)
         const errorMessage = error instanceof Error
             ? error.message
             : typeof error === 'object' && error !== null && 'message' in error
-                ? error.message
+                ? String((error as Record<string, unknown>).message)
                 : String(error);
         return { success: false, error: errorMessage }
     }
@@ -77,7 +77,7 @@ export async function updateProduct(id: string, data: ProductFormData) {
         const unitChanged = currentProduct.unit_medida !== validatedData.unidad_medida
 
         const unitChanges = handleUnitConversion(
-            currentProduct.unit_medida as any,
+            currentProduct.unit_medida as "kg" | "g" | "L" | "ml" | "unidades",
             validatedData.unidad_medida,
             unitChanged ? Number(currentProduct.stock_actual) : validatedData.stock_actual,
             unitChanged ? Number(currentProduct.costo_unitario) : validatedData.costo_unitario

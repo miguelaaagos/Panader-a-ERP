@@ -10,7 +10,6 @@ import { Search, Plus, ArrowLeft, Pencil, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { RoleGuard } from "@/components/auth/RoleGuard"
 import Link from "next/link"
-import { format } from "date-fns"
 import { ProveedorFormDialog } from "@/components/inventario/proveedor-form-dialog"
 import { DeleteProveedorDialog } from "@/components/inventario/delete-proveedor-dialog"
 
@@ -35,7 +34,7 @@ export default function ProveedoresPage() {
             } else if (!result.success) {
                 toast.error("Error al cargar proveedores", { description: result.error })
             }
-        } catch (error: any) {
+        } catch {
             toast.error("Error al cargar la lista")
         } finally {
             setLoading(false)

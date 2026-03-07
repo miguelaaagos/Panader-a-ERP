@@ -32,7 +32,7 @@ interface SelectedItem {
 
 export default function NuevoIngresoPage() {
     const router = useRouter()
-    const [productos, setProductos] = useState<any[]>([])
+    const [productos, setProductos] = useState<{ id: string; nombre: string; codigo: string | null; unidad_medida: string; costo_unitario: number }[]>([])
     const [proveedores, setProveedores] = useState<Proveedor[]>([])
     const [items, setItems] = useState<SelectedItem[]>([])
     const [observaciones, setObservaciones] = useState("")

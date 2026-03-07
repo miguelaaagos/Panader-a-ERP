@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { format, subMonths, startOfMonth } from "date-fns"
 import { es } from "date-fns/locale"
 import { toast } from "sonner"
-import { Loader2, TrendingUp, TrendingDown, Landmark, Wallet, Calculator } from "lucide-react"
+import { Loader2, TrendingUp, Landmark, Wallet, Calculator } from "lucide-react"
 import {
     BarChart,
     Bar,
@@ -16,14 +16,13 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
-    Legend,
     ResponsiveContainer,
     LabelList
 } from "recharts"
 
 export default function ReporteFinancieroPage() {
     const [loading, setLoading] = useState(true)
-    const [reporte, setReporte] = useState<any>(null)
+    const [reporte, setReporte] = useState<Record<string, unknown> | null>(null)
     const [selectedMonth, setSelectedMonth] = useState<string>(startOfMonth(new Date()).toISOString())
 
     const monthOptions = Array.from({ length: 12 }).map((_, i) => {

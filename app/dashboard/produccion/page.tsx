@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChefHat, Plus, Activity, CheckCircle2, Clock, AlertCircle } from "lucide-react"
+import { Plus, Activity, CheckCircle2, Clock } from "lucide-react"
 import { toast } from "sonner"
 import { RoleGuard } from "@/components/auth/RoleGuard"
 import { getProductionOrders, completeProductionOrder, cancelProductionOrder } from "@/actions/production"

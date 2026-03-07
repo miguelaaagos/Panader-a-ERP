@@ -13,24 +13,39 @@ import { es } from "date-fns/locale"
 import { IngresoDetalleDialog } from "@/components/inventario/ingreso-detalle-dialog"
 import { Badge } from "@/components/ui/badge"
 
+type IngresoRow = {
+    id: string
+    codigo: string | null
+    observaciones: string | null
+    created_at: string
+    subtotal: number
+    monto_iva: number
+    total: number
+    tipo_documento: string
+    generar_gasto: boolean
+    estado: string | null
+    usuario: { nombre_completo: string } | null
+    proveedor: { id: string; nombre: string } | null
+}
+
 export default function HistorialIngresosPage() {
-    const [ingresos, setIngresos] = useState<any[]>([])
+    const [ingresos, setIngresos] = useState<IngresoRow[]>([])
     const [loading, setLoading] = useState(true)
-    const [selectedIngreso, setSelectedIngreso] = useState<any | null>(null)
+    const [selectedIngreso, setSelectedIngreso] = useState<IngresoRow | null>(null)
     const [isDetailOpen, setIsDetailOpen] = useState(false)
 
     const fetchIngresos = useCallback(async () => {
         setLoading(true)
         const result = await getHistorialIngresos()
         if (result.success && result.data) {
-            setIngresos(result.data)
+            setIngresos(result.data as IngresoRow[])
         } else if (!result.success) {
             toast.error("Error al cargar el historial de compras: " + result.error)
         }
         setLoading(false)
     }, [])
 
-    const handleAnular = async (ingreso: any) => {
+    const handleAnular = async (ingreso: IngresoRow) => {
         if (!confirm(`¿Estás seguro que deseas ANULAR la compra #${ingreso.codigo}? Esta acción revertirá el stock ingresado y marcará el gasto asociado como anulado. No se puede deshacer.`)) return
 
         setLoading(true)

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { Suspense } from "react"
 import Link from "next/link"
-import { ShoppingCart, Package, ChefHat, FileText } from "lucide-react"
+import { ShoppingCart } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 
@@ -26,7 +26,7 @@ async function WelcomeMessage({ month, year }: { month?: number, year?: number }
     .eq("id", user_id)
     .single()
 
-  const profile = profileData as any
+  const profile = profileData as { rol?: string } | null
 
   if (profile?.rol === "cajero") {
     redirect("/dashboard/erp")

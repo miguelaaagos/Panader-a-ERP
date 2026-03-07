@@ -1,13 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Search, Utensils, Clock, DollarSign, Plus, Pencil, Trash2, ExternalLink, Loader2 } from "lucide-react"
+import { Search, Utensils, DollarSign, Plus, Pencil, Trash2, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { RoleGuard } from "@/components/auth/RoleGuard"
 import { getRecipes, toggleRecipeStatus, getRecipeDetail } from "@/actions/recipes"
@@ -36,7 +35,7 @@ export default function RecetasPage() {
 
     // Dialog states
     const [recipeFormOpen, setRecipeFormOpen] = useState(false)
-    const [selectedRecipe, setSelectedRecipe] = useState<any>(null)
+    const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
     const [fetchingDetail, setFetchingDetail] = useState(false)
 
     const fetchRecipes = async () => {

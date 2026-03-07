@@ -2,21 +2,17 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
-import { z } from "zod"
 
-const profileSchema = z.object({
-    nombre_completo: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-})
+type ProfileData = {
+    nombre_completo: string
+}
 
-const passwordSchema = z.object({
-    password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
-    confirmPassword: z.string()
-}).refine(data => data.password === data.confirmPassword, {
-    message: "Las contraseñas no coinciden",
-    path: ["confirmPassword"]
-})
+type PasswordData = {
+    password: string
+    confirmPassword: string
+}
 
-export async function updateProfile(data: z.infer<typeof profileSchema>) {
+export async function updateProfile(data: ProfileData) {
     try {
         const supabase = await createClient()
         const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -41,7 +37,7 @@ export async function updateProfile(data: z.infer<typeof profileSchema>) {
     }
 }
 
-export async function updatePassword(data: z.infer<typeof passwordSchema>) {
+export async function updatePassword(data: PasswordData) {
     try {
         const supabase = await createClient()
 

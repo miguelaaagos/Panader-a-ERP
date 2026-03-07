@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea"
 
 export default function NuevoGastoPage() {
     const router = useRouter()
-    const [categorias, setCategorias] = useState<any[]>([])
+    const [categorias, setCategorias] = useState<{ id: string; nombre: string; descripcion: string | null }[]>([])
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
 
@@ -137,7 +137,7 @@ export default function NuevoGastoPage() {
             } else {
                 toast.error("Error al registrar: " + res.error)
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             toast.error("Ocurrió un error inesperado al guardar el gasto")
             console.error(error)
         } finally {

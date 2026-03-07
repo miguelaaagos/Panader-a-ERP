@@ -28,8 +28,8 @@ export async function crearCategoriaGasto(nombre: string, descripcion?: string) 
 
         if (error) throw error
         return { success: true, data }
-    } catch (error: any) {
-        return { success: false, error: error.message || String(error) }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -48,8 +48,8 @@ export async function getCategoriasGastos() {
 
         if (error) throw error
         return { success: true, data }
-    } catch (error: any) {
-        return { success: false, error: error.message || String(error) }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -82,10 +82,10 @@ export async function registrarGasto(data: z.infer<typeof GastoSchema>) {
 
         revalidatePath("/dashboard/gastos")
         return { success: true, data: result }
-    } catch (error: any) {
-        let msg = error.message || String(error)
+    } catch (error: unknown) {
+        let msg = error instanceof Error ? error.message : String(error)
         if (error instanceof z.ZodError) {
-            msg = (error as any).errors.map((e: any) => e.message).join(", ")
+            msg = error.errors.map((e) => e.message).join(", ")
         }
         return { success: false, error: msg }
     }
@@ -133,8 +133,8 @@ export async function getGastos(mes?: number, anio?: number) {
 
         if (error) throw error
         return { success: true, data }
-    } catch (error: any) {
-        return { success: false, error: error.message || String(error) }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -170,8 +170,8 @@ export async function eliminarGasto(id: string) {
 
         revalidatePath("/dashboard/gastos")
         return { success: true }
-    } catch (error: any) {
-        return { success: false, error: error.message || String(error) }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -243,8 +243,8 @@ export async function generarGastosFijosDelMes() {
         revalidatePath("/dashboard/reportes/financiero")
 
         return { success: true, message: `Se generaron exitosamente ${nuevosGastos.length} gastos fijos recurrentes para este mes.`, count: nuevosGastos.length }
-    } catch (error: any) {
-        return { success: false, error: error.message || String(error) }
+    } catch (error: unknown) {
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }
 
@@ -269,7 +269,7 @@ export async function updateGasto(id: string, data: Partial<z.infer<typeof Gasto
             throw new Error("No se puede editar un gasto anulado")
         }
 
-        const updateData: any = {}
+        const updateData: Record<string, unknown> = {}
         if (data.descripcion !== undefined) updateData.descripcion = data.descripcion
         if (data.categoria_id !== undefined) updateData.categoria_id = data.categoria_id || null
         if (data.monto_neto !== undefined) updateData.monto_neto = data.monto_neto
@@ -289,10 +289,10 @@ export async function updateGasto(id: string, data: Partial<z.infer<typeof Gasto
 
         revalidatePath("/dashboard/gastos")
         return { success: true }
-    } catch (error: any) {
-        let msg = error.message || String(error)
+    } catch (error: unknown) {
+        let msg = error instanceof Error ? error.message : String(error)
         if (error instanceof z.ZodError) {
-            msg = (error as any).errors.map((e: any) => e.message).join(", ")
+            msg = error.errors.map((e) => e.message).join(", ")
         }
         return { success: false, error: msg }
     }

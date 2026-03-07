@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { getGastos, eliminarGasto, generarGastosFijosDelMes } from "@/actions/gastos"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -24,16 +24,30 @@ const MESES = [
     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ]
 
+type GastoRow = {
+    id: string
+    descripcion: string
+    fecha_gasto: string
+    monto_neto: number
+    monto_iva: number
+    monto_total: number
+    tipo_documento: string
+    tipo_gasto: string
+    estado: string | null
+    categoria: { nombre: string } | null
+    usuario: { nombre_completo: string } | null
+}
+
 export default function GastosPage() {
     const today = new Date()
-    const [gastos, setGastos] = useState<any[]>([])
+    const [gastos, setGastos] = useState<GastoRow[]>([])
     const [loading, setLoading] = useState(true)
     const [generating, setGenerating] = useState(false)
 
-    const [selectedGasto, setSelectedGasto] = useState<any | null>(null)
+    const [selectedGasto, setSelectedGasto] = useState<GastoRow | null>(null)
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 
-    const handleEditClick = (gasto: any) => {
+    const handleEditClick = (gasto: GastoRow) => {
         setSelectedGasto(gasto)
         setIsEditDialogOpen(true)
     }
@@ -42,24 +56,24 @@ export default function GastosPage() {
     const [mesFilters, setMesFilters] = useState<string>(today.getMonth().toString())
     const [anioFilters, setAnioFilters] = useState<string>(today.getFullYear().toString())
 
-    const fetchGastos = async (m?: number, a?: number) => {
+    const fetchGastos = useCallback(async (m?: number, a?: number) => {
         setLoading(true)
         const currentMes = m !== undefined ? m : parseInt(mesFilters)
         const currentAnio = a !== undefined ? a : parseInt(anioFilters)
 
         const res = await getGastos(currentMes, currentAnio)
         if (res.success && res.data) {
-            setGastos(res.data)
+            setGastos(res.data as GastoRow[])
         } else {
             toast.error("Error al cargar los gastos: " + res.error)
         }
         setLoading(false)
-    }
+    }, [mesFilters, anioFilters])
 
     // Volver a cargar cuando cambien los combos de mes/año
     useEffect(() => {
         fetchGastos(parseInt(mesFilters), parseInt(anioFilters))
-    }, [mesFilters, anioFilters])
+    }, [mesFilters, anioFilters, fetchGastos])
 
     const handleDelete = async (id: string) => {
         if (!confirm("¿Seguro que deseas eliminar este gasto de manera manual?")) return
