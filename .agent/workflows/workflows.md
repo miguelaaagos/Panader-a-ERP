@@ -147,19 +147,24 @@ Regenera tipos de Supabase desde el schema remoto.
 ```
 Voy a regenerar los tipos de Supabase:
 
-1. ¿Cuál es tu PROJECT_ID de Supabase? (ej: abcdefghijklmnop)
-
-2. Ejecutaré:
+1. Ejecutaré el script seguro (garantiza UTF-8 en cualquier OS):
 ```bash
-npx supabase gen types typescript --project-id "YOUR_PROJECT_ID" > src/types/database.types.ts
+pnpm gen:types
 ```
 
-3. Verificaré que los helpers de tipos existan en src/types/index.ts
+> NUNCA usar `npx supabase gen types ... >` directo desde PowerShell.
+> El operador `>` en PowerShell produce UTF-16LE, lo que corrompe el archivo
+> y rompe toda la inferencia de tipos de Supabase en TypeScript.
 
-4. Verificaré que tus clientes usen los tipos:
+2. Verificaré que los clientes usen los tipos:
 ```typescript
 createBrowserClient<Database>(...)
 createServerClient<Database>(...)
+```
+
+3. Correré typecheck para confirmar que todo compila:
+```bash
+pnpm typecheck
 ```
 
 ¿Listo?

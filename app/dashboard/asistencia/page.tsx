@@ -19,13 +19,8 @@ export default async function AsistenciaPage(props: AsistenciaPageProps) {
     const searchParams = await props.searchParams
 
     // 1. Validar autenticación
-    let profile = null;
-    try {
-        const auth = await validateRequest();
-        profile = auth.profile;
-    } catch (error) {
-        redirect("/login");
-    }
+    const auth = await validateRequest().catch(() => redirect("/login"));
+    const profile = auth.profile;
 
     // 2. Determinar el mes y año para los filtros (por defecto mes actual)
     const now = new Date();

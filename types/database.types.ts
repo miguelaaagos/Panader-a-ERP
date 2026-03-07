@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -362,47 +362,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "horarios_roles_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      horarios_usuarios: {
-        Row: {
-          created_at: string
-          dia_semana: number
-          hora_entrada: string
-          hora_salida: string
-          id: string
-          tenant_id: string
-          updated_at: string
-          usuario_id: string
-        }
-        Insert: {
-          created_at?: string
-          dia_semana: number
-          hora_entrada: string
-          hora_salida: string
-          id?: string
-          tenant_id: string
-          updated_at?: string
-          usuario_id: string
-        }
-        Update: {
-          created_at?: string
-          dia_semana?: number
-          hora_entrada?: string
-          hora_salida?: string
-          id?: string
-          tenant_id?: string
-          updated_at?: string
-          usuario_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "horarios_usuarios_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -1324,4 +1283,3 @@ export const Constants = {
     },
   },
 } as const
-

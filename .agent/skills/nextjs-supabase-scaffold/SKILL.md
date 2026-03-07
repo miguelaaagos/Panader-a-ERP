@@ -85,13 +85,13 @@ npx create-next-app@latest [project-name] \
 cd [project-name]
 
 # 2. Install core dependencies
-npm install @supabase/supabase-js@latest @supabase/ssr@^0.8.0
+pnpm add @supabase/supabase-js@latest @supabase/ssr@^0.8.0
 
 # 3. Install validation and forms
-npm install zod react-hook-form @hookform/resolvers
+pnpm add zod react-hook-form @hookform/resolvers
 
 # 4. Install dev dependencies
-npm install -D @types/node@latest
+pnpm add -D @types/node@latest
 ```
 
 ### Phase 3: Create Project Structure
@@ -193,8 +193,8 @@ Guide the user through Supabase setup:
 5. **Generate TypeScript types**:
    ```bash
    pnpm add -D supabase
-   npx supabase login
-   npx supabase gen types typescript --project-id "YOUR_ID" > src/types/database.types.ts
+   pnpm exec supabase login
+   pnpm gen:types
    ```
 
 ### Phase 6: Create Authentication Pages (if enabled)
@@ -226,7 +226,7 @@ For each table the user specified, generate:
        "lint": "eslint .",
        "typecheck": "tsc --noEmit",
        "format": "prettier --write .",
-       "db:types": "supabase gen types typescript --project-id \"$PROJECT_ID\" > src/types/database.types.ts"
+       "gen:types": "supabase gen types typescript --project-id YOUR_PROJECT_ID > types/database.types.ts"
      }
    }
    ```
@@ -298,7 +298,7 @@ If any step fails:
 Common issues:
 - Node version too old (need 20.9+)
 - pnpm not installed (suggest install)
-- Supabase CLI not authenticated (run npx supabase login)
+- Supabase CLI not authenticated (run pnpm exec supabase login)
 - Wrong project ID (double-check Supabase dashboard)
 - Network issues (check internet connection)
 

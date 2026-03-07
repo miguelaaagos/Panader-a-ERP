@@ -105,7 +105,7 @@ export const Button = ({ label, onClick, variant = 'primary', disabled }: Button
 ### Generar tipos desde schema
 
 ```bash
-npx supabase gen types typescript --project-id "YOUR_PROJECT_ID" > src/types/database.types.ts
+pnpm gen:types
 ```
 
 ### Type helpers
