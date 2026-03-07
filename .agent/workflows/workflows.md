@@ -288,7 +288,9 @@ Voy a revisar tu código contra el checklist del stack:
 
 Ejecuta:
 ```bash
-pnpm typecheck && pnpm lint && pnpm format:check
+pnpm typecheck
+pnpm lint
+pnpm format:check
 ```
 
 Y comparte el output.

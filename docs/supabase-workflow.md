@@ -12,17 +12,16 @@ Usa siempre el script definido en `package.json` que utiliza la CLI de Supabase 
 pnpm gen:types
 ```
 
-## En caso de error "supabase no se reconoce"
-Si el comando falla porque no encuentra la CLI, asegúrate de haber ejecutado primero:
+Si el problema persiste y `node_modules/.bin/supabase` no existe, fuerza la instalación:
 
 ```bash
-pnpm install
+pnpm add -D supabase
 ```
 
-Si el problema persiste, puedes intentar usar `npx` explícitamente pero asegurando el encoding UTF-8 (solo si es estrictamente necesario):
+Luego ejecuta los tipos usando el prefijo de `pnpm exec`:
 
 ```powershell
-npx supabase gen types typescript --project-id mzbiksxetgpogaqncorl | Out-File -FilePath types/database.types.ts -Encoding utf8
+pnpm exec supabase gen types typescript --project-id mzbiksxetgpogaqncorl | Out-File -FilePath types/database.types.ts -Encoding utf8
 ```
 
 > [!IMPORTANT]

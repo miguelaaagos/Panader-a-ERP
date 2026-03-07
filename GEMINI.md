@@ -3,6 +3,7 @@
 ## Stack
 - **Next.js** 16 + App Router | **React** 19 | **TypeScript** 5.9 strict
 - **Supabase** @supabase/ssr v0.8 | **Zod** v4 | **Tailwind** v3
+- **Shell**: PROHIBIDO usar `&&` para encadenar comandos (PowerShell falla). Usar comandos individuales.
 - **Package Manager**: pnpm (ÚNICO — nunca `npm` ni `npx` directo)
 
 ## Reglas Absolutas (NUNCA VIOLAR)
