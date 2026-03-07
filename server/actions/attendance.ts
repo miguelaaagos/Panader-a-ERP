@@ -46,7 +46,7 @@ export async function marcarEntrada() {
 
     // 2. Verificar si hay horario personalizado para este usuario y día
     let horarioEntrada;
-    const { data: userHorario } = await supabase
+    const { data: userHorario } = await (supabase as any)
         .from("horarios_usuarios")
         .select("hora_entrada")
         .eq("tenant_id", profile.tenant_id)
