@@ -104,13 +104,13 @@ export async function updateProduct(id: string, data: ProductFormData) {
 
         revalidatePath("/dashboard/inventario")
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error updating product:", error)
         // Ensure database errors are properly stringified for the client
         const errorMessage = error instanceof Error
             ? error.message
             : typeof error === 'object' && error !== null && 'message' in error
-                ? error.message
+                ? String((error as Record<string, unknown>).message)
                 : String(error);
         return { success: false, error: errorMessage }
     }

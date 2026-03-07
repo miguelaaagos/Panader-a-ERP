@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import {
     Table,
     TableBody,
@@ -17,7 +16,6 @@ import {
     Eye,
     XCircle,
     CheckCircle2,
-    Clock,
     Loader2,
     Calendar,
     User as UserIcon,
@@ -27,7 +25,7 @@ import {
 } from "lucide-react"
 import { RoleGuard } from "@/components/auth/RoleGuard"
 
-interface Sale {
+export interface Sale {
     id: string
     numero_venta: string
     fecha: string

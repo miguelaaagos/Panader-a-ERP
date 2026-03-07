@@ -387,8 +387,8 @@ export async function createQuickIngredient(data: {
 
         revalidatePath("/dashboard/inventario")
         return { success: true, data: newObject }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Error creating quick ingredient:", error)
-        return { success: false, error: error?.message || String(error) }
+        return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
 }

@@ -20,9 +20,17 @@ import {
     LabelList
 } from "recharts"
 
+type ReporteFinanciero = {
+    periodo: { inicio: string; fin: string }
+    ventas: { bruto: number; neto: number; iva_debito: number }
+    gastos: { bruto: number; neto: number; iva_credito: number; fijos_bruto: number; fijos_neto: number; variables_bruto: number; variables_neto: number }
+    impuestos: { iva_a_pagar: number; iva_a_favor: number }
+    utilidad: { bruta: number; neta: number }
+}
+
 export default function ReporteFinancieroPage() {
     const [loading, setLoading] = useState(true)
-    const [reporte, setReporte] = useState<Record<string, unknown> | null>(null)
+    const [reporte, setReporte] = useState<ReporteFinanciero | null>(null)
     const [selectedMonth, setSelectedMonth] = useState<string>(startOfMonth(new Date()).toISOString())
 
     const monthOptions = Array.from({ length: 12 }).map((_, i) => {
@@ -184,14 +192,14 @@ export default function ReporteFinancieroPage() {
                                     />
                                     <Tooltip
                                         cursor={{ fill: 'hsl(var(--muted))', opacity: 0.4 }}
-                                        formatter={(value: any) => [formatter.format(Number(value)), "Total"]}
+                                        formatter={(value: number) => [formatter.format(Number(value)), "Total"]}
                                         contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
                                     />
                                     <Bar dataKey="Total" radius={[4, 4, 0, 0]}>
                                         {chartData.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={entry.fill} />
                                         ))}
-                                        <LabelList dataKey="Total" position="top" offset={10} formatter={(val: any) => Number(val) > 0 ? formatter.format(Number(val)) : ""} fontSize={11} fill="hsl(var(--foreground))" />
+                                        <LabelList dataKey="Total" position="top" offset={10} formatter={(val: number) => Number(val) > 0 ? formatter.format(Number(val)) : ""} fontSize={11} fill="hsl(var(--foreground))" />
                                     </Bar>
                                 </BarChart>
                             </ResponsiveContainer>

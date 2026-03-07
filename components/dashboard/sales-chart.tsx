@@ -1,18 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
 export function SalesChart() {
     const supabase = createClient()
-    const [data, setData] = useState<any[]>([])
+    const [data, setData] = useState<{ hora: string; total: number }[]>([])
 
-    useEffect(() => {
-        loadChartData()
-    }, [])
-
-    const loadChartData = async () => {
+    const loadChartData = useCallback(async () => {
         try {
             const today = new Date()
             today.setHours(0, 0, 0, 0)
@@ -35,10 +31,10 @@ export function SalesChart() {
                 hourlyData[`${i}:00`] = 0
             }
 
-            ventas?.forEach((venta: any) => {
+            ventas?.forEach((venta) => {
                 const hour = new Date(venta.created_at).getHours()
                 const hourKey = `${hour}:00`
-                hourlyData[hourKey] += venta.total
+                hourlyData[hourKey] += Number(venta.total)
             })
 
             const chartData = Object.entries(hourlyData).map(([hora, total]) => ({
@@ -47,12 +43,16 @@ export function SalesChart() {
             }))
 
             setData(chartData)
-        } catch (error: any) {
-            console.error("Error loading chart data:", error?.message || error)
+        } catch (error: unknown) {
+            console.error("Error loading chart data:", error instanceof Error ? error.message : error)
             // Establecer datos vacíos en caso de error
             setData([])
         }
-    }
+    }, [supabase])
+
+    useEffect(() => {
+        loadChartData()
+    }, [loadChartData])
 
     return (
         <ResponsiveContainer width="100%" height={350}>
@@ -71,7 +71,7 @@ export function SalesChart() {
                     tickFormatter={(value) => `$${value.toLocaleString('es-CL')}`}
                 />
                 <Tooltip
-                    formatter={(value: any) => [`$${Number(value || 0).toLocaleString('es-CL')}`, "Ventas"] as [string, string]}
+                    formatter={(value: number) => [`$${Number(value || 0).toLocaleString('es-CL')}`, "Ventas"] as [string, string]}
                     cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
                 />
                 <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />

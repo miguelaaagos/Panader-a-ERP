@@ -73,7 +73,7 @@ export function ConfigurarHorariosDialog({ horariosActuales }: Props) {
                 toast.error("Hubo problemas guardando algunos horarios.");
             }
 
-        } catch (err) {
+        } catch {
             toast.error("Error de servidor.");
         } finally {
             setLoading(false);

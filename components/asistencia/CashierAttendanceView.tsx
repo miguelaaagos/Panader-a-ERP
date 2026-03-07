@@ -28,7 +28,7 @@ export function CashierAttendanceView({ activeTurn, asistencias }: Props) {
             } else {
                 toast.error(res.error || "Hubo un error al registrar la entrada.");
             }
-        } catch (err) {
+        } catch {
             toast.error("Error inesperado en el servidor.");
         } finally {
             setLoading(false);
@@ -45,7 +45,7 @@ export function CashierAttendanceView({ activeTurn, asistencias }: Props) {
             } else {
                 toast.error(res.error || "Hubo un error al registrar la salida.");
             }
-        } catch (err) {
+        } catch {
             toast.error("Error inesperado en el servidor.");
         } finally {
             setLoading(false);
@@ -148,7 +148,7 @@ export function CashierAttendanceView({ activeTurn, asistencias }: Props) {
                                         asistencias.map((asistencia) => {
                                             const fechaEntrada = new Date(asistencia.entrada);
                                             // TODO: Types are missing estado and horas_extra in AsistenciaRow for now
-                                            const asis = asistencia as any;
+                                            const asis = asistencia as { estado?: string };
 
                                             return (
                                                 <TableRow key={asistencia.id}>

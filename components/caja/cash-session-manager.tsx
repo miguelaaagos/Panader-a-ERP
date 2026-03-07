@@ -10,7 +10,7 @@ import { toast } from "sonner"
 import { Coins, Lock, Unlock, AlertCircle } from "lucide-react"
 
 export function CashSessionManager() {
-    const [session, setSession] = useState<any>(null)
+    const [session, setSession] = useState<Record<string, unknown> | null>(null)
     const [loading, setLoading] = useState(true)
     const [opening, setOpening] = useState(false)
     const [closing, setClosing] = useState(false)

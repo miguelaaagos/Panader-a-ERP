@@ -13,7 +13,7 @@ export async function RecentSalesContainer() {
     const sales = res.success ? (res.data || []) : []
 
     // Cast explicitly to match the expected RecentSale interface in client component
-    const normalizedSales = sales.map((sale: any) => ({
+    const normalizedSales = sales.map((sale: Record<string, unknown>) => ({
         id: sale.id,
         created_at: sale.created_at,
         total: sale.total,

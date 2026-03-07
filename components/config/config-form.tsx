@@ -14,10 +14,9 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
-import { Loader2, Save, Printer, Settings2 } from "lucide-react"
+import { Loader2, Save, Settings2 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { getBusinessConfig, updateBusinessConfig } from "@/actions/config"
 
@@ -42,7 +41,7 @@ export function ConfigForm() {
     const [saving, setSaving] = useState(false)
 
     const form = useForm<ConfigFormValues>({
-        resolver: zodResolver(configFormSchema) as any,
+        resolver: zodResolver(configFormSchema),
         defaultValues: {
             nombre_negocio: "Mi Panadería",
             razon_social: "",
@@ -97,9 +96,9 @@ export function ConfigForm() {
             } else {
                 throw new Error(result.error)
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error guardando configuración:", error)
-            toast.error("Error al guardar: " + error.message)
+            toast.error("Error al guardar: " + (error instanceof Error ? error.message : String(error)))
         } finally {
             setSaving(false)
         }

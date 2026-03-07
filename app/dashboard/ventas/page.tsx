@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react"
 import { getRecentSales, anularVenta } from "@/actions/sales"
 import { getSession } from "@/actions/auth"
-import { SalesList } from "@/components/erp/sales-list"
-import { RoleGuard } from "@/components/auth/RoleGuard"
+import { SalesList, type Sale } from "@/components/erp/sales-list"
 import { FileText, Search, RefreshCcw, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { SaleDetailsModal } from "@/components/erp/sale-details-modal"
 
 export default function VentasPage() {
-    const [sales, setSales] = useState<any[]>([])
+    const [sales, setSales] = useState<Sale[]>([])
     const [tenantId, setTenantId] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
     const [processingId, setProcessingId] = useState<string | null>(null)
