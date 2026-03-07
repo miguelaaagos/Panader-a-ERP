@@ -78,7 +78,7 @@ export async function openCashSession(montoInicial: number, observaciones?: stri
 
 export async function closeCashSession(montoFinalReal: number, observaciones?: string) {
     try {
-        const { supabase, profile } = await validateRequest('shifts.manage')
+        const { supabase } = await validateRequest('shifts.manage')
 
         // 1. Obtener sesión actual
         const { session } = await getCurrentCashSession()

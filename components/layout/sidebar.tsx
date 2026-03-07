@@ -25,7 +25,7 @@ import { useLogout } from "@refinedev/core";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Permission } from "@/lib/roles";
 
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> { }
+type SidebarProps = React.HTMLAttributes<HTMLDivElement>;
 
 export function Sidebar({ className }: SidebarProps) {
     const pathname = usePathname();

@@ -1,7 +1,7 @@
 "use server"
 
 import { validateRequest } from "@/lib/server/auth"
-import { startOfDay, subDays, startOfMonth, format, parseISO, endOfMonth, endOfDay, getDate, addDays } from "date-fns"
+import { startOfDay, subDays, startOfMonth, format, parseISO, endOfMonth, getDate, addDays } from "date-fns"
 import { es } from "date-fns/locale"
 import { connection } from "next/server"
 
@@ -151,11 +151,6 @@ export async function getCriticalStockItems() {
             .not("stock_minimo", "is", null)
 
         if (error) throw error
-
-        interface ProductBase {
-            stock_actual: number
-            stock_minimo: number
-        }
 
         const criticalItems = (data || []).filter((p) =>
             (p.stock_actual !== null && p.stock_minimo !== null) &&

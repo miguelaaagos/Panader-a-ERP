@@ -3,7 +3,6 @@
 import { validateRequest } from "@/lib/server/auth"
 import { hasPermission } from "@/lib/roles"
 import { revalidatePath, revalidateTag } from "next/cache"
-import { cacheTag, cacheLife } from "next/cache"
 import { z } from "zod"
 
 const saleItemSchema = z.object({
@@ -29,7 +28,7 @@ export type SaleFormData = z.infer<typeof saleSchema>
 
 export async function getProductsForPOS(tenant_id: string) {
     try {
-        const { supabase, profile } = await validateRequest('sales.create')
+        const { supabase } = await validateRequest('sales.create')
 
         const { data, error } = await supabase
             .from("productos")

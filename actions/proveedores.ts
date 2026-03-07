@@ -91,7 +91,7 @@ export async function getUltimoPrecioProducto(
     productoId: string
 ): Promise<{ success: boolean; data?: UltimoPrecioProducto | null; error?: string }> {
     try {
-        const { supabase, profile } = await validateRequest('inventory.view')
+        const { supabase } = await validateRequest('inventory.view')
 
         const { data, error } = await supabase
             .from("ingreso_inventario_detalles")

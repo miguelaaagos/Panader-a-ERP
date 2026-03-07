@@ -82,7 +82,7 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                         // Si la unidad es kg o L, el factor SIEMPRE debe ser 1000
                         // (1 kg = 1000 g, 1 L = 1000 ml), ignorar valores incorrectos en BD
                         const isMassOrVolume = uComp === "kg" || uComp === "l"
-                        let factor = isMassOrVolume ? 1000 : (product.factor_conversion || 1)
+                        const factor = isMassOrVolume ? 1000 : (product.factor_conversion || 1)
                         const purchaseCost = product.costo_unitario ?? 0
 
                         // Determinar la unidad mostrada y cantidad escalada
@@ -225,7 +225,7 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                 const uComp = product.unidad_medida.toLowerCase()
                 // Si la unidad es kg o L, el factor SIEMPRE debe ser 1000
                 const isMassOrVolume = uComp === "kg" || uComp === "l"
-                let factor = isMassOrVolume ? 1000 : (product.factor_conversion || 1)
+                const factor = isMassOrVolume ? 1000 : (product.factor_conversion || 1)
                 const purchaseCost = product.costo_unitario ?? 0
 
                 newIngredientes[index] = {
