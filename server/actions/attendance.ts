@@ -27,6 +27,8 @@ export async function getEstadoAsistencia() {
     return { success: true, activeTurn: data || null };
 }
 
+import { differenceInMinutes, parseISO } from "date-fns";
+
 export async function marcarEntrada() {
     const { user_id, profile } = await validateRequest();
     const supabase = await createClient();
@@ -37,11 +39,32 @@ export async function marcarEntrada() {
         return { success: false, error: "Ya existe un turno activo sin marcar salida." };
     }
 
+    // 1. Verificar si hay un horario designado para el rol
+    const { data: horario } = await supabase
+        .from("horarios_roles")
+        .select("hora_entrada")
+        .eq("tenant_id", profile.tenant_id)
+        .eq("rol", profile.rol)
+        .maybeSingle();
+
+    let estado = "En hora"; // Por defecto
+
+    if (horario && horario.hora_entrada) {
+        const now = new Date();
+        const horaActualString = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+
+        // Comparación simple de cadenas HH:mm asumiendo timezone local
+        if (horaActualString > horario.hora_entrada) {
+            estado = "Atraso";
+        }
+    }
+
     const { data, error } = await supabase
         .from("asistencias")
         .insert({
             tenant_id: profile.tenant_id,
             usuario_id: user_id,
+            estado: estado
             // entrada is set by default to now() in DB
         })
         .select()
@@ -60,9 +83,66 @@ export async function marcarSalida(asistenciaId: string) {
     const { user_id, profile } = await validateRequest();
     const supabase = await createClient();
 
+    // 1. Obtener la hora actual de salida
+    const fechaSalidaIso = new Date().toISOString();
+
+    // 2. Obtener el horario designado para el rol
+    const { data: horario } = await supabase
+        .from("horarios_roles")
+        .select("hora_salida")
+        .eq("tenant_id", profile.tenant_id)
+        .eq("rol", profile.rol)
+        .maybeSingle();
+
+    let horasExtrasCalculadas = 0;
+    let estadoFinal = "En hora";
+
+    // Si había un "Atraso" en la entrada, idealmente hay que preservarlo, 
+    // pero para mantenerlo simple consultemos el registro actual primero
+    const { data: registroActual } = await supabase
+        .from("asistencias")
+        .select("estado")
+        .eq("id", asistenciaId)
+        .single();
+
+    if (registroActual?.estado) {
+        estadoFinal = registroActual.estado;
+    }
+
+    // 3. Calculo de Salida y Horas extras
+    if (horario && horario.hora_salida) {
+        const now = new Date();
+        const horaSalidaRealStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+
+        // Si sale antes de la hora estipulada
+        if (horaSalidaRealStr < horario.hora_salida) {
+            estadoFinal = estadoFinal === "Atraso" ? "Atraso e Incompleto" : "Incompleto";
+        }
+        // Si sale después de la hora estipulada + tolerancia (digamos 15 mins), calculamos
+        else if (horaSalidaRealStr > horario.hora_salida) {
+            const [hEsperada, mEsperada] = horario.hora_salida.split(":").map(Number);
+            const [hReal, mReal] = horaSalidaRealStr.split(":").map(Number);
+
+            const dateEsperada = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hEsperada, mEsperada);
+            const dateReal = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hReal, mReal);
+
+            const diffMinutos = differenceInMinutes(dateReal, dateEsperada);
+
+            // Solo contabilizar como hora extra si se quedó más de 15 minutos fuera de la hora
+            if (diffMinutos >= 15) {
+                // Guarda en la base de datos como fracción de hora con 2 decimales (ej 1.5 horas = 1h 30m)
+                horasExtrasCalculadas = Number((diffMinutos / 60).toFixed(2));
+            }
+        }
+    }
+
     const { data, error } = await supabase
         .from("asistencias")
-        .update({ salida: new Date().toISOString() })
+        .update({
+            salida: fechaSalidaIso,
+            horas_extra: horasExtrasCalculadas,
+            estado: estadoFinal
+        })
         .eq("id", asistenciaId)
         .eq("tenant_id", profile.tenant_id)
         .eq("usuario_id", user_id)

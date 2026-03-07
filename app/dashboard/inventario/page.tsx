@@ -407,11 +407,12 @@ export default function InventarioPage() {
                                     const stockBajo = producto.unidad_medida === 'unidades' && (producto.stock_actual ?? 0) < (producto.stock_minimo ?? 0) && (producto.stock_actual ?? 0) > 0
                                     const sinStock = producto.unidad_medida === 'unidades' && (producto.stock_actual || 0) === 0
 
-                                    // Cálculo de Margen
+                                    // Cálculo de Margen (Se ajusta al neto, incluyendo IVA en costo)
                                     const costo = producto.costo_unitario || 0
                                     const venta = producto.precio_venta || 0
-                                    const margen = venta > 0 ? ((venta - costo) / venta) * 100 : 0
-                                    const margenValor = venta - costo
+                                    const costoIva = costo * 1.19
+                                    const margen = venta > 0 ? ((venta - costoIva) / venta) * 100 : 0
+                                    const margenValor = Math.round((venta / 1.19) - costo)
 
                                     return (
                                         <TableRow key={producto.id} className={sinStock ? "opacity-60 grayscale-[0.5] hover:opacity-100 transition-opacity bg-red-50/10" : ""}>

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation"
 import { CashierAttendanceView } from "@/components/asistencia/CashierAttendanceView"
 import { AdminAttendanceView } from "@/components/asistencia/AdminAttendanceView"
 import { getEstadoAsistencia, getAsistenciasRecientes } from "@/server/actions/attendance"
+import { getHorariosRoles } from "@/server/actions/horarios"
 
 export const metadata: Metadata = {
     title: "Asistencia | Panadería ERP",
@@ -42,6 +43,8 @@ export default async function AsistenciaPage(props: AsistenciaPageProps) {
         year: profile.rol === "admin" ? year : undefined,
     });
 
+    const { data: horarios } = await getHorariosRoles();
+
     return (
         <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
             <div className="flex items-center justify-between space-y-2">
@@ -53,6 +56,7 @@ export default async function AsistenciaPage(props: AsistenciaPageProps) {
                     asistencias={asistencias || []}
                     currentMonth={month}
                     currentYear={year}
+                    horariosActuales={horarios || []}
                 />
             ) : (
                 <CashierAttendanceView

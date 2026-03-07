@@ -7,13 +7,14 @@ import { registrarIngresoInventario } from "@/actions/ingresos"
 import { getProveedores, crearProveedor, getUltimoPrecioProducto } from "@/actions/proveedores"
 import type { Proveedor, UltimoPrecioProducto } from "@/actions/proveedores"
 import { ProductFormDialog } from "@/components/inventario/product-form-dialog"
+import { ProveedorFormDialog } from "@/components/inventario/proveedor-form-dialog"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
-import { Loader2, Plus, Trash2, ArrowLeft, Building2, X } from "lucide-react"
+import { Loader2, Plus, Trash2, ArrowLeft, Building2, X, Pencil } from "lucide-react"
 import { convertToDisplayUnit, calculateBaseCost, AppUnit } from "@/lib/utils/inventory-units"
 import Link from "next/link"
 import { Textarea } from "@/components/ui/textarea"
@@ -59,6 +60,7 @@ export default function NuevoIngresoPage() {
 
     // Nuevo producto inline
     const [productFormOpen, setProductFormOpen] = useState(false)
+    const [editProveedorOpen, setEditProveedorOpen] = useState(false)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -406,11 +408,24 @@ export default function NuevoIngresoPage() {
                                             {proveedores.map(p => (
                                                 <SelectItem key={p.id} value={p.id}>
                                                     {p.nombre}
-                                                    {p.contacto && <span className="text-muted-foreground"> · {p.contacto}</span>}
+                                                    {p.telefono && <span className="text-muted-foreground"> · {p.telefono}</span>}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
+
+                                    {selectedProveedorId && selectedProveedorId !== "none" && (
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => setEditProveedorOpen(true)}
+                                            title="Editar proveedor seleccionado"
+                                            type="button"
+                                        >
+                                            <Pencil className="h-4 w-4" />
+                                        </Button>
+                                    )}
+
                                     <Button
                                         variant="outline"
                                         size="icon"
@@ -568,6 +583,14 @@ export default function NuevoIngresoPage() {
                         await handleProductSelect(newProductId)
                     }
                 }}
+            />
+
+            {/* Dialog para editar el proveedor seleccionado */}
+            <ProveedorFormDialog
+                open={editProveedorOpen}
+                onOpenChange={setEditProveedorOpen}
+                proveedorSelected={proveedores.find(p => p.id === selectedProveedorId) || null}
+                onSuccess={refreshProveedores}
             />
         </div>
     )

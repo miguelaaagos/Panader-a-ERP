@@ -8,11 +8,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { ConfigurarHorariosDialog } from "./ConfigurarHorariosDialog";
+import { HorarioRole } from "@/server/actions/horarios";
 
 interface Props {
     asistencias: AsistenciaRow[];
     currentMonth: number;
     currentYear: number;
+    horariosActuales?: HorarioRole[];
 }
 
 const MONTHS = [
@@ -30,7 +33,7 @@ const MONTHS = [
     { value: 12, label: "Diciembre" },
 ];
 
-export function AdminAttendanceView({ asistencias, currentMonth, currentYear }: Props) {
+export function AdminAttendanceView({ asistencias, currentMonth, currentYear, horariosActuales = [] }: Props) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -109,10 +112,11 @@ export function AdminAttendanceView({ asistencias, currentMonth, currentYear }: 
                         >
                             Limpiar
                         </Button>
+                        <ConfigurarHorariosDialog horariosActuales={horariosActuales} />
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="rounded-md border">
+                    <div className="rounded-md border overflow-x-auto">
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -120,19 +124,23 @@ export function AdminAttendanceView({ asistencias, currentMonth, currentYear }: 
                                     <TableHead>Fecha</TableHead>
                                     <TableHead>Entrada</TableHead>
                                     <TableHead>Salida</TableHead>
+                                    <TableHead>Estado</TableHead>
                                     <TableHead className="text-right">Duración del Turno</TableHead>
+                                    <TableHead className="text-right">Hrs. Extras</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {asistencias.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
+                                        <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
                                             No hay registros de asistencia en este periodo.
                                         </TableCell>
                                     </TableRow>
                                 ) : (
                                     asistencias.map((asistencia) => {
                                         const fechaEntrada = new Date(asistencia.entrada);
+                                        const asis = asistencia as unknown as { estado: string, horas_extra: number };
+
                                         return (
                                             <TableRow key={asistencia.id}>
                                                 <TableCell className="font-medium">
@@ -140,6 +148,9 @@ export function AdminAttendanceView({ asistencias, currentMonth, currentYear }: 
                                                         <span>{asistencia.usuarios?.nombre_completo || "Usuario Desconocido"}</span>
                                                         <span className="text-xs text-muted-foreground hidden sm:inline-block">
                                                             {asistencia.usuarios?.email}
+                                                        </span>
+                                                        <span className="text-xs text-primary hidden sm:inline-block capitalize">
+                                                            {asistencia.usuarios?.rol}
                                                         </span>
                                                     </div>
                                                 </TableCell>
@@ -152,8 +163,24 @@ export function AdminAttendanceView({ asistencias, currentMonth, currentYear }: 
                                                         <span className="text-amber-500 font-medium">Activo</span>
                                                     )}
                                                 </TableCell>
+                                                <TableCell>
+                                                    {asis.estado === "Atraso" || asis.estado === "Incompleto" || asis.estado === "Atraso e Incompleto" ? (
+                                                        <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
+                                                            {asis.estado}
+                                                        </span>
+                                                    ) : asis.estado === "En hora" ? (
+                                                        <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                                                            {asis.estado}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-muted-foreground text-xs">-</span>
+                                                    )}
+                                                </TableCell>
                                                 <TableCell className="text-right font-medium">
                                                     {calculateHours(asistencia.entrada, asistencia.salida)}
+                                                </TableCell>
+                                                <TableCell className="text-right font-bold text-amber-600 dark:text-amber-500">
+                                                    {asis.horas_extra > 0 ? `${asis.horas_extra}h` : '-'}
                                                 </TableCell>
                                             </TableRow>
                                         );

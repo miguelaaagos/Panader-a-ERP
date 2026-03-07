@@ -79,6 +79,11 @@ El sistema ha sido diseñado priorizando la integridad de los datos y la segurid
 -   **Registro de Compras**: Gestión de gastos y comprobantes.
 -   **Automatización de Ingresos**: Integración automática de gastos al ingresar mercancía de proveedores al inventario.
 
+### 🔍 Auditoría y Control
+- **Anulación de Compras**: Reversión automática de stock al anular ingresos de inventario.
+- **Edición de Gastos**: Posibilidad de corregir montos y categorías de gastos registrados.
+- **Sincronización de Tipos**: Integración 100% segura con Supabase CLI para tipos de TypeScript.
+
 ---
 
 ## 🛠️ Stack Tecnológico
@@ -110,6 +115,6 @@ pnpm typecheck
 
 ---
 
-**Version**: 1.2.4 (Unit Conversion Bugfix & Real-time Cost Calculation)  
+**Version**: 1.2.5 (Account Audit & Database Sync)  
 **Estado**: Estable / Producción  
-**Última actualización**: 1 de marzo de 2026 — Corrección crítica de cálculo de costos en recetas (12g de harina ahora cuesta ~$9.6, no $9,600). Se unificó la lógica en `getLineCost` → `convertQuantity`, se migró `cantidad` a `string` en el formulario para soporte real-time y decimales, y se normalizaron los `factor_conversion` en la BD (1000 para kg/L).
+**Última actualización**: 6 de marzo de 2026 — Implementación de Auditoría Contable (Edición de Gastos y Anulación de Compras con reversión de stock). Sincronización total de la base de datos remota con migraciones locales (`horarios_roles`, `proveedores`, `estados`) y regeneración de tipos TypeScript 100% seguros.

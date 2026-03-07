@@ -6,8 +6,10 @@ import { revalidatePath } from "next/cache"
 export interface Proveedor {
     id: string
     nombre: string
-    contacto: string | null
-    activo: boolean
+    telefono: string | null
+    email: string | null
+    rut: string | null
+    direccion: string | null
     created_at: string
 }
 
@@ -19,7 +21,7 @@ export interface UltimoPrecioProducto {
 }
 
 /**
- * Obtiene todos los proveedores activos del tenant
+ * Obtiene todos los proveedores del tenant
  */
 export async function getProveedores(): Promise<{ success: boolean; data?: Proveedor[]; error?: string }> {
     try {
@@ -27,15 +29,14 @@ export async function getProveedores(): Promise<{ success: boolean; data?: Prove
 
         const { data, error } = await supabase
             .from("proveedores")
-            .select("id, nombre, contacto, activo, created_at")
+            .select("id, nombre, telefono, email, rut, direccion, created_at")
             .eq("tenant_id", profile.tenant_id)
-            .eq("activo", true)
             .order("nombre")
 
         if (error) throw error
 
         return { success: true, data: data || [] }
-    } catch (error: any) {
+    } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error)
         return { success: false, error: errorMessage }
     }
@@ -46,7 +47,10 @@ export async function getProveedores(): Promise<{ success: boolean; data?: Prove
  */
 export async function crearProveedor(
     nombre: string,
-    contacto?: string
+    telefono?: string,
+    email?: string,
+    rut?: string,
+    direccion?: string
 ): Promise<{ success: boolean; data?: Proveedor; error?: string }> {
     try {
         const { supabase, profile } = await validateRequest('inventory.edit')
@@ -60,10 +64,12 @@ export async function crearProveedor(
             .insert({
                 tenant_id: profile.tenant_id,
                 nombre: nombre.trim(),
-                contacto: contacto?.trim() || null,
-                activo: true
+                telefono: telefono?.trim() || null,
+                email: email?.trim() || null,
+                rut: rut?.trim() || null,
+                direccion: direccion?.trim() || null,
             })
-            .select("id, nombre, contacto, activo, created_at")
+            .select("id, nombre, telefono, email, rut, direccion, created_at")
             .single()
 
         if (error) throw error
@@ -71,7 +77,7 @@ export async function crearProveedor(
         revalidatePath("/dashboard/inventario/ingresos")
 
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error)
         return { success: false, error: errorMessage }
     }
@@ -114,7 +120,7 @@ export async function getUltimoPrecioProducto(
 
         if (!data) return { success: true, data: null }
 
-        const ingreso = data.ingreso as any
+        const ingreso = data.ingreso as { created_at: string; proveedor_id: string | null; proveedor: { nombre: string } | null } | null
 
         return {
             success: true,
@@ -125,7 +131,90 @@ export async function getUltimoPrecioProducto(
                 fecha: ingreso?.created_at || ""
             }
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        return { success: false, error: errorMessage }
+    }
+}
+
+/**
+ * Actualiza un proveedor existente
+ */
+export async function updateProveedor(
+    id: string,
+    data: {
+        nombre: string,
+        telefono?: string,
+        email?: string,
+        rut?: string,
+        direccion?: string
+    }
+): Promise<{ success: boolean; data?: Proveedor; error?: string }> {
+    try {
+        const { supabase, profile } = await validateRequest('inventory.edit')
+
+        if (!data.nombre?.trim()) {
+            throw new Error("El nombre del proveedor es requerido")
+        }
+
+        const { data: updatedData, error } = await supabase
+            .from("proveedores")
+            .update({
+                nombre: data.nombre.trim(),
+                telefono: data.telefono?.trim() || null,
+                email: data.email?.trim() || null,
+                rut: data.rut?.trim() || null,
+                direccion: data.direccion?.trim() || null,
+            })
+            .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
+            .select("id, nombre, telefono, email, rut, direccion, created_at")
+            .single()
+
+        if (error) throw error
+
+        revalidatePath("/dashboard/inventario/proveedores")
+        revalidatePath("/dashboard/inventario/ingresos")
+        revalidatePath("/dashboard/inventario/ingresos/nuevo")
+
+        return { success: true, data: updatedData }
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        return { success: false, error: errorMessage }
+    }
+}
+
+/**
+ * Elimina un proveedor del tenant.
+ */
+export async function deleteProveedor(id: string): Promise<{ success: boolean; error?: string }> {
+    try {
+        const { supabase, profile } = await validateRequest('inventory.delete')
+
+        // Chequear si el proveedor tiene ingresos asociados
+        const { count, error: countError } = await supabase
+            .from("ingresos_inventario")
+            .select("*", { count: "exact", head: true })
+            .eq("proveedor_id", id)
+
+        if (countError) throw countError
+        if (count && count > 0) {
+            throw new Error("No se puede eliminar un proveedor que tiene compras asociadas. Edítalo en su lugar.")
+        }
+
+        const { error } = await supabase
+            .from("proveedores")
+            .delete()
+            .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
+
+        if (error) throw error
+
+        revalidatePath("/dashboard/inventario/proveedores")
+        revalidatePath("/dashboard/inventario/ingresos")
+
+        return { success: true }
+    } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error)
         return { success: false, error: errorMessage }
     }

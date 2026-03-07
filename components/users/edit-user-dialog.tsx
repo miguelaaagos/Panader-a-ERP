@@ -33,10 +33,11 @@ import {
 import { toast } from "sonner"
 import { Loader2, Edit } from "lucide-react"
 import { updateUser } from "@/actions/users"
+import { UserRole } from "@/lib/roles"
 
 const formSchema = z.object({
     nombre_completo: z.string().min(2, "Mínimo 2 caracteres"),
-    rol: z.enum(["admin", "cajero"]),
+    rol: z.enum(["admin", "cajero", "panadero", "pastelero"] as const),
 })
 
 interface EditUserDialogProps {
@@ -55,7 +56,7 @@ export function EditUserDialog({ user }: EditUserDialogProps) {
         resolver: zodResolver(formSchema),
         defaultValues: {
             nombre_completo: user.nombre_completo,
-            rol: user.rol as "admin" | "cajero",
+            rol: user.rol as "admin" | "cajero" | "panadero" | "pastelero",
         },
     })
 
@@ -122,6 +123,8 @@ export function EditUserDialog({ user }: EditUserDialogProps) {
                                         </FormControl>
                                         <SelectContent>
                                             <SelectItem value="cajero">Cajero</SelectItem>
+                                            <SelectItem value="panadero">Panadero</SelectItem>
+                                            <SelectItem value="pastelero">Pastelero</SelectItem>
                                             <SelectItem value="admin">Administrador</SelectItem>
                                         </SelectContent>
                                     </Select>

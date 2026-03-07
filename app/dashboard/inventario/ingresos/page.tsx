@@ -1,19 +1,23 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { getHistorialIngresos } from "@/actions/ingresos"
+import { getHistorialIngresos, anularIngreso } from "@/actions/ingresos"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, ArrowLeft } from "lucide-react"
+import { Plus, ArrowLeft, Eye, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { RoleGuard } from "@/components/auth/RoleGuard"
 import Link from "next/link"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
+import { IngresoDetalleDialog } from "@/components/inventario/ingreso-detalle-dialog"
+import { Badge } from "@/components/ui/badge"
 
 export default function HistorialIngresosPage() {
     const [ingresos, setIngresos] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
+    const [selectedIngreso, setSelectedIngreso] = useState<any | null>(null)
+    const [isDetailOpen, setIsDetailOpen] = useState(false)
 
     const fetchIngresos = useCallback(async () => {
         setLoading(true)
@@ -25,6 +29,20 @@ export default function HistorialIngresosPage() {
         }
         setLoading(false)
     }, [])
+
+    const handleAnular = async (ingreso: any) => {
+        if (!confirm(`¿Estás seguro que deseas ANULAR la compra #${ingreso.codigo}? Esta acción revertirá el stock ingresado y marcará el gasto asociado como anulado. No se puede deshacer.`)) return
+
+        setLoading(true)
+        const res = await anularIngreso(ingreso.id)
+        if (res.success) {
+            toast.success("Compra anulada exitosamente.")
+            fetchIngresos()
+        } else {
+            toast.error(res.error)
+            setLoading(false)
+        }
+    }
 
     useEffect(() => {
         fetchIngresos()
@@ -80,18 +98,25 @@ export default function HistorialIngresosPage() {
                             </div>
                         ) : (
                             <div className="rounded-md border">
-                                <div className="grid grid-cols-4 md:grid-cols-6 p-4 bg-muted/50 font-medium text-sm border-b">
+                                <div className="grid grid-cols-4 md:grid-cols-8 p-4 bg-muted/50 font-medium text-sm border-b gap-4">
                                     <div>Codigo</div>
+                                    <div>Estado</div>
                                     <div>Fecha</div>
                                     <div className="hidden md:block">Usuario</div>
                                     <div className="hidden md:block">Proveedor</div>
                                     <div className="text-right hidden md:block">Total</div>
-                                    <div>Observaciones</div>
+                                    <div className="hidden md:block">Observaciones</div>
+                                    <div className="text-center">Acciones</div>
                                 </div>
                                 <div className="divide-y">
                                     {ingresos.map((ingreso) => (
-                                        <div key={ingreso.id} className="grid grid-cols-4 md:grid-cols-6 p-4 text-sm items-center hover:bg-muted/30 transition-colors">
-                                            <div className="font-medium text-primary">{ingreso.codigo}</div>
+                                        <div key={ingreso.id} className={`grid grid-cols-4 md:grid-cols-8 p-4 text-sm items-center hover:bg-muted/30 transition-colors gap-4 ${ingreso.estado === 'anulada' ? 'opacity-60 bg-muted/20' : ''}`}>
+                                            <div className={`font-medium text-primary ${ingreso.estado === 'anulada' ? 'line-through' : ''}`}>{ingreso.codigo}</div>
+                                            <div>
+                                                <Badge variant={ingreso.estado === 'anulada' ? 'destructive' : 'outline'} className={ingreso.estado === 'anulada' ? '' : 'border-emerald-500 text-emerald-600'}>
+                                                    {ingreso.estado === 'anulada' ? 'Anulada' : 'Completada'}
+                                                </Badge>
+                                            </div>
                                             <div className="whitespace-nowrap">
                                                 {format(new Date(ingreso.created_at), "dd MMM yyyy, HH:mm", { locale: es })}
                                             </div>
@@ -104,8 +129,31 @@ export default function HistorialIngresosPage() {
                                             <div className="text-right hidden md:block font-medium">
                                                 {ingreso.total > 0 ? `$${ingreso.total.toLocaleString("es-CL", { maximumFractionDigits: 0 })}` : "-"}
                                             </div>
-                                            <div className="truncate text-muted-foreground" title={ingreso.observaciones}>
+                                            <div className="hidden md:block truncate text-muted-foreground" title={ingreso.observaciones}>
                                                 {ingreso.observaciones || "-"}
+                                            </div>
+                                            <div className="flex justify-center gap-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => {
+                                                        setSelectedIngreso(ingreso)
+                                                        setIsDetailOpen(true)
+                                                    }}
+                                                    title="Ver Detalles"
+                                                >
+                                                    <Eye className="h-4 w-4 text-muted-foreground hover:text-primary" />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => handleAnular(ingreso)}
+                                                    title="Anular Compra"
+                                                    disabled={ingreso.estado === 'anulada'}
+                                                    className="text-destructive hover:bg-destructive/20"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
                                             </div>
                                         </div>
                                     ))}
@@ -114,6 +162,12 @@ export default function HistorialIngresosPage() {
                         )}
                     </CardContent>
                 </Card>
+
+                <IngresoDetalleDialog
+                    open={isDetailOpen}
+                    onOpenChange={setIsDetailOpen}
+                    ingreso={selectedIngreso}
+                />
             </div>
         </RoleGuard>
     )

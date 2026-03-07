@@ -18,7 +18,8 @@ import {
     Wallet,
     TrendingUp,
     User,
-    Clock
+    Clock,
+    Truck
 } from "lucide-react";
 import { useLogout } from "@refinedev/core";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -61,11 +62,18 @@ export function Sidebar({ className }: SidebarProps) {
             permission: "inventory.view" as Permission,
         },
         {
+            label: "Proveedores",
+            icon: Truck,
+            href: "/dashboard/inventario/proveedores",
+            active: pathname.startsWith("/dashboard/inventario/proveedores"),
+            permission: "inventory.view" as Permission,
+        },
+        {
             label: "Gastos",
             icon: Wallet,
             href: "/dashboard/gastos",
             active: pathname.startsWith("/dashboard/gastos"),
-            permission: "sales.view_all" as Permission, // Or another relevant permission
+            permission: "sales.view_all" as Permission,
         },
         {
             label: "Recetas",
@@ -100,6 +108,7 @@ export function Sidebar({ className }: SidebarProps) {
             icon: Clock,
             href: "/dashboard/asistencia",
             active: pathname.startsWith("/dashboard/asistencia"),
+            // La asistencia la ven todos, pero en la página en sí habrá restricciones por rol si fuera de mantenedor
         },
         {
             label: "Usuarios",

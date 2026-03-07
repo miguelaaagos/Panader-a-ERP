@@ -21,18 +21,23 @@
    - Confirmadas activas: `frontend-pos-design`, `playwright-testing`, `nextjs-16-patterns`, `supabase-ssr`, `shell-syntax-rules`.
    - Stack validado: Next.js 16, React 19, Supabase SSR v0.8.0, Tailwind v3.4.19.
 
+5. **Módulo de Auditoría Local-Remota**:
+   - Se implementó la anulación de compras con reversión de stock y la edición de gastos.
+   - Se sincronizó la base de datos remota (`mzbiksxetgpogaqncorl`) con las migraciones locales.
+   - Se arregló el flujo de `supabase gen types` usando el Project ID correcto, eliminando 15 errores de tipos.
+
 ## Gotchas Encontrados
-- **`index.lock` de Git**: Procesos de `supabase gen types` y `git reset --hard` lanzados en segundo plano bloquearon operaciones Git posteriores. Solución: terminar procesos antes de operar Git.
-- **Cherry-pick con conflictos automáticos**: `9cf7a99` (fix recetas) ya estaba incluido en el merge `742c0c5` de `main`. El intento de cherry-pick redundante fue descartado correctamente.
-- **PowerShell y `&&`**: Sigue siendo un error recurrente. La skill `shell-syntax-rules` previene esto en el futuro.
+- **Project ID Mismatch**: El error "Forbidden resource" al generar tipos se debía al uso del Project ID de un proyecto antiguo. Validado el Project ID actual en `.env`.
+- **Sincronización de BD**: Las tablas `horarios_roles` y `proveedores` no estaban en remoto. Se aplicaron vía MCP exitosamente.
+- **`index.lock` de Git**: Procesos en segundo plano bloquearon operaciones Git. Solución: terminar procesos antes de operar Git.
 
 ## Estado de Ramas al Cierre
 ```
 main       → 9c1aa27  feat(compras): Ingresos→Compras ✅
-desarrollo → 9c1aa27  (sincronizado con main) ✅
+desarrollo → 9c1aa27  (sincronizado y compilando con tipos remotos) ✅
 ```
 
 ## Próximos Pasos (Próximo Chat)
-- Arreglar error de build en Vercel tras el merge de la refactorización de Compras.
-- Verificar que la migración SQL de `proveedores` esté aplicada en Supabase producción.
-- Revisar si hay tipos de TypeScript desactualizados tras el rename de Ingresos→Compras.
+- Probar el flujo completo de anulación de una compra en producción y observar la reversión de stock.
+- Integrar gastos fijos (sueldos, servicios) al Dashboard Financiero.
+- Refactorizar páginas `"use client"` a Server Components según la deuda técnica.

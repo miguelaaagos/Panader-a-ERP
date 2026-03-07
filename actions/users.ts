@@ -10,6 +10,7 @@ interface UserData {
     email: string
     password?: string
     nombre_completo: string
+    rol: string
 }
 
 export async function createUser(data: UserData) {
@@ -36,8 +37,8 @@ export async function createUser(data: UserData) {
             }
         )
 
-        // Enforce 'cajero' role for new users created via this action
-        const rol = "cajero"
+        // Ensure a fallback but use the provided role
+        const rol = data.rol || "cajero"
 
         // 1. Create Auth User
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({

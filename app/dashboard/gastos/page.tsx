@@ -4,21 +4,50 @@ import { useState, useEffect } from "react"
 import { getGastos, eliminarGasto, generarGastosFijosDelMes } from "@/actions/gastos"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Plus, Trash2, Wallet, RefreshCw } from "lucide-react"
+import { Plus, Trash2, Wallet, RefreshCw, FilterX, FileEdit } from "lucide-react"
+import { GastoEditarDialog } from "@/components/gastos/gasto-editar-dialog"
 import Link from "next/link"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+
+const MESES = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+]
 
 export default function GastosPage() {
+    const today = new Date()
     const [gastos, setGastos] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [generating, setGenerating] = useState(false)
 
-    const fetchGastos = async () => {
+    const [selectedGasto, setSelectedGasto] = useState<any | null>(null)
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+
+    const handleEditClick = (gasto: any) => {
+        setSelectedGasto(gasto)
+        setIsEditDialogOpen(true)
+    }
+
+    // Filtros
+    const [mesFilters, setMesFilters] = useState<string>(today.getMonth().toString())
+    const [anioFilters, setAnioFilters] = useState<string>(today.getFullYear().toString())
+
+    const fetchGastos = async (m?: number, a?: number) => {
         setLoading(true)
-        const res = await getGastos()
+        const currentMes = m !== undefined ? m : parseInt(mesFilters)
+        const currentAnio = a !== undefined ? a : parseInt(anioFilters)
+
+        const res = await getGastos(currentMes, currentAnio)
         if (res.success && res.data) {
             setGastos(res.data)
         } else {
@@ -27,9 +56,10 @@ export default function GastosPage() {
         setLoading(false)
     }
 
+    // Volver a cargar cuando cambien los combos de mes/año
     useEffect(() => {
-        fetchGastos()
-    }, [])
+        fetchGastos(parseInt(mesFilters), parseInt(anioFilters))
+    }, [mesFilters, anioFilters])
 
     const handleDelete = async (id: string) => {
         if (!confirm("¿Seguro que deseas eliminar este gasto de manera manual?")) return
@@ -58,24 +88,66 @@ export default function GastosPage() {
         setGenerating(false)
     }
 
+    const currentYear = new Date().getFullYear();
+    const añosHaciaAtras = 5;
+    const aniosDisponibles = Array.from({ length: añosHaciaAtras }, (_, i) => currentYear - i);
+
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 max-w-7xl mx-auto w-full">
-            <div className="flex items-center justify-between space-y-2">
+            <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0 pb-4">
                 <div>
                     <h2 className="text-3xl font-bold tracking-tight">Gastos Operativos <Wallet className="inline-block w-8 h-8 ml-2 text-primary" /></h2>
                     <p className="text-muted-foreground">Administra los gastos y egresos del negocio.</p>
                 </div>
+
                 <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
                     <Button variant="outline" onClick={handleGenerarRecurrentes} disabled={generating || loading}>
                         <RefreshCw className={`mr-2 h-4 w-4 ${generating ? 'animate-spin' : ''}`} />
-                        {generating ? "Generando..." : "Cargar Fijos del Mes"}
+                        {generating ? "Generando..." : "Cargar Fijos"}
                     </Button>
                     <Link href="/dashboard/gastos/nuevo">
                         <Button>
-                            <Plus className="mr-2 h-4 w-4" /> Nuevo Gasto
+                            <Plus className="mr-2 h-4 w-4" /> Nuevo
                         </Button>
                     </Link>
                 </div>
+            </div>
+
+            <div className="flex items-center space-x-2 mb-4 bg-muted/30 p-2 rounded-lg border w-fit">
+                <Select value={mesFilters} onValueChange={setMesFilters}>
+                    <SelectTrigger className="w-[140px] bg-background">
+                        <SelectValue placeholder="Mes" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {MESES.map((m, i) => (
+                            <SelectItem key={i} value={i.toString()}>{m}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                <Select value={anioFilters} onValueChange={setAnioFilters}>
+                    <SelectTrigger className="w-[100px] bg-background">
+                        <SelectValue placeholder="Año" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {aniosDisponibles.map(a => (
+                            <SelectItem key={a} value={a.toString()}>{a}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 px-2 text-muted-foreground hover:text-foreground"
+                    onClick={() => {
+                        setMesFilters(today.getMonth().toString())
+                        setAnioFilters(today.getFullYear().toString())
+                    }}
+                    title="Ver mes actual"
+                >
+                    <FilterX className="h-4 w-4" />
+                </Button>
             </div>
 
             <div className="rounded-md border bg-card overflow-x-auto">
@@ -83,6 +155,7 @@ export default function GastosPage() {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Fecha</TableHead>
+                            <TableHead>Estado</TableHead>
                             <TableHead>Descripción</TableHead>
                             <TableHead>Categoría</TableHead>
                             <TableHead>Tipo</TableHead>
@@ -104,11 +177,18 @@ export default function GastosPage() {
                             </TableRow>
                         ) : (
                             gastos.map((gasto) => (
-                                <TableRow key={gasto.id}>
+                                <TableRow key={gasto.id} className={gasto.estado === 'anulada' ? 'opacity-60 bg-muted/30' : ''}>
                                     <TableCell className="font-medium">
                                         {format(new Date(gasto.fecha_gasto), "dd MMM yyyy", { locale: es })}
                                     </TableCell>
-                                    <TableCell>{gasto.descripcion}</TableCell>
+                                    <TableCell>
+                                        <Badge variant={gasto.estado === 'anulada' ? 'destructive' : 'outline'} className={gasto.estado === 'anulada' ? '' : 'border-emerald-500 text-emerald-600'}>
+                                            {gasto.estado === 'anulada' ? 'Anulado' : 'Completado'}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className={gasto.estado === 'anulada' ? 'line-through' : ''}>
+                                        {gasto.descripcion}
+                                    </TableCell>
                                     <TableCell>
                                         <Badge variant="outline">{gasto.categoria?.nombre || "Sin Categoría"}</Badge>
                                     </TableCell>
@@ -124,9 +204,14 @@ export default function GastosPage() {
                                     </TableCell>
                                     <TableCell className="text-right">${gasto.monto_neto.toLocaleString()}</TableCell>
                                     <TableCell className="text-right">${gasto.monto_iva.toLocaleString()}</TableCell>
-                                    <TableCell className="text-right font-bold">${gasto.monto_total.toLocaleString()}</TableCell>
-                                    <TableCell className="text-right">
-                                        <Button variant="ghost" size="icon" className="text-destructive h-8 w-8 hover:bg-destructive/20" onClick={() => handleDelete(gasto.id)}>
+                                    <TableCell className={`text-right ${gasto.estado === 'anulada' ? 'line-through' : 'font-bold'}`}>${gasto.monto_total.toLocaleString()}</TableCell>
+                                    <TableCell className="text-right flex items-center justify-end gap-1">
+                                        {gasto.estado !== 'anulada' && (
+                                            <Button variant="ghost" size="icon" className="text-blue-600 h-8 w-8 hover:bg-blue-600/20" onClick={() => handleEditClick(gasto)}>
+                                                <FileEdit className="w-4 h-4" />
+                                            </Button>
+                                        )}
+                                        <Button variant="ghost" size="icon" className="text-destructive h-8 w-8 hover:bg-destructive/20" onClick={() => handleDelete(gasto.id)} disabled={gasto.estado === 'anulada'}>
                                             <Trash2 className="w-4 h-4" />
                                         </Button>
                                     </TableCell>
@@ -136,6 +221,13 @@ export default function GastosPage() {
                     </TableBody>
                 </Table>
             </div>
+
+            <GastoEditarDialog
+                open={isEditDialogOpen}
+                onOpenChange={setIsEditDialogOpen}
+                gasto={selectedGasto}
+                onEdited={() => fetchGastos()}
+            />
         </div>
     )
 }

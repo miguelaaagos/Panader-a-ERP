@@ -86,6 +86,7 @@ export async function getHistorialIngresos() {
                 total,
                 tipo_documento,
                 generar_gasto,
+                estado,
                 usuario:usuario_id (
                     nombre_completo
                 ),
@@ -145,5 +146,82 @@ export async function getDetallesIngreso(ingresoId: string) {
     } catch (error: any) {
         const errorMessage = error instanceof Error ? error.message : String(error)
         return { success: false, error: errorMessage }
+    }
+}
+
+/**
+ * Anula un ingreso de inventario (compra).
+ * Revierte el stock físico y marca el ingreso y gasto asociado (si aplica) como 'anulada'.
+ */
+export async function anularIngreso(ingresoId: string) {
+    try {
+        const { supabase, profile } = await validateRequest('inventory.edit')
+
+        // 1. Obtener la compra y verificar que no esté anulada
+        const { data: ingreso, error: checkError } = await supabase
+            .from("ingresos_inventario")
+            .select("id, generar_gasto, estado")
+            .eq("id", ingresoId)
+            .eq("tenant_id", profile.tenant_id)
+            .single()
+
+        if (checkError || !ingreso) {
+            throw new Error("Ingreso no encontrado")
+        }
+
+        if (ingreso.estado === 'anulada') {
+            throw new Error("Esta compra ya se encuentra anulada")
+        }
+
+        // 2. Obtener detalles para revertir stock
+        const { data: detalles, error: detError } = await supabase
+            .from("ingreso_inventario_detalles")
+            .select("producto_id, cantidad")
+            .eq("ingreso_id", ingresoId)
+
+        if (detError) throw detError
+
+        // 3. Revertir el stock mediante un loop conservador (no tenemos RPC nativa de anulación)
+        for (const det of detalles) {
+            // Obtenemos el stock actual
+            const { data: prodData } = await supabase
+                .from("productos")
+                .select("stock_actual")
+                .eq("id", det.producto_id)
+                .single()
+
+            if (prodData) {
+                const newStock = Math.max(0, Number(prodData.stock_actual) - Number(det.cantidad))
+                await supabase
+                    .from("productos")
+                    .update({ stock_actual: newStock })
+                    .eq("id", det.producto_id)
+            }
+        }
+
+        // 4. Marcar ingreso como anulada
+        const { error: updIngresoError } = await supabase
+            .from("ingresos_inventario")
+            .update({ estado: 'anulada' })
+            .eq("id", ingresoId)
+
+        if (updIngresoError) throw updIngresoError
+
+        // 5. Marcar gasto como anulada si correspondía
+        if (ingreso.generar_gasto) {
+            await supabase
+                .from("gastos")
+                .update({ estado: 'anulada' })
+                .eq("ingreso_inventario_id", ingresoId)
+                .eq("tenant_id", profile.tenant_id)
+        }
+
+        revalidatePath("/dashboard/inventario")
+        revalidatePath("/dashboard/inventario/ingresos")
+        revalidatePath("/dashboard/gastos")
+
+        return { success: true }
+    } catch (error: any) {
+        return { success: false, error: error.message || String(error) }
     }
 }

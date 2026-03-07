@@ -23,14 +23,23 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import { toast } from "sonner"
 import { Loader2, Plus } from "lucide-react"
 import { createUser } from "@/actions/users"
+import { UserRole } from "@/lib/roles"
 
 const formSchema = z.object({
     email: z.string().email("Email inválido"),
     password: z.string().min(6, "Mínimo 6 caracteres"),
     nombre_completo: z.string().min(2, "Mínimo 2 caracteres"),
+    rol: z.enum(["admin", "cajero", "panadero", "pastelero"] as const),
 })
 
 export function CreateUserDialog() {
@@ -43,17 +52,17 @@ export function CreateUserDialog() {
             email: "",
             password: "",
             nombre_completo: "",
+            rol: "cajero",
         },
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setLoading(true)
         try {
-            // Role is handled on server side now (forced to 'cajero')
             const result = await createUser(values)
 
             if (result.success) {
-                toast.success("Cajero creado correctamente")
+                toast.success("Usuario creado correctamente")
                 setOpen(false)
                 form.reset()
             } else {
@@ -73,14 +82,14 @@ export function CreateUserDialog() {
             <DialogTrigger asChild>
                 <Button>
                     <Plus className="w-4 h-4 mr-2" />
-                    Nuevo Cajero
+                    Nuevo Usuario
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Crear Nuevo Cajero</DialogTitle>
+                    <DialogTitle>Crear Nuevo Usuario</DialogTitle>
                     <DialogDescription>
-                        Ingresa los datos del nuevo cajero. Se creará una cuenta de acceso limitada.
+                        Ingresa los datos del nuevo usuario y asígnale un rol.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -124,10 +133,33 @@ export function CreateUserDialog() {
                                 </FormItem>
                             )}
                         />
+                        <FormField
+                            control={form.control}
+                            name="rol"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Rol en el Sistema</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Selecciona un rol" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="cajero">Cajero</SelectItem>
+                                            <SelectItem value="panadero">Panadero</SelectItem>
+                                            <SelectItem value="pastelero">Pastelero</SelectItem>
+                                            <SelectItem value="admin">Administrador</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <DialogFooter>
                             <Button type="submit" disabled={loading}>
                                 {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                                Crear Cajero
+                                Crear Usuario
                             </Button>
                         </DialogFooter>
                     </form>

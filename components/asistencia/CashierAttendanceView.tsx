@@ -132,19 +132,24 @@ export function CashierAttendanceView({ activeTurn, asistencias }: Props) {
                                         <TableHead>Fecha</TableHead>
                                         <TableHead>Entrada</TableHead>
                                         <TableHead>Salida</TableHead>
+                                        <TableHead>Estado</TableHead>
                                         <TableHead className="text-right">Duración</TableHead>
+                                        <TableHead className="text-right">Extras</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {asistencias.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={4} className="text-center h-24 text-muted-foreground">
+                                            <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
                                                 No hay registros recientes.
                                             </TableCell>
                                         </TableRow>
                                     ) : (
                                         asistencias.map((asistencia) => {
                                             const fechaEntrada = new Date(asistencia.entrada);
+                                            // TODO: Types are missing estado and horas_extra in AsistenciaRow for now
+                                            const asis = asistencia as any;
+
                                             return (
                                                 <TableRow key={asistencia.id}>
                                                     <TableCell className="font-medium">
@@ -158,8 +163,24 @@ export function CashierAttendanceView({ activeTurn, asistencias }: Props) {
                                                             <span className="text-amber-500 font-medium">Activo</span>
                                                         )}
                                                     </TableCell>
+                                                    <TableCell>
+                                                        {asis.estado === "Atraso" || asis.estado === "Incompleto" || asis.estado === "Atraso e Incompleto" ? (
+                                                            <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
+                                                                {asis.estado}
+                                                            </span>
+                                                        ) : asis.estado === "En hora" ? (
+                                                            <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                                                                {asis.estado}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-muted-foreground text-xs">-</span>
+                                                        )}
+                                                    </TableCell>
                                                     <TableCell className="text-right">
                                                         {calculateHours(asistencia.entrada, asistencia.salida)}
+                                                    </TableCell>
+                                                    <TableCell className="text-right font-medium text-amber-600 dark:text-amber-500">
+                                                        {asis.horas_extra > 0 ? `${asis.horas_extra}h` : '-'}
                                                     </TableCell>
                                                 </TableRow>
                                             );

@@ -92,13 +92,13 @@ export async function registrarGasto(data: z.infer<typeof GastoSchema>) {
 }
 
 /**
- * Obtiene el historial de gastos con filtrado básico
+ * Obtiene el historial de gastos con filtrado básico (mes y año opcional)
  */
-export async function getGastos() {
+export async function getGastos(mes?: number, anio?: number) {
     try {
         const { supabase, profile } = await validateRequest('inventory.edit')
 
-        const { data, error } = await supabase
+        let query = supabase
             .from("gastos")
             .select(`
                 id,
@@ -109,11 +109,25 @@ export async function getGastos() {
                 monto_total,
                 tipo_documento,
                 tipo_gasto,
+                estado,
                 created_at,
                 categoria:categoria_id(nombre),
                 usuario:usuario_id(nombre_completo)
             `)
             .eq("tenant_id", profile.tenant_id)
+
+        // Filtro opcional por mes y año
+        if (mes !== undefined && anio !== undefined) {
+            // JavaScript months are 0-indexed (0 = Jan, 11 = Dec)
+            const dateStart = new Date(anio, mes, 1)
+            const dateEnd = new Date(anio, mes + 1, 0, 23, 59, 59, 999) // Último día del mes
+
+            query = query
+                .gte("fecha_gasto", dateStart.toISOString())
+                .lte("fecha_gasto", dateEnd.toISOString())
+        }
+
+        const { data, error } = await query
             .order("fecha_gasto", { ascending: false })
             .order("created_at", { ascending: false })
 
@@ -231,5 +245,55 @@ export async function generarGastosFijosDelMes() {
         return { success: true, message: `Se generaron exitosamente ${nuevosGastos.length} gastos fijos recurrentes para este mes.`, count: nuevosGastos.length }
     } catch (error: any) {
         return { success: false, error: error.message || String(error) }
+    }
+}
+
+/**
+ * Edita (enmienda) un gasto ya existente siempre que no esté anulado.
+ */
+export async function updateGasto(id: string, data: Partial<z.infer<typeof GastoSchema>>) {
+    try {
+        const { supabase, profile } = await validateRequest('inventory.edit')
+
+        // Verifica que el gasto exista, pertenezca al tenant y no esté anulado
+        const { data: gasto, error: checkError } = await supabase
+            .from("gastos")
+            .select("id, ingreso_inventario_id, estado")
+            .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
+            .single()
+
+        if (checkError || !gasto) throw new Error("Gasto no encontrado")
+
+        if (gasto.estado === 'anulada') {
+            throw new Error("No se puede editar un gasto anulado")
+        }
+
+        const updateData: any = {}
+        if (data.descripcion !== undefined) updateData.descripcion = data.descripcion
+        if (data.categoria_id !== undefined) updateData.categoria_id = data.categoria_id || null
+        if (data.monto_neto !== undefined) updateData.monto_neto = data.monto_neto
+        if (data.monto_iva !== undefined) updateData.monto_iva = data.monto_iva
+        if (data.monto_total !== undefined) updateData.monto_total = data.monto_total
+        if (data.tipo_documento !== undefined) updateData.tipo_documento = data.tipo_documento
+        if (data.tipo_gasto !== undefined) updateData.tipo_gasto = data.tipo_gasto
+        if (data.fecha_gasto !== undefined) updateData.fecha_gasto = data.fecha_gasto
+
+        const { error } = await supabase
+            .from("gastos")
+            .update(updateData)
+            .eq("id", id)
+            .eq("tenant_id", profile.tenant_id)
+
+        if (error) throw error
+
+        revalidatePath("/dashboard/gastos")
+        return { success: true }
+    } catch (error: any) {
+        let msg = error.message || String(error)
+        if (error instanceof z.ZodError) {
+            msg = (error as any).errors.map((e: any) => e.message).join(", ")
+        }
+        return { success: false, error: msg }
     }
 }

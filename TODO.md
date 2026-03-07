@@ -1,9 +1,9 @@
 # TODO: Sincronización de Desarrollo (Calama - Antofagasta)
 
-## Estado Actual: Consolidación de Ramas + Módulo de Compras (Marzo 2026)
+## Estado Actual: Auditoría Contable y Sincronización DB (Marzo 2026)
 - **Fecha**: 2026-03-06
 - **Ubicación**: Antofagasta
-- **Hito**: Consolidación total de ramas `main` y `desarrollo`. Cherry-pick de refactorización Ingresos→Compras (`e3bd7ad`). Ambas ramas sincronizadas en commit `9c1aa27`. Pendiente: arreglar error de build en Vercel.
+- **Hito**: Implementación de módulo de Auditoría (Anulaciones/Edición) y sincronización total de BD remota. Proyecto compilando con 0 errores de tipos.
 
 ## Tareas Completadas [x]
 - [x] Establecer y documentar estándares UI/UX (Notificaciones, Gráficos PowerBI style, Tablas móviles, Dark mode) en GEMINI.md y skills.
@@ -43,10 +43,15 @@
 - [x] **Consolidación de ramas Git**: `main` y `desarrollo` sincronizadas en `9c1aa27`. Ramas sucias (`pr-1`, `claude/musing-brattain`) depuradas.
 - [x] **Módulo de Compras (ex-Ingresos)**: Cherry-pick de `e3bd7ad` a `main` — renombrado de Ingresos→Compras en sidebar, actions y páginas.
 - [x] **Skill `shell-syntax-rules`**: Creada para prevenir uso de `&&` en PowerShell. Usar `;` o comandos separados.
-## Tareas Pendientes [ ]
-- [ ] **Arreglar error de build en Vercel** tras merge de refactorización Compras (nuevo chat).
+- [x] **Mantenedor de Proveedores**: CRUD completo, rutas, validaciones y dialogos en el inventario.
+- [x] **Mejoras en Compras**: Edición in-situ de proveedores en "Nueva Compra" y vista de "Detalle Histórico" de transacciones.
+- [x] **Arreglar error de build en Vercel** tras merge de refactorización Compras.
+- [x] **Auditoría de Compras**: Lógica de anulación con reversión automática de stock y anulación de gastos vinculados.
+- [x] **Gestión de Gastos**: CRUD de edición y estados de anulación visual.
+- [x] **Sincronización de Infraestructura**: Push de migraciones acumuladas (`horarios_roles`, `proveedores`) y fix de `supabase gen types` usando el Project ID correcto.
 - [ ] Integración de Gastos Fijos (sueldos, luz, agua) al Dashboard Financiero.
 - [ ] Implementar soporte 100% Offline (PWA) con IndexedDB para carga total de catálogo y sincronización en segundo plano.
+- [ ] **Deuda Técnica (Performance)**: Eliminar `"use client"` de todas las páginas (ej. `/inventario`, `/ventas`) convirtiéndolas a Server Components nativos para mejorar el TTFB (Time to First Byte). Solo usar `"use client"` en sub-componentes interactivos menores.
 - [ ] Solucionar error de resolución de `eslint-plugin-react` con ESLint 9 Flat Config + PNPM.
 - [x] Ejecución de pruebas iniciales con Playwright (Salud del sistema)
 - [x] Configuración de Global Auth Setup para tests rápidos

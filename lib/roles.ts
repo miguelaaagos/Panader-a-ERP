@@ -1,11 +1,11 @@
-export type UserRole = 'admin' | 'cajero' | 'panadero';
+export type UserRole = 'admin' | 'cajero' | 'panadero' | 'pastelero';
 
 export const PERMISSIONS = {
     // Inventory permissions
     'inventory.create': ['admin'],
     'inventory.edit': ['admin'],
     'inventory.delete': ['admin'],
-    'inventory.view': ['admin', 'cajero', 'panadero'],
+    'inventory.view': ['admin', 'cajero', 'panadero', 'pastelero'],
     'inventory.adjust_stock': ['admin'],
     'inventory.restock': ['admin', 'cajero'],
 
@@ -17,11 +17,11 @@ export const PERMISSIONS = {
 
     // Recipes permissions
     'recipes.manage': ['admin'],
-    'recipes.view': ['admin', 'panadero'],
+    'recipes.view': ['admin', 'panadero', 'pastelero'],
 
     // Production permissions
-    'production.manage': ['admin', 'panadero'],
-    'production.view': ['admin', 'panadero'],
+    'production.manage': ['admin', 'panadero', 'pastelero'],
+    'production.view': ['admin', 'panadero', 'pastelero'],
 
     // Analytics permissions
     'analytics.view_full': ['admin'],

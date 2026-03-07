@@ -97,6 +97,15 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                 const isUnit = producto.unidad_medida === 'unidades'
                 setPricingType(isUnit ? "unit" : "weight")
 
+                // Cálculo dinámico de margen actual
+                const initialCosto = producto.costo_unitario || 0
+                const initialPrecio = producto.precio_venta || 0
+                const costoIva = initialCosto * 1.19
+                let calcMargen = producto.margen_deseado?.toString() || "0"
+                if (initialPrecio > 0) {
+                    calcMargen = Math.round(((initialPrecio - costoIva) / initialPrecio) * 100).toString()
+                }
+
                 // Pre-llenar formulario
                 setFormData({
                     nombre: producto.nombre || "",
@@ -109,7 +118,7 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                     unidad_medida: (producto.unidad_medida as any) || "unidades",
                     activo: producto.activo !== undefined ? producto.activo : true,
                     tipo: producto.tipo || "producto_terminado",
-                    margen_deseado: producto.margen_deseado?.toString() || "0",
+                    margen_deseado: calcMargen,
                     es_pesable: !!producto.es_pesable,
                     mostrar_en_pos: producto.tipo === 'ingrediente' ? false : (producto.mostrar_en_pos !== undefined ? producto.mostrar_en_pos : true),
                 })
@@ -260,7 +269,7 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
 
             // Luego actualizar datos, pasando el ID del producto si fue una creación nueva
             const newId = !isEditing && 'id' in result ? result.id : undefined
-            onSuccess(newId)
+            onSuccess(newId as string | undefined)
 
         } catch (error: any) {
             console.error("Error saving product:", error)
@@ -453,7 +462,21 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                                         type="text"
                                         inputMode="decimal"
                                         value={formData.costo_unitario}
-                                        onChange={(e) => setFormData({ ...formData, costo_unitario: e.target.value.replace(",", ".") })}
+                                        onChange={(e) => {
+                                            const val = e.target.value.replace(",", ".")
+                                            setFormData(prev => {
+                                                const _costo = parseFloat(val) || 0
+                                                const _precio = parseFloat(prev.precio_venta) || 0
+                                                const _costoIva = _costo * 1.19
+                                                let _margen = prev.margen_deseado
+                                                if (_precio > 0 && _precio >= _costoIva) {
+                                                    _margen = Math.round(((_precio - _costoIva) / _precio) * 100).toString()
+                                                } else if (_precio > 0 && _precio < _costoIva) {
+                                                    _margen = Math.round(((_precio - _costoIva) / _precio) * 100).toString()
+                                                }
+                                                return { ...prev, costo_unitario: val, margen_deseado: _margen }
+                                            })
+                                        }}
                                         className="pl-7"
                                         placeholder="0"
                                     />
@@ -506,7 +529,19 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                                         type="text"
                                         inputMode="decimal"
                                         value={formData.precio_venta}
-                                        onChange={(e) => setFormData({ ...formData, precio_venta: e.target.value.replace(",", ".") })}
+                                        onChange={(e) => {
+                                            const val = e.target.value.replace(",", ".")
+                                            setFormData(prev => {
+                                                const _precio = parseFloat(val) || 0
+                                                const _costo = parseFloat(prev.costo_unitario) || 0
+                                                const _costoIva = _costo * 1.19
+                                                let _margen = prev.margen_deseado
+                                                if (_precio > 0) {
+                                                    _margen = Math.round(((_precio - _costoIva) / _precio) * 100).toString()
+                                                }
+                                                return { ...prev, precio_venta: val, margen_deseado: _margen }
+                                            })
+                                        }}
                                         className="pl-7 font-bold"
                                         placeholder="0"
                                     />
