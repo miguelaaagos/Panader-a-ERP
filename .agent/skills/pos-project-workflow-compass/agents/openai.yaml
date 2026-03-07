@@ -1,0 +1,4 @@
+﻿interface:
+  display_name: "POS Project Workflow Compass"
+  short_description: "Mapea arquitectura, módulos y workflows operativos del POS"
+  default_prompt: "Use $pos-project-workflow-compass to understand this POS project architecture and follow the correct workflows before coding."

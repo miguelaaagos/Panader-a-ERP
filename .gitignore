@@ -45,10 +45,12 @@ next-env.d.ts
 blueprint panaderia erp/
 blueprint_panaderia_erp (1).md
 
+
 # Agent Context & Logs
 TODO.md
 SESSION_SUMMARY.md
 brain/
 playwright-report/
+!.agent/
 
 test-results/
