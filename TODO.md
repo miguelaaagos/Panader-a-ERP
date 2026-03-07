@@ -1,9 +1,9 @@
 # TODO: Sincronización de Desarrollo (Calama - Antofagasta)
 
-## Estado Actual: Auditoría Contable y Sincronización DB (Marzo 2026)
-- **Fecha**: 2026-03-06
+## Estado Actual: Estabilización de Tipos y Corrección de Costos (Marzo 2026)
+- **Fecha**: 2026-03-07
 - **Ubicación**: Antofagasta
-- **Hito**: Implementación de módulo de Auditoría (Anulaciones/Edición) y sincronización total de BD remota. Proyecto compilando con 0 errores de tipos.
+- **Hito**: Corrección crítica del bug de costos en recetas (kg↔g). Estabilización de tipos `unknown` en Dashboard, Gastos y Configuración. Reducción de errores de build de >100 a ~50.
 
 ## Tareas Completadas [x]
 - [x] Establecer y documentar estándares UI/UX (Notificaciones, Gráficos PowerBI style, Tablas móviles, Dark mode) en GEMINI.md y skills.
@@ -47,7 +47,10 @@
 - [x] **Mejoras en Compras**: Edición in-situ de proveedores en "Nueva Compra" y vista de "Detalle Histórico" de transacciones.
 - [x] **Arreglar error de build en Vercel** tras merge de refactorización Compras.
 - [x] **Auditoría de Compras**: Lógica de anulación con reversión automática de stock y anulación de gastos vinculados.
-- [x] **Gestión de Gastos**: CRUD de edición y estados de anulación visual.
+- [x] **Gestión de Gastos**: CRUD de edición y **Version**: 1.2.6 (Type Stabilization & Cost Bugfix)  
+**Estado**: Estable / En Desarrollo  
+**Última actualización**: 7 de marzo de 2026 — Corrección del bug crítico de cálculo de costos en el modal de recetas (conversión kg↔g integrada en tiempo real). Estabilización masiva de tipos `unknown` en Dashboard, Gastos y Configuración. Sincronización completada en la rama `desarrollo`.
+- [x] **Estabilización de Tipos (Saneamiento)**: Resolución de más de 50 errores de `unknown` en `Stats.tsx`, `gastos-client.tsx` y `config-form.tsx`.
 - [x] **Sincronización de Infraestructura**: Push de migraciones acumuladas (`horarios_roles`, `proveedores`) y fix de `supabase gen types` usando el Project ID correcto.
 - [x] Integración de Gastos Fijos (sueldos, luz, agua) al Dashboard Financiero.
 - [ ] Implementar soporte 100% Offline (PWA) con IndexedDB para carga total de catálogo y sincronización en segundo plano.
