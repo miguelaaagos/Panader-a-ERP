@@ -29,19 +29,28 @@
 
 ## Comandos
 
+> **REGLA**: Ejecutar comandos de forma **INDIVIDUAL**, uno por uno. Nunca encadenar con `&&`.
+
 ```bash
 pnpm dev              # servidor de desarrollo
 pnpm typecheck        # tsc --noEmit
 pnpm test             # vitest
-pnpm gen:types        # regenerar tipos Supabase (UTF-8 garantizado)
+pnpm gen:types        # regenerar tipos Supabase (atómico, no corrompe)
 pnpm lint
 pnpm build
 pnpm exec playwright test
 ```
 
-> **CRÍTICO**: `pnpm gen:types` es el ÚNICO comando permitido para regenerar tipos.
-> `npx supabase gen types > archivo` en PowerShell produce UTF-16LE y rompe
-> toda la inferencia de tipos de Supabase en TypeScript.
+> **CRÍTICO**: `pnpm gen:types` usa `--output` (no `>`). Si se usara `>` y el CLI falla,
+> el mensaje de error sobreescribe el `.ts` y genera 200+ errores de TypeScript.
+> Si los tipos se corrompieron: `git checkout <hash> -- types/database.types.ts`
+> Ver skill `fix-supabase-types` para diagnóstico completo.
+
+## Supabase MCP
+
+Si el MCP de Supabase está configurado (`@supabase/mcp-server-supabase`),
+usarlo para inspeccionar schema sin CLI. Ver skill `fix-supabase-types` para
+setup y queries de diagnóstico.
 
 ## Deprecados (NUNCA USAR)
 
