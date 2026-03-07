@@ -13,6 +13,23 @@ import { toast } from "sonner"
 import { Loader2, AlertCircle } from "lucide-react"
 import { createProduct, updateProduct, type ProductFormData } from "@/actions/inventory"
 
+interface Producto {
+    id: string
+    nombre: string
+    codigo: string | null
+    categoria_id: string | null
+    precio_venta: number
+    costo_unitario: number
+    stock_actual: number
+    stock_minimo: number
+    unidad_medida: string
+    activo: boolean
+    tipo: "ingrediente" | "producto_terminado" | "ambos"
+    margen_deseado: number | null
+    es_pesable: boolean
+    mostrar_en_pos: boolean
+}
+
 interface Categoria {
     id: string
     nombre: string
@@ -37,7 +54,7 @@ interface ProductFormDataUI {
 interface ProductFormDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    producto?: unknown // Producto existente para editar (opcional)
+    producto?: Producto | null // Use proper interface
     onSuccess: (newProductId?: string) => void
 }
 
@@ -115,7 +132,7 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                     costo_unitario: producto.costo_unitario?.toString() || "",
                     stock_actual: producto.stock_actual?.toString() || "0",
                     stock_minimo: producto.stock_minimo?.toString() || "5",
-                    unidad_medida: (producto.unidad_medida as unknown) || "unidades",
+                    unidad_medida: (producto.unidad_medida as "kg" | "g" | "L" | "ml" | "unidades") || "unidades",
                     activo: producto.activo !== undefined ? producto.activo : true,
                     tipo: producto.tipo || "producto_terminado",
                     margen_deseado: calcMargen,
@@ -216,7 +233,7 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
 
             setFormData(prev => ({
                 ...prev,
-                unidad_medida: newUnit as unknown,
+                unidad_medida: newUnit as "kg" | "g" | "L" | "ml" | "unidades",
                 stock_actual: (currentStock * factor).toString(),
                 stock_minimo: (currentMinSafe * factor).toString(),
                 // Prices scale inversely to quantity
@@ -226,7 +243,7 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
 
             toast.info(`Valores convertidos de ${oldUnit} a ${newUnit}`)
         } else {
-            setFormData(prev => ({ ...prev, unidad_medida: newUnit as unknown }))
+            setFormData(prev => ({ ...prev, unidad_medida: newUnit as "kg" | "g" | "L" | "ml" | "unidades" }))
         }
     }
 
@@ -259,7 +276,8 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
             }
 
             if (!result.success) {
-                throw new Error(result.error)
+                const errorMsg = typeof result.error === 'string' ? result.error : "Error desconocido"
+                throw new Error(errorMsg)
             }
 
             toast.success(isEditing ? "Producto actualizado correctamente" : "Producto creado correctamente")
@@ -272,9 +290,10 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
             onSuccess(newId as string | undefined)
 
         } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error)
             console.error("Error saving product:", error)
             toast.error("Error al guardar producto", {
-                description: error.message
+                description: errorMessage
             })
             setLoading(false)
         }
@@ -337,7 +356,7 @@ export function ProductFormDialog({ open, onOpenChange, producto, onSuccess }: P
                             <Label htmlFor="tipo">Uso del Producto</Label>
                             <Select
                                 value={formData.tipo}
-                                onValueChange={(value: unknown) => {
+                                onValueChange={(value: "ingrediente" | "producto_terminado" | "ambos") => {
                                     setFormData(prev => ({
                                         ...prev,
                                         tipo: value,

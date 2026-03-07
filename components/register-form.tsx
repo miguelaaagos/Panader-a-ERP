@@ -28,7 +28,10 @@ export function RegisterForm({
         e.preventDefault();
         register({ email, password }, {
             onError: (error: unknown) => {
-                setError(error?.message || "Error al registrarse");
+                const message = error instanceof Error ? error.message :
+                    (typeof error === 'object' && error !== null && 'message' in error) ? String((error as any).message) :
+                        "Error al registrarse";
+                setError(message);
             },
         });
     };

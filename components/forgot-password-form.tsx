@@ -35,14 +35,16 @@ export function ForgotPasswordForm({
             });
 
             if (error) {
-                toast.error(error.message);
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                toast.error(errorMessage);
             } else {
                 setIsSubmitted(true);
                 toast.success("Correo de recuperación enviado exitosamente");
             }
-        } catch (err) {
-            toast.error("Ocurrió un error inesperado");
-            console.error(err);
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            toast.error(errorMessage);
+            console.error(error);
         } finally {
             setIsLoading(false);
         }

@@ -20,7 +20,9 @@ interface Producto {
     costo_unitario: number | null
     factor_conversion: number | null
     tipo: "ingrediente" | "producto_terminado" | "ambos"
-    categorias?: { nombre: string } | null
+    margen_deseado: number | null
+    precio_venta: number | null
+    categorias?: { nombre: string } | { nombre: string }[] | null
 }
 
 interface IngredienteSeleccionado {
@@ -33,10 +35,36 @@ interface IngredienteSeleccionado {
     factor_conversion: number // Siempre >= 1
 }
 
+interface Recipe {
+    id: string
+    producto_id: string
+    nombre: string
+    descripcion: string | null
+    rendimiento: number
+    ingredientes: Ingrediente[]
+    producto?: {
+        id: string
+        nombre: string
+        margen_deseado: number | null
+    }
+}
+
+interface Ingrediente {
+    ingrediente_id: string
+    cantidad: number
+    producto: {
+        nombre: string
+        unidad_medida: string
+        unidad_medida_base: string | null
+        factor_conversion: number | null
+        costo_unitario: number | null
+    }
+}
+
 interface RecipeFormDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    recipe?: unknown // Recipe detallada para editar
+    recipe?: Recipe | null // Recipe detallada para editar
     onSuccess: () => void
 }
 
@@ -76,7 +104,7 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                 setDescripcion(recipe.descripcion || "")
                 setRendimiento(recipe.rendimiento.toString())
                 setIngredientes(
-                    recipe.ingredientes.map((ing: unknown) => {
+                    recipe.ingredientes.map((ing: Ingrediente) => {
                         const product = ing.producto
                         const uComp = product.unidad_medida.toLowerCase()
                         // Si la unidad es kg o L, el factor SIEMPRE debe ser 1000
@@ -143,7 +171,8 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
             if (error) throw error
             setProducts((data as unknown as Producto[]) || [])
         } catch (error: unknown) {
-            toast.error("Error al cargar productos")
+            const errorMessage = error instanceof Error ? error.message : "Error al cargar productos"
+            toast.error(errorMessage)
         } finally {
             setLoading(false)
         }
@@ -154,7 +183,7 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
         products.filter(p => {
             if (p.tipo !== "producto_terminado" && p.tipo !== "ambos") return false
             if (!p.categorias) return false
-            const catRecord = p.categorias as unknown
+            const catRecord = p.categorias as any
             const nombreCat = Array.isArray(catRecord) ? catRecord[0]?.nombre : catRecord?.nombre
             if (!nombreCat) return false
             const catNombre = String(nombreCat).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -487,25 +516,28 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                                                 </SelectContent>
                                             </Select>
                                         </div>
-                                        <div className="w-24">
-                                            <Label className="text-[10px] uppercase text-muted-foreground ml-1">Costo</Label>
-                                            <div className="h-9 flex items-center px-2 text-sm font-medium">
-                                                ${Math.round(
-                                                    getLineCost({
+                                        <div className="flex-1 min-w-[150px]">
+                                            <Label className="text-[10px] uppercase text-muted-foreground ml-1">Costo Línea</Label>
+                                            <div className="h-9 flex items-center px-3 bg-secondary/30 rounded-md border border-border/50">
+                                                <span className="text-sm font-semibold">
+                                                    ${Math.round(getLineCost({
                                                         cantidad: parseFloat(ing.cantidad.replace(",", ".")) || 0,
                                                         unidadSeleccionada: ing.unidad_seleccionada,
                                                         unidadCompra: ing.unidad_medida_compra,
                                                         factor: ing.factor_conversion,
                                                         costoCompra: ing.costo_unitario
-                                                    })
-                                                ).toLocaleString()}
+                                                    })).toLocaleString()}
+                                                </span>
+                                                <span className="text-[10px] text-muted-foreground ml-auto">
+                                                    Total
+                                                </span>
                                             </div>
                                         </div>
                                         <Button
                                             type="button"
                                             variant="ghost"
                                             size="icon"
-                                            className="h-9 w-9 text-destructive"
+                                            className="h-9 w-9 text-destructive hover:bg-destructive/10"
                                             onClick={() => removeIngredient(index)}
                                         >
                                             <Trash2 className="h-4 w-4" />
@@ -574,7 +606,7 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                                 </Button>
                                 {selectedProduct && (
                                     <div className="text-[10px] text-muted-foreground italic pl-2">
-                                        Precio catálogo: ${Number((selectedProduct as unknown).precio_venta || 0).toLocaleString()}
+                                        Precio catálogo: ${Number(selectedProduct.precio_venta || 0).toLocaleString()}
                                     </div>
                                 )}
                             </div>
@@ -633,7 +665,7 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                                     <Label>Se Compra En</Label>
                                     <Select
                                         value={newIngredient.unidad_medida}
-                                        onValueChange={(val: unknown) => {
+                                        onValueChange={(val: "kg" | "g" | "L" | "ml" | "unidades") => {
                                             const base = val === "kg" ? "g" : val === "L" ? "ml" : val
                                             const fact = (val === "kg" || val === "L") ? 1000 : 1
                                             setNewIngredient({ ...newIngredient, unidad_medida: val, unidad_medida_base: base, factor_conversion: fact })
@@ -656,7 +688,7 @@ export function RecipeFormDialog({ open, onOpenChange, recipe, onSuccess }: Reci
                                     <Label>Se Usa En (Receta)</Label>
                                     <Select
                                         value={newIngredient.unidad_medida_base || newIngredient.unidad_medida}
-                                        onValueChange={(val: unknown) => {
+                                        onValueChange={(val: "kg" | "g" | "L" | "ml" | "unidades") => {
                                             let fact = 1;
                                             if (newIngredient.unidad_medida === "kg" && val === "g") fact = 1000;
                                             if (newIngredient.unidad_medida === "L" && val === "ml") fact = 1000;

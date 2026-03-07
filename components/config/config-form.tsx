@@ -42,7 +42,7 @@ export function ConfigForm() {
     const [saving, setSaving] = useState(false)
 
     const form = useForm<ConfigFormValues>({
-        resolver: zodResolver(configFormSchema) as unknown,
+        resolver: zodResolver(configFormSchema) as any,
         defaultValues: {
             nombre_negocio: "Mi Panadería",
             razon_social: "",
@@ -50,7 +50,6 @@ export function ConfigForm() {
             direccion: "",
             telefono: "",
             email: "",
-
             umbral_stock_bajo: 10,
             simbolo_moneda: "$",
         },
@@ -99,7 +98,8 @@ export function ConfigForm() {
             }
         } catch (error: unknown) {
             console.error("Error guardando configuración:", error)
-            toast.error("Error al guardar: " + error.message)
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            toast.error("Error al guardar: " + errorMessage)
         } finally {
             setSaving(false)
         }

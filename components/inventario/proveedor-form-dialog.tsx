@@ -95,7 +95,8 @@ export function ProveedorFormDialog({
                 toast.error(result.error || "Ocurrió un error al guardar el proveedor")
             }
         } catch (error: unknown) {
-            toast.error(error.message || "Ocurrió un error inesperado")
+            const errorMessage = error instanceof Error ? error.message : "Ocurrió un error inesperado"
+            toast.error(errorMessage)
         } finally {
             setIsSubmitting(false)
         }

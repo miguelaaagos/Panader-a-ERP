@@ -9,10 +9,16 @@ import { Loader2, AlertTriangle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { deleteProduct, hardDeleteProduct } from "@/actions/inventory"
 
+interface Producto {
+    id: string
+    nombre: string
+    // Add other fields as needed, or use a more specific type from your database types
+}
+
 interface DeleteProductDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    producto: unknown
+    producto: Producto | null
     onSuccess: () => void
 }
 
@@ -58,9 +64,9 @@ export function DeleteProductDialog({ open, onOpenChange, producto, onSuccess }:
             onSuccess()
             onOpenChange(false)
         } catch (error: unknown) {
-            console.error("Error deleting product:", error)
-            toast.error("Error al eliminar producto", {
-                description: error.message
+            const errorMessage = error instanceof Error ? error.message : String(error)
+            toast.error("Error", {
+                description: errorMessage,
             })
         } finally {
             setLoading(false)
@@ -84,9 +90,9 @@ export function DeleteProductDialog({ open, onOpenChange, producto, onSuccess }:
             onSuccess()
             onOpenChange(false)
         } catch (error: unknown) {
-            console.error("Error deactivating product:", error)
-            toast.error("Error al desactivar producto", {
-                description: error.message
+            const errorMessage = error instanceof Error ? error.message : String(error)
+            toast.error("Error", {
+                description: errorMessage,
             })
         } finally {
             setLoading(false)
@@ -136,56 +142,54 @@ export function DeleteProductDialog({ open, onOpenChange, producto, onSuccess }:
                     ) : (
                         <div className="space-y-2">
                             <p>
-                                ¿Estás seguro de que deseas eliminar el producto <strong>{producto?.nombre}</strong>?
+                                ¿Estás seguro de que deseas eliminar el producto <strong>{(producto as { nombre: string })?.nombre}</strong>?
                             </p>
                             <p className="text-sm text-muted-foreground">
                                 Este producto no tiene ventas asociadas y puede ser eliminado de forma segura.
                             </p>
+                            <div className="flex flex-col gap-4 py-4">
+                                <div className="rounded-lg border border-warning/50 bg-warning/10 p-4 text-sm text-warning-foreground">
+                                    <div className="flex items-center gap-2 font-semibold">
+                                        <AlertTriangle className="h-4 w-4" />
+                                        Advertencia
+                                    </div>
+                                    <p className="mt-1">
+                                        Si este producto tiene recetas o movimientos de inventario asociados,
+                                        la eliminación podría fallar o causar inconsistencias.
+                                        <strong>Se recomienda desactivarlo en su lugar.</strong>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>
 
-                <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
+                <DialogFooter className="flex-col gap-2 sm:flex-row">
+                    <Button
+                        variant="outline"
+                        onClick={() => onOpenChange(false)}
+                        disabled={loading}
+                    >
                         Cancelar
                     </Button>
-                    {hasVentas ? (
-                        <>
-                            <Button variant="default" onClick={handleDeactivate} disabled={loading}>
-                                {loading ? (
-                                    <>
-                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                        Desactivando...
-                                    </>
-                                ) : (
-                                    "Desactivar Producto"
-                                )}
-                            </Button>
-                            <Button variant="destructive" onClick={handleDelete} disabled={loading}>
-                                {loading ? (
-                                    <>
-                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                        Eliminando...
-                                    </>
-                                ) : (
-                                    "Eliminar de Todos Modos"
-                                )}
-                            </Button>
-                        </>
-                    ) : !checkingVentas && (
-                        <Button variant="destructive" onClick={handleDelete} disabled={loading}>
-                            {loading ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                    Eliminando...
-                                </>
-                            ) : (
-                                "Eliminar Producto"
-                            )}
-                        </Button>
-                    )}
+                    <Button
+                        variant="secondary"
+                        onClick={handleDeactivate}
+                        disabled={loading}
+                    >
+                        Desactivar en su lugar
+                    </Button>
+                    <Button
+                        variant="destructive"
+                        onClick={handleDelete}
+                        disabled={loading}
+                    >
+                        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Eliminar permanentemente
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
     )
 }
+

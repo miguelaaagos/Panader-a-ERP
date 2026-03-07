@@ -24,25 +24,38 @@ export function StockAdjuster({ producto, onSuccess }: StockAdjusterProps) {
     const [adjustment, setAdjustment] = useState("")
     const [loading, setLoading] = useState(false)
 
+    const supabase = createClient()
+
     const handleAdjust = async (delta: number) => {
         setLoading(true)
         try {
-            const result = await adjustStock(producto.id, delta)
+            const newStock = (producto as any).stock_actual + delta;
+            const { error } = await supabase
+                .from("productos")
+                .update({ stock_actual: newStock }) // Changed 'stock' to 'stock_actual' based on existing code
+                .eq("id", (producto as any).id)
 
-            if (!result.success) {
-                throw new Error(result.error)
-            }
+            if (error) throw error
 
-            toast.success(`Stock actualizado a ${result.newStock} ${producto.unidad_medida === 'unidades' ? 'uds' : producto.unidad_medida}`)
-            onSuccess()
+            toast.success("Stock actualizado", {
+                description: `Nuevo stock para ${(producto as any).nombre}: ${newStock} ${(producto as any).unidad_medida}`
+            })
+            onSuccess?.()
             setOpen(false)
             setAdjustment("")
         } catch (error: unknown) {
-            console.error("Error adjusting stock:", error)
-            toast.error("Error al ajustar stock", {
-                description: error.message
+            const errorMessage = error instanceof Error ? error.message : "Ocurrió un error inesperado"
+            // The original code uses 'sonner' toast (e.g., toast.error).
+            // The provided instruction uses a different toast API (e.g., toast({ title: "Error", ... })).
+            // To maintain syntactic correctness with the existing 'sonner' import,
+            // we'll adapt the message to 'sonner's API. If a different toast library
+            // is intended, its import and usage would need to be updated.
+            toast.error("Error", {
+                description: errorMessage,
             })
         } finally {
+            // The instruction specified 'setSubmitting(false)', but 'setLoading' is the state variable defined.
+            // Keeping 'setLoading(false)' to avoid introducing an undefined variable and maintain functionality.
             setLoading(false)
         }
     }

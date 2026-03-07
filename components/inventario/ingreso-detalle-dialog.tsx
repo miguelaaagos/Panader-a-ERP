@@ -56,7 +56,8 @@ export function IngresoDetalleDialog({
                 setError(result.error || "No se pudieron cargar los detalles")
             }
         } catch (err: unknown) {
-            setError(err.message || "Ocurrió un error inesperado")
+            const errorMessage = err instanceof Error ? err.message : "Ocurrió un error inesperado"
+            setError(errorMessage)
         } finally {
             setLoading(false)
         }

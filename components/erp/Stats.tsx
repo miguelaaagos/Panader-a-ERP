@@ -32,7 +32,11 @@ export function BakeryStats() {
                 .gte("created_at", today.toISOString())
                 .eq("anulada", false);
 
-            const ventasHoy = ventas?.reduce((sum: number, v: unknown) => sum + v.total, 0) || 0;
+            interface VentaRow {
+                total: number;
+            }
+
+            const ventasHoy = (ventas as VentaRow[] | null)?.reduce((sum: number, v: VentaRow) => sum + v.total, 0) || 0;
             const transaccionesHoy = ventas?.length || 0;
 
             // Query 2: Total de productos activos
@@ -50,9 +54,14 @@ export function BakeryStats() {
                 .eq("es_pesable", false)
                 .not("stock_minimo", "is", null);
 
+            interface ProductoStockRow {
+                stock_cantidad: number;
+                stock_minimo: number;
+            }
+
             // Filtrar en el cliente donde stock_cantidad <= stock_minimo
-            const stockCritico = productosStockBajo?.filter(
-                (p: unknown) => p.stock_cantidad <= p.stock_minimo
+            const stockCritico = (productosStockBajo as ProductoStockRow[] | null)?.filter(
+                (p: ProductoStockRow) => p.stock_cantidad <= p.stock_minimo
             ).length || 0;
 
             setStats({

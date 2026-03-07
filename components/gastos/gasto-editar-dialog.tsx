@@ -12,10 +12,26 @@ import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 import { format } from "date-fns"
 
+interface Gasto {
+    id: string
+    descripcion: string
+    categoria_id: string | null
+    categoria?: {
+        id: string
+        nombre: string
+    }
+    tipo_documento: "Factura" | "Boleta" | "Recibo" | "Otro"
+    tipo_gasto: "fijo" | "variable"
+    monto_total: number
+    monto_neto: number
+    monto_iva: number
+    fecha_gasto: string
+}
+
 interface GastoEditarDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    gasto: unknown | null
+    gasto: Gasto | null
     onEdited: () => void
 }
 
@@ -48,8 +64,8 @@ export function GastoEditarDialog({ open, onOpenChange, gasto, onEdited }: Gasto
                 const catId = gasto.categoria?.id || gasto.categoria_id || "none"
                 setCategoriaId(catId)
 
-                setTipoDocumento((gasto.tipo_documento as unknown) || "Boleta")
-                setTipoGasto((gasto.tipo_gasto as unknown) || "variable")
+                setTipoDocumento(gasto.tipo_documento || "Boleta")
+                setTipoGasto(gasto.tipo_gasto || "variable")
                 setMontoTotal(gasto.monto_total?.toString() || "")
                 setMontoNeto(gasto.monto_neto || 0)
                 setMontoIva(gasto.monto_iva || 0)
@@ -195,7 +211,7 @@ export function GastoEditarDialog({ open, onOpenChange, gasto, onEdited }: Gasto
                         </div>
                         <div className="space-y-2">
                             <Label>Tipo de Gasto</Label>
-                            <Select value={tipoGasto} onValueChange={(val: unknown) => setTipoGasto(val)}>
+                            <Select value={tipoGasto} onValueChange={(val: "fijo" | "variable") => setTipoGasto(val)}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="variable">Gasto Variable</SelectItem>

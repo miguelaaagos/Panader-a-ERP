@@ -25,8 +25,25 @@ const MESES = [
     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ]
 
+interface GastoRow {
+    id: string
+    fecha_gasto: string
+    estado: string
+    descripcion: string
+    categoria_id: string | null
+    categoria?: {
+        id: string
+        nombre: string
+    } | undefined
+    tipo_gasto: "fijo" | "variable"
+    tipo_documento: "Factura" | "Boleta" | "Recibo" | "Otro"
+    monto_neto: number
+    monto_iva: number
+    monto_total: number
+}
+
 interface GastosClientProps {
-    initialGastos: unknown[]
+    initialGastos: GastoRow[]
     mes: number
     anio: number
 }
@@ -37,10 +54,10 @@ export function GastosClient({ initialGastos, mes, anio }: GastosClientProps) {
     const [isPending, startTransition] = useTransition()
     const [generating, setGenerating] = useState(false)
 
-    const [selectedGasto, setSelectedGasto] = useState<any | null>(null)
+    const [selectedGasto, setSelectedGasto] = useState<GastoRow | null>(null)
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 
-    const handleEditClick = (gasto: unknown) => {
+    const handleEditClick = (gasto: GastoRow) => {
         setSelectedGasto(gasto)
         setIsEditDialogOpen(true)
     }
