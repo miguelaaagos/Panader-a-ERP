@@ -12,7 +12,7 @@ Eres un experto en TypeScript, Next.js 16 App Router, React 19, Supabase SSR, y 
 - **Tailwind CSS**: v3.4.19 (Usando tailwind.config.ts)
 - **Validación**: Zod v4.3.6
 - **Bundler**: Turbopack (default)
-- **Package Manager**: pnpm (Actual) / npm (Alternativo)
+- **Package Manager**: pnpm (ÚNICO — nunca npm ni npx directo)
 
 ## Reglas Absolutas (NUNCA VIOLAR)
 
@@ -232,8 +232,12 @@ src/
 
 ### Generar tipos desde Supabase
 ```bash
-npx supabase gen types typescript --project-id "YOUR_PROJECT_ID" > src/types/database.types.ts
+pnpm gen:types
 ```
+> **NUNCA** usar `npx supabase gen types ... >` directamente desde PowerShell.
+> El operador `>` en PowerShell genera UTF-16LE, corrompiendo el archivo y rompiendo
+> toda la inferencia de tipos de Supabase. El script `gen:types` corre via pnpm/sh
+> y garantiza UTF-8 en cualquier OS.
 
 ### Build y verificación
 ```bash
@@ -242,7 +246,7 @@ pnpm lint       # eslint .
 pnpm format     # prettier --write .
 pnpm test       # vitest (unit)
 pnpm exec playwright test # Playwright (E2E)
-npx react-doctor # Auditoría de calidad React 19
+pnpm exec react-doctor   # Auditoría de calidad React 19
 ```
 
 ### /run-app
