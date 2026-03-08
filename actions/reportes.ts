@@ -128,3 +128,54 @@ export async function getReporteFinancieroMensual(monthISO?: string) {
         return { success: false, error: errorMessage }
     }
 }
+
+export async function getProyeccionInventario() {
+    try {
+        const { supabase, profile } = await validateRequest('analytics.view_full')
+
+        const { data: productos, error } = await supabase
+            .from("productos")
+            .select("id, nombre, stock_actual, precio_venta, costo_unitario")
+            .eq("tenant_id", profile.tenant_id)
+            .eq("activo", true)
+            .gt("stock_actual", 0)
+
+        if (error) throw error
+
+        let totalInversion = 0
+        let totalVentaPotencial = 0
+        let totalIvaDebitoPotencial = 0
+
+        productos?.forEach(p => {
+            const stock = Number(p.stock_actual || 0)
+            const costo = Number(p.costo_unitario || 0)
+            const precio = Number(p.precio_venta || 0)
+
+            totalInversion += stock * costo
+            totalVentaPotencial += stock * precio
+
+            // Cálculo IVA (Asumiendo que precio_venta es BRUTO)
+            const neto = precio / 1.19
+            totalIvaDebitoPotencial += stock * (precio - neto)
+        })
+
+        const totalNetoPotencial = totalVentaPotencial - totalIvaDebitoPotencial
+        const totalUtilidadPotencial = totalNetoPotencial - totalInversion
+
+        return {
+            success: true,
+            data: {
+                total_inversion: totalInversion,
+                total_venta_potencial: totalVentaPotencial,
+                total_iva_debito_potencial: totalIvaDebitoPotencial,
+                total_neto_potencial: totalNetoPotencial,
+                total_utilidad_potencial: totalUtilidadPotencial,
+                conteo_productos: productos?.length || 0
+            }
+        }
+
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        return { success: false, error: errorMessage }
+    }
+}

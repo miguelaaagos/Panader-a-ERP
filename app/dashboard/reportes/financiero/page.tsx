@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { getReporteFinancieroMensual } from "@/actions/reportes"
+import { getReporteFinancieroMensual, getProyeccionInventario } from "@/actions/reportes"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { format, subMonths, startOfMonth } from "date-fns"
@@ -24,6 +24,7 @@ import {
 export default function ReporteFinancieroPage() {
     const [loading, setLoading] = useState(true)
     const [reporte, setReporte] = useState<any>(null)
+    const [proyeccion, setProyeccion] = useState<any>(null)
     const [selectedMonth, setSelectedMonth] = useState<string>(startOfMonth(new Date()).toISOString())
 
     const monthOptions = Array.from({ length: 12 }).map((_, i) => {
@@ -36,12 +37,21 @@ export default function ReporteFinancieroPage() {
 
     const fetchReport = async (monthISO: string) => {
         setLoading(true)
-        const res = await getReporteFinancieroMensual(monthISO)
-        if (res.success && res.data) {
-            setReporte(res.data)
+        const [reporteRes, proyeccionRes] = await Promise.all([
+            getReporteFinancieroMensual(monthISO),
+            getProyeccionInventario()
+        ])
+
+        if (reporteRes.success && reporteRes.data) {
+            setReporte(reporteRes.data)
         } else {
-            toast.error("Error al cargar reporte: " + res.error)
+            toast.error("Error al cargar reporte: " + reporteRes.error)
         }
+
+        if (proyeccionRes.success && proyeccionRes.data) {
+            setProyeccion(proyeccionRes.data)
+        }
+
         setLoading(false)
     }
 
@@ -79,6 +89,24 @@ export default function ReporteFinancieroPage() {
             fill: reporte.utilidad.neta >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))"
         }
     ]
+
+    const proyeccionChartData = proyeccion ? [
+        {
+            name: "Inversión",
+            Monto: Math.round(proyeccion.total_inversion),
+            fill: "hsl(var(--muted-foreground))"
+        },
+        {
+            name: "Neto",
+            Monto: Math.round(proyeccion.total_neto_potencial),
+            fill: "hsl(var(--primary) / 0.6)"
+        },
+        {
+            name: "Venta (B)",
+            Monto: Math.round(proyeccion.total_venta_potencial),
+            fill: "hsl(var(--primary))"
+        }
+    ] : []
 
     return (
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 max-w-7xl mx-auto w-full">
@@ -176,23 +204,77 @@ export default function ReporteFinancieroPage() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
-                <Card className="col-span-4">
+                <Card className="col-span-4 border-primary/20 bg-primary/5">
+                    <CardHeader>
+                        <CardTitle className="flex justify-between items-center">
+                            <span>Proyección de Inventario (Venta Potencial)</span>
+                            <Calculator className="h-5 w-5 text-primary" />
+                        </CardTitle>
+                        <CardDescription>
+                            Resultado esperado si se vendiera todo el stock actual {proyeccion && `(${proyeccion.conteo_productos} productos)`}.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <div className="space-y-1">
+                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Inversión Actual</p>
+                                <p className="text-xl font-bold">{proyeccion ? formatter.format(proyeccion.total_inversion) : '...'}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Venta Proyectada (B)</p>
+                                <p className="text-xl font-bold text-primary">{proyeccion ? formatter.format(proyeccion.total_venta_potencial) : '...'}</p>
+                                {proyeccion && <p className="text-[10px] text-muted-foreground">IVA: {formatter.format(proyeccion.total_iva_debito_potencial)}</p>}
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Neto Proyectado</p>
+                                <p className="text-xl font-bold">{proyeccion ? formatter.format(proyeccion.total_neto_potencial) : '...'}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Utilidad Potencial</p>
+                                <p className="text-xl font-bold text-emerald-600">{proyeccion ? formatter.format(proyeccion.total_utilidad_potencial) : '...'}</p>
+                            </div>
+                        </div>
+                        <div className="h-[250px] w-full mt-4">
+                            {proyeccion && (
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart layout="vertical" data={proyeccionChartData} margin={{ left: 40, right: 40 }}>
+                                        <XAxis type="number" hide />
+                                        <YAxis dataKey="name" type="category" width={110} tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
+                                        <Tooltip
+                                            cursor={{ fill: 'transparent' }}
+                                            formatter={(value: any) => [formatter.format(Number(value)), "Monto"]}
+                                            contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
+                                        />
+                                        <Bar dataKey="Monto" radius={[0, 4, 4, 0]} barSize={40}>
+                                            {proyeccionChartData.map((entry: any, index: number) => (
+                                                <Cell key={`cell-proy-${index}`} fill={entry.fill} />
+                                            ))}
+                                            <LabelList dataKey="Monto" position="right" formatter={(val: any) => formatter.format(Number(val))} fontSize={11} offset={10} fill="hsl(var(--foreground))" />
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card className="col-span-3">
                     <CardHeader>
                         <CardTitle>Flujo de Caja - Resumen</CardTitle>
                     </CardHeader>
                     <CardContent className="pl-2">
                         <div className="h-[350px] min-h-[350px]">
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={chartData} margin={{ top: 40, right: 30, left: 20, bottom: 25 }} barSize={60}>
+                                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }} barSize={50}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
-                                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickMargin={15} padding={{ left: 60, right: 60 }} />
+                                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} tickMargin={10} />
                                     <YAxis
                                         stroke="hsl(var(--muted-foreground))"
-                                        fontSize={12}
+                                        fontSize={10}
                                         tickLine={false}
                                         axisLine={false}
                                         tickFormatter={(value) => `$${value.toLocaleString('es-CL')}`}
-                                        width={75}
+                                        width={60}
                                     />
                                     <Tooltip
                                         cursor={{ fill: 'hsl(var(--muted))', opacity: 0.4 }}
@@ -203,23 +285,24 @@ export default function ReporteFinancieroPage() {
                                         {chartData.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={entry.fill} />
                                         ))}
-                                        <LabelList dataKey="Total" position="top" offset={10} formatter={(val: any) => Number(val) > 0 ? formatter.format(Number(val)) : ""} fontSize={11} fill="hsl(var(--foreground))" />
                                     </Bar>
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
                     </CardContent>
                 </Card>
+            </div>
 
-                <Card className="col-span-3">
-                    <CardHeader>
-                        <CardTitle>Detalle Tributario Mensual (SII)</CardTitle>
-                        <CardDescription>
-                            El IVA de tus ventas se descuenta con el IVA de tus compras y gastos con factura.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-6">
+            <Card className="mt-4">
+                <CardHeader>
+                    <CardTitle>Detalle Tributario Mensual (SII)</CardTitle>
+                    <CardDescription>
+                        El IVA de tus ventas se descuenta con el IVA de tus compras y gastos con factura.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div className="space-y-4">
                             <div className="flex flex-col space-y-1">
                                 <span className="text-sm font-medium text-muted-foreground">Total Ventas (Neto)</span>
                                 <span className="text-2xl font-semibold">{formatter.format(reporte.ventas.neto)}</span>
@@ -228,24 +311,30 @@ export default function ReporteFinancieroPage() {
                                 <span className="text-sm font-medium text-muted-foreground">Total Gastos (Neto)</span>
                                 <span className="text-2xl font-semibold">{formatter.format(reporte.gastos.neto)}</span>
                             </div>
-                            <div className="border-t border-border pt-4">
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-sm">(+) IVA Ventas (19%)</span>
-                                    <span className="font-medium">{formatter.format(reporte.ventas.iva_debito)}</span>
-                                </div>
-                                <div className="flex justify-between items-center mb-4">
-                                    <span className="text-sm">(-) IVA Compras (19%)</span>
-                                    <span className="font-medium">{formatter.format(reporte.gastos.iva_credito)}</span>
-                                </div>
-                                <div className={`flex justify-between items-center p-3 rounded-md ${reporte.impuestos.iva_a_pagar > 0 ? 'bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-100' : 'bg-emerald-100 text-emerald-900 dark:bg-emerald-900/30 dark:text-emerald-100'}`}>
-                                    <span className="font-semibold">{reporte.impuestos.iva_a_pagar > 0 ? 'IVA a Pagar' : 'Remanente a Favor'}</span>
-                                    <span className="font-bold">{formatter.format(reporte.impuestos.iva_a_pagar > 0 ? reporte.impuestos.iva_a_pagar : reporte.impuestos.iva_a_favor)}</span>
-                                </div>
+                        </div>
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-muted-foreground">(+) IVA Ventas (19%)</span>
+                                <span className="font-medium">{formatter.format(reporte.ventas.iva_debito)}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-muted-foreground">(-) IVA Compras (19%)</span>
+                                <span className="font-medium">{formatter.format(reporte.gastos.iva_credito)}</span>
+                            </div>
+                            <div className={`mt-4 flex justify-between items-center p-3 rounded-md ${reporte.impuestos.iva_a_pagar > 0 ? 'bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-100' : 'bg-emerald-100 text-emerald-900 dark:bg-emerald-900/30 dark:text-emerald-100'}`}>
+                                <span className="font-semibold">{reporte.impuestos.iva_a_pagar > 0 ? 'IVA a Pagar' : 'Remanente a Favor'}</span>
+                                <span className="font-bold">{formatter.format(reporte.impuestos.iva_a_pagar > 0 ? reporte.impuestos.iva_a_pagar : reporte.impuestos.iva_a_favor)}</span>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
-            </div>
+                        <div className="hidden lg:flex items-center justify-center p-4 border rounded-xl bg-muted/50">
+                            <div className="text-center">
+                                <Landmark className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
+                                <p className="text-xs text-muted-foreground max-w-[200px]">Usa este resumen para tu declaración mensual de impuestos (F29).</p>
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     )
 }
