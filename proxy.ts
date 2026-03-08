@@ -69,6 +69,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url))
   }
 
+  if (pathname === "/dashboard/recetas") {
+    return NextResponse.redirect(new URL("/dashboard/produccion/recetas", request.url))
+  }
+
   return supabaseResponse
 }
 

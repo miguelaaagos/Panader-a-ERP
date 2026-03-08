@@ -3,9 +3,10 @@
 ## Estado Actual: Producción Lista (Inventario Real)
 - **Versión**: 1.5.1 (Attendance & Offline Edition)
 - **Estado**: Estable / En Desarrollo
-- **Última actualización**: 8 de marzo de 2026 — Implementación de Vista General de Horarios Especiales, corrección de persistencia de horarios por usuario (sincronización bidireccional) y saneamiento de tipos Supabase.
+- **Última actualización**: 8 de marzo de 2026 — Integración del módulo de Recetas dentro de Producción, anidación visual en Sidebar, corrección de redirecciones 404 y saneamiento de procesos de desarrollo.
 
 ## Tareas Completadas [x]
+- [x] **Integración Recetas en Producción**: Mover módulo a `/produccion/recetas`, anidar visualmente en Sidebar y configurar redirecciones en `proxy.ts`.
 - [x] Establecer y documentar estándares UI/UX (Notificaciones, Gráficos PowerBI style, Tablas móviles, Dark mode) en GEMINI.md y skills.
 - [x] Optimizar la responsividad móvil en tablas de Inventario, Ventas y ERP.
 - [x] Solucionar error 500 en creación de usuarios e incorporar estado visual de notificaciones (Toaster).

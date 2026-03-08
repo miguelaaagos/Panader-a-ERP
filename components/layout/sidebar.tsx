@@ -26,6 +26,15 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { Permission } from "@/lib/roles";
 import Image from "next/image";
 
+interface Route {
+    label: string;
+    icon: any;
+    href: string;
+    active: boolean;
+    permission?: Permission;
+    children?: Route[];
+}
+
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 export function Sidebar({ className }: SidebarProps) {
@@ -77,18 +86,20 @@ export function Sidebar({ className }: SidebarProps) {
             permission: "sales.view_all" as Permission,
         },
         {
-            label: "Recetas",
-            icon: Utensils,
-            href: "/dashboard/recetas",
-            active: pathname.startsWith("/dashboard/recetas"),
-            permission: "recipes.view" as Permission,
-        },
-        {
             label: "Producción",
             icon: ChefHat,
             href: "/dashboard/produccion",
             active: pathname.startsWith("/dashboard/produccion"),
             permission: "production.view" as Permission,
+            children: [
+                {
+                    label: "Recetas",
+                    icon: Utensils,
+                    href: "/dashboard/produccion/recetas",
+                    active: pathname.startsWith("/dashboard/produccion/recetas"),
+                    permission: "recipes.view" as Permission,
+                },
+            ]
         },
         {
             label: "Historial Ventas",
@@ -161,17 +172,45 @@ export function Sidebar({ className }: SidebarProps) {
                     </div>
                     <div className="space-y-1">
                         {visibleRoutes.map((route) => (
-                            <Button
-                                key={route.href}
-                                variant={route.active ? "secondary" : "ghost"}
-                                className={cn("w-full justify-start", route.active && "bg-primary/10 text-primary hover:bg-primary/20")}
-                                asChild
-                            >
-                                <Link href={route.href}>
-                                    <route.icon className="mr-2 h-4 w-4" />
-                                    {route.label}
-                                </Link>
-                            </Button>
+                            <div key={route.href} className="space-y-1">
+                                <Button
+                                    variant={route.active ? "secondary" : "ghost"}
+                                    className={cn(
+                                        "w-full justify-start",
+                                        route.active && "bg-primary/10 text-primary hover:bg-primary/20",
+                                        route.children && "font-semibold"
+                                    )}
+                                    asChild
+                                >
+                                    <Link href={route.href}>
+                                        <route.icon className="mr-2 h-4 w-4" />
+                                        {route.label}
+                                    </Link>
+                                </Button>
+                                {route.children && (
+                                    <div className="ml-4 pl-2 border-l space-y-1 mt-1">
+                                        {route.children
+                                            .filter(child => !child.permission || can(child.permission))
+                                            .map((child) => (
+                                                <Button
+                                                    key={child.href}
+                                                    variant={child.active ? "secondary" : "ghost"}
+                                                    size="sm"
+                                                    className={cn(
+                                                        "w-full justify-start h-8 text-xs",
+                                                        child.active && "bg-primary/10 text-primary hover:bg-primary/20"
+                                                    )}
+                                                    asChild
+                                                >
+                                                    <Link href={child.href}>
+                                                        <child.icon className="mr-2 h-3.5 w-3.5" />
+                                                        {child.label}
+                                                    </Link>
+                                                </Button>
+                                            ))}
+                                    </div>
+                                )}
+                            </div>
                         ))}
                     </div>
                 </div>

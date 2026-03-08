@@ -163,7 +163,7 @@ export async function upsertRecipe(data: RecipeFormData, recipeId?: string) {
             .update(productUpdate)
             .eq("id", validated.producto_id)
 
-        revalidatePath("/dashboard/recetas")
+        revalidatePath("/dashboard/produccion/recetas")
         revalidatePath("/dashboard/inventario")
         return { success: true, id: currentRecipeId }
 
@@ -200,7 +200,7 @@ export async function recalculateRecipesUsingIngredient(ingredienteId: string) {
             await recalculateRecipeDetail(recipeId as string, supabase)
         }
 
-        revalidatePath("/dashboard/recetas")
+        revalidatePath("/dashboard/produccion/recetas")
         return { success: true, count: uniqueRecipeIds.length }
     } catch (error: unknown) {
         console.error("Error recalculating recipes:", error)
@@ -347,7 +347,7 @@ export async function toggleRecipeStatus(id: string, activa: boolean) {
 
         if (error) throw error
 
-        revalidatePath("/dashboard/recetas")
+        revalidatePath("/dashboard/produccion/recetas")
         return { success: true }
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error)

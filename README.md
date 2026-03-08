@@ -64,4 +64,4 @@ pnpm typecheck
 
 **Version**: 1.5.1 (Attendance & Offline Edition)  
 **Estado**: Producción / Resiliente  
-**Última actualización**: 8 de marzo de 2026 — Implementación de Vista General de Horarios Especiales, corrección de persistencia de horarios por usuario y sincronización de tipos Supabase.
+**Última actualización**: 8 de marzo de 2026 — Integración del módulo de Recetas dentro de Producción, anidación visual en Sidebar, corrección de redirecciones 404 y saneamiento de procesos de desarrollo.

@@ -35,7 +35,7 @@
   - Riesgo alto: conversion de unidades y consistencia de stock
 
 - Recetas y Produccion:
-  - UI: `app/dashboard/recetas/*`, `app/dashboard/produccion/*`
+  - UI: `app/dashboard/produccion/recetas/*`, `app/dashboard/produccion/*`
   - Acciones: `actions/recipes.ts`, `actions/production.ts`
   - Riesgo alto: costos, consumo de insumos y RPCs de produccion
 

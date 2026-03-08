@@ -11,6 +11,15 @@ import { Permission } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
+interface Route {
+    label: string;
+    icon: any;
+    href: string;
+    active: boolean;
+    permission?: Permission;
+    children?: Route[];
+}
+
 export function MobileSidebar() {
     const [open, setOpen] = useState(false);
     const pathname = usePathname();
@@ -61,18 +70,20 @@ export function MobileSidebar() {
             permission: "sales.view_all" as Permission,
         },
         {
-            label: "Recetas",
-            icon: Utensils,
-            href: "/dashboard/recetas",
-            active: pathname.startsWith("/dashboard/recetas"),
-            permission: "recipes.view" as Permission,
-        },
-        {
             label: "Producción",
             icon: ChefHat,
             href: "/dashboard/produccion",
             active: pathname.startsWith("/dashboard/produccion"),
             permission: "production.view" as Permission,
+            children: [
+                {
+                    label: "Recetas",
+                    icon: Utensils,
+                    href: "/dashboard/produccion/recetas",
+                    active: pathname.startsWith("/dashboard/produccion/recetas"),
+                    permission: "recipes.view" as Permission,
+                },
+            ]
         },
         {
             label: "Historial Ventas",
@@ -129,18 +140,47 @@ export function MobileSidebar() {
                 <div className="flex-1 overflow-y-auto py-4">
                     <div className="px-3 space-y-1">
                         {visibleRoutes.map((route) => (
-                            <Button
-                                key={route.href}
-                                variant={route.active ? "secondary" : "ghost"}
-                                className={cn("w-full justify-start", route.active && "bg-primary/10 text-primary hover:bg-primary/20")}
-                                onClick={() => setOpen(false)}
-                                asChild
-                            >
-                                <Link href={route.href}>
-                                    <route.icon className="mr-2 h-4 w-4" />
-                                    {route.label}
-                                </Link>
-                            </Button>
+                            <div key={route.href} className="space-y-1">
+                                <Button
+                                    variant={route.active ? "secondary" : "ghost"}
+                                    className={cn(
+                                        "w-full justify-start",
+                                        route.active && "bg-primary/10 text-primary hover:bg-primary/20",
+                                        route.children && "font-semibold"
+                                    )}
+                                    onClick={() => !route.children && setOpen(false)}
+                                    asChild
+                                >
+                                    <Link href={route.href}>
+                                        <route.icon className="mr-2 h-4 w-4" />
+                                        {route.label}
+                                    </Link>
+                                </Button>
+                                {route.children && (
+                                    <div className="ml-4 pl-2 border-l space-y-1 mt-1">
+                                        {route.children
+                                            .filter(child => !child.permission || can(child.permission))
+                                            .map((child) => (
+                                                <Button
+                                                    key={child.href}
+                                                    variant={child.active ? "secondary" : "ghost"}
+                                                    size="sm"
+                                                    className={cn(
+                                                        "w-full justify-start h-9 text-sm",
+                                                        child.active && "bg-primary/10 text-primary hover:bg-primary/20"
+                                                    )}
+                                                    onClick={() => setOpen(false)}
+                                                    asChild
+                                                >
+                                                    <Link href={child.href}>
+                                                        <child.icon className="mr-2 h-4 w-4" />
+                                                        {child.label}
+                                                    </Link>
+                                                </Button>
+                                            ))}
+                                    </div>
+                                )}
+                            </div>
                         ))}
                     </div>
                 </div>

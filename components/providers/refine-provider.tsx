@@ -140,7 +140,7 @@ export function RefineProvider({ children }: { children: React.ReactNode }) {
                         },
                         {
                             name: "recetas",
-                            list: "/dashboard/recetas",
+                            list: "/dashboard/produccion/recetas",
                             meta: {
                                 label: "Recetas",
                             }
