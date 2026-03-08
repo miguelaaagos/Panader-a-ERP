@@ -29,6 +29,8 @@ Cuando desarrolles nuevas interfaces o componentes para el proyecto, DEBES segui
 
 ## 5. Tema Oscuro (Dark Mode)
 - **Regla:** El contraste debe ser perfecto tanto en Light como en Dark mode.
+- **Tipografía:** Evita el uso excesivo de mayúsculas (shouting) en títulos para mantener un tono profesional y premium.
+- **Limpieza de Títulos:** Evita el uso innecesario de paréntesis y abreviaciones técnicas (ej. "(SII)", "(Bruto)", "(B)") en títulos principales. Mantén los nombres directos y limpios. El contexto técnico puede ir en descripciones pequeñas (`text-muted-foreground`).
 - **Colores:** NUNCA uses colores absolutos (ej. `bg-white`, `text-black`) para elementos de estructura. Usa las variables CSS del tema (ej. `bg-background`, `text-foreground`, `bg-muted`, `border-border`, `bg-card`).
 - **Excepciones:** Solo usa colores estáticos para elementos de marca específicos o estados (ej. `text-red-500` para errores, pero verificando que se lea bien en oscuro).
 

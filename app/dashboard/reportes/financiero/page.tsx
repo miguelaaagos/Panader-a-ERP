@@ -102,7 +102,7 @@ export default function ReporteFinancieroPage() {
             fill: "hsl(var(--primary) / 0.6)"
         },
         {
-            name: "Venta (B)",
+            name: "Venta",
             Monto: Math.round(proyeccion.total_venta_potencial),
             fill: "hsl(var(--primary))"
         }
@@ -112,7 +112,7 @@ export default function ReporteFinancieroPage() {
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 max-w-7xl mx-auto w-full">
             <div className="flex flex-col md:flex-row md:items-center justify-between space-y-2 md:space-y-0">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Reporte Financiero y Tributario (SII)</h2>
+                    <h2 className="text-3xl font-bold tracking-tight">Reporte Financiero y Tributario</h2>
                     <p className="text-muted-foreground">Consolidado de ventas, gastos, utilidades y cálculo de IVA mensual.</p>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -136,7 +136,7 @@ export default function ReporteFinancieroPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Ventas Totales (Bruto)</CardTitle>
+                        <CardTitle className="text-sm font-medium">Ventas Totales</CardTitle>
                         <TrendingUp className="h-4 w-4 text-emerald-500" />
                     </CardHeader>
                     <CardContent>
@@ -146,7 +146,7 @@ export default function ReporteFinancieroPage() {
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Gastos Variables (Bruto)</CardTitle>
+                        <CardTitle className="text-sm font-medium">Gastos Variables</CardTitle>
                         <Wallet className="h-4 w-4 text-rose-500" />
                     </CardHeader>
                     <CardContent>
@@ -204,10 +204,10 @@ export default function ReporteFinancieroPage() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
-                <Card className="col-span-4 border-primary/20 bg-primary/5">
+                <Card className="col-span-4 transition-all duration-300">
                     <CardHeader>
                         <CardTitle className="flex justify-between items-center">
-                            <span>Proyección de Inventario (Venta Potencial)</span>
+                            <span>Proyección de Inventario</span>
                             <Calculator className="h-5 w-5 text-primary" />
                         </CardTitle>
                         <CardDescription>
@@ -217,20 +217,20 @@ export default function ReporteFinancieroPage() {
                     <CardContent>
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                             <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Inversión Actual</p>
+                                <p className="text-xs text-muted-foreground font-medium tracking-wider">Inversión Actual</p>
                                 <p className="text-xl font-bold">{proyeccion ? formatter.format(proyeccion.total_inversion) : '...'}</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Venta Proyectada (B)</p>
+                                <p className="text-xs text-muted-foreground font-medium tracking-wider">Venta Proyectada</p>
                                 <p className="text-xl font-bold text-primary">{proyeccion ? formatter.format(proyeccion.total_venta_potencial) : '...'}</p>
                                 {proyeccion && <p className="text-[10px] text-muted-foreground">IVA: {formatter.format(proyeccion.total_iva_debito_potencial)}</p>}
                             </div>
                             <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Neto Proyectado</p>
+                                <p className="text-xs text-muted-foreground font-medium tracking-wider">Neto Proyectado</p>
                                 <p className="text-xl font-bold">{proyeccion ? formatter.format(proyeccion.total_neto_potencial) : '...'}</p>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Utilidad Potencial</p>
+                                <p className="text-xs text-muted-foreground font-medium tracking-wider">Utilidad Potencial</p>
                                 <p className="text-xl font-bold text-emerald-600">{proyeccion ? formatter.format(proyeccion.total_utilidad_potencial) : '...'}</p>
                             </div>
                         </div>
@@ -239,17 +239,32 @@ export default function ReporteFinancieroPage() {
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart layout="vertical" data={proyeccionChartData} margin={{ left: 40, right: 40 }}>
                                         <XAxis type="number" hide />
-                                        <YAxis dataKey="name" type="category" width={110} tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
+                                        <YAxis
+                                            dataKey="name"
+                                            type="category"
+                                            width={110}
+                                            tick={{ fontSize: 12, fill: 'hsl(var(--foreground))' }}
+                                            axisLine={false}
+                                            tickLine={false}
+                                        />
                                         <Tooltip
                                             cursor={{ fill: 'transparent' }}
                                             formatter={(value: any) => [formatter.format(Number(value)), "Monto"]}
-                                            contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
+                                            contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px', color: 'hsl(var(--foreground))' }}
+                                            itemStyle={{ color: 'hsl(var(--foreground))' }}
+                                            labelStyle={{ color: 'hsl(var(--foreground))' }}
                                         />
                                         <Bar dataKey="Monto" radius={[0, 4, 4, 0]} barSize={40}>
                                             {proyeccionChartData.map((entry: any, index: number) => (
                                                 <Cell key={`cell-proy-${index}`} fill={entry.fill} />
                                             ))}
-                                            <LabelList dataKey="Monto" position="right" formatter={(val: any) => formatter.format(Number(val))} fontSize={11} offset={10} fill="hsl(var(--foreground))" />
+                                            <LabelList
+                                                dataKey="Monto"
+                                                position="right"
+                                                formatter={(val: any) => formatter.format(Number(val))}
+                                                className="fill-foreground text-[10px] sm:text-[11px]"
+                                                offset={10}
+                                            />
                                         </Bar>
                                     </BarChart>
                                 </ResponsiveContainer>
@@ -295,7 +310,7 @@ export default function ReporteFinancieroPage() {
 
             <Card className="mt-4">
                 <CardHeader>
-                    <CardTitle>Detalle Tributario Mensual (SII)</CardTitle>
+                    <CardTitle>Detalle Tributario Mensual</CardTitle>
                     <CardDescription>
                         El IVA de tus ventas se descuenta con el IVA de tus compras y gastos con factura.
                     </CardDescription>
