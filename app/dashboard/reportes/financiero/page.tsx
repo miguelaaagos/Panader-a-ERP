@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { format, subMonths, startOfMonth } from "date-fns"
 import { es } from "date-fns/locale"
 import { toast } from "sonner"
-import { Loader2, TrendingUp, TrendingDown, Landmark, Wallet, Calculator } from "lucide-react"
+import { Loader2, TrendingUp, Landmark, Wallet, Calculator } from "lucide-react"
 import {
     BarChart,
     Bar,
@@ -16,15 +16,49 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
-    Legend,
     ResponsiveContainer,
     LabelList
 } from "recharts"
 
+interface ReporteFinanciero {
+    ventas: { bruto: number; neto: number; iva_debito: number }
+    gastos: {
+        bruto: number;
+        neto: number;
+        iva_credito: number;
+        fijos_bruto: number;
+        variables_bruto: number
+        fijos_detalle: Array<{ descripcion: string; monto: number; id: string }>
+    }
+    impuestos: { iva_a_pagar: number; iva_a_favor: number }
+    utilidad: { bruta: number; neta: number }
+}
+
+interface ProyeccionInventario {
+    total_inversion: number
+    total_venta_potencial: number
+    total_iva_debito_potencial: number
+    total_neto_potencial: number
+    total_utilidad_potencial: number
+    conteo_productos: number
+}
+
+interface ChartDataItem {
+    name: string
+    Total: number
+    fill: string
+}
+
+interface ProyChartDataItem {
+    name: string
+    Monto: number
+    fill: string
+}
+
 export default function ReporteFinancieroPage() {
     const [loading, setLoading] = useState(true)
-    const [reporte, setReporte] = useState<any>(null)
-    const [proyeccion, setProyeccion] = useState<any>(null)
+    const [reporte, setReporte] = useState<ReporteFinanciero | null>(null)
+    const [proyeccion, setProyeccion] = useState<ProyeccionInventario | null>(null)
     const [selectedMonth, setSelectedMonth] = useState<string>(startOfMonth(new Date()).toISOString())
 
     const monthOptions = Array.from({ length: 12 }).map((_, i) => {
@@ -72,25 +106,25 @@ export default function ReporteFinancieroPage() {
 
     const formatter = new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" })
 
-    const chartData = [
+    const chartData: ChartDataItem[] = [
         {
-            name: "Ventas Totales",
-            Total: Math.round(reporte.ventas.bruto || 0),
+            name: "Ventas",
+            Total: reporte?.ventas.bruto || 0,
             fill: "hsl(var(--primary))"
         },
         {
-            name: "Compras y Gastos",
-            Total: Math.round(reporte.gastos.bruto || 0),
-            fill: "hsl(var(--destructive))"
+            name: "Gastos",
+            Total: reporte?.gastos.bruto || 0,
+            fill: "hsl(var(--destructive) / 0.8)"
         },
         {
-            name: "Utilidad Neta",
-            Total: Math.round(Math.abs(reporte.utilidad.neta)),
-            fill: reporte.utilidad.neta >= 0 ? "hsl(var(--primary))" : "hsl(var(--destructive))"
+            name: "Margen",
+            Total: reporte?.utilidad.neta || 0,
+            fill: "hsl(var(--emerald-500))"
         }
     ]
 
-    const proyeccionChartData = proyeccion ? [
+    const proyeccionChartData: ProyChartDataItem[] = proyeccion ? [
         {
             name: "Inversión",
             Monto: Math.round(proyeccion.total_inversion),
@@ -249,7 +283,7 @@ export default function ReporteFinancieroPage() {
                                         />
                                         <Tooltip
                                             cursor={{ fill: 'transparent' }}
-                                            formatter={(value: any) => [formatter.format(Number(value)), "Monto"]}
+                                            formatter={(value: number | string | undefined) => [formatter.format(Number(value || 0)), "Monto"]}
                                             contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px', color: 'hsl(var(--foreground))' }}
                                             itemStyle={{ color: 'hsl(var(--foreground))' }}
                                             labelStyle={{ color: 'hsl(var(--foreground))' }}
