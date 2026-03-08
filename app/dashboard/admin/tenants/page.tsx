@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Building2 } from "lucide-react";
+import { SubscriptionDialog } from "@/components/admin/SubscriptionDialog";
 
 export default async function TenantsAdminPage() {
     const supabase = await createClient();
@@ -75,7 +76,7 @@ export default async function TenantsAdminPage() {
                                 </TableCell>
                                 <TableCell>
                                     <Badge variant={tenant.subscription_tier === 'pro' ? 'default' : 'outline'}>
-                                        {tenant.subscription_tier.toUpperCase()}
+                                        {tenant.subscription_tier?.toUpperCase() || 'INITIAL'}
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
@@ -87,9 +88,11 @@ export default async function TenantsAdminPage() {
                                     </span>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
-                                        Editar Plan
-                                    </Badge>
+                                    <SubscriptionDialog
+                                        tenantId={tenant.id}
+                                        tenantName={tenant.name}
+                                        currentTier={tenant.subscription_tier as 'initial' | 'advanced' | 'pro'}
+                                    />
                                 </TableCell>
                             </TableRow>
                         ))}

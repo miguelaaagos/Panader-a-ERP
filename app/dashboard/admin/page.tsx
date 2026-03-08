@@ -8,6 +8,8 @@ import {
     ShieldCheck
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getGlobalAuditLogs } from "@/actions/admin";
+import { AuditLogTable } from "@/components/admin/AuditLogTable";
 
 export default async function AdminDashboardPage() {
     const supabase = await createClient();
@@ -37,7 +39,7 @@ export default async function AdminDashboardPage() {
         supabase.from("tenants").select("subscription_tier")
     ]);
 
-    const proPlans = activeSubscriptions?.filter(t => t.subscription_tier === 'pro').length || 0;
+    const proPlans = activeSubscriptions?.filter((t: { subscription_tier: string | null }) => t.subscription_tier === 'pro').length || 0;
 
     const stats = [
         {
@@ -70,6 +72,9 @@ export default async function AdminDashboardPage() {
         }
     ];
 
+    // Obtener logs de auditoría
+    const { data: auditLogs } = await getGlobalAuditLogs();
+
     return (
         <div className="container mx-auto space-y-8 p-4 md:p-6">
             <div className="flex flex-col gap-1">
@@ -100,32 +105,16 @@ export default async function AdminDashboardPage() {
                 ))}
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
-                <Card>
+            <div className="grid gap-6">
+                <Card className="lg:col-span-2">
                     <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2">
-                            <TrendingUp className="h-5 w-5 text-primary" />
-                            Crecimiento de la Plataforma
+                            <ShieldCheck className="h-5 w-5 text-primary" />
+                            Auditoría de Acciones Globales
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="h-[300px] flex items-center justify-center border-2 border-dashed rounded-lg bg-muted/30">
-                        <p className="text-muted-foreground text-sm italic">
-                            Gráficos de métricas globales en desarrollo...
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg flex items-center gap-2">
-                            <Building2 className="h-5 w-5 text-primary" />
-                            Actividad Reciente por Local
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="h-[300px] flex items-center justify-center border-2 border-dashed rounded-lg bg-muted/30">
-                        <p className="text-muted-foreground text-sm italic">
-                            Log de eventos multi-tenant en desarrollo...
-                        </p>
+                    <CardContent>
+                        <AuditLogTable logs={auditLogs as any || []} />
                     </CardContent>
                 </Card>
             </div>

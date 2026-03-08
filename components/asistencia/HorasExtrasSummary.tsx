@@ -32,7 +32,8 @@ export function HorasExtrasSummary({ asistencias }: Props) {
         return acc;
     }, {} as Record<string, { nombre: string, rol: string, totalExtras: number, count: number }>);
 
-    const data = Object.values(summary).sort((a, b) => b.totalExtras - a.totalExtras);
+    const data = (Object.values(summary) as Array<{ nombre: string, rol: string, totalExtras: number, count: number }>)
+        .sort((a, b) => b.totalExtras - a.totalExtras);
     const globalTotal = data.reduce((sum, item) => sum + item.totalExtras, 0);
 
     return (

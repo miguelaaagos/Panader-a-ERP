@@ -64,24 +64,26 @@
 - [x] Ejecución de pruebas iniciales con Playwright (Salud del sistema)
 - [x] Configuración de Global Auth Setup para tests rápidos
 - [x] **Integración de Lector de Códigos de Barras**:
-    - [x] Escucha de eventos de teclado global en el POS para captura de secuencias de escáner.
-    - [x] Búsqueda automática de productos por código y agregado al carrito (`addItem`).
-    - [x] Optimización de la experiencia de usuario (UI Premium, Toaster feedback, Vibración móvil).
-    - [x] Soporte para cámaras con fallback dinámico y escalado automático.
+-     [x] Escucha de eventos de teclado global en el POS para captura de secuencias de escáner.
+-     [x] Búsqueda automática de productos por código y agregado al carrito (`addItem`).
+-     [x] Optimización de la experiencia de usuario (UI Premium, Toaster feedback, Vibración móvil).
+-     [x] Soporte para cámaras con fallback dinámico y escalado automático.
 - [x] Soporte Offline para Ventas (IndexedDB/Dexie) — *Implementado*
 - [ ] PWA Avanzado (Instalación/Service Worker) — *Descartado por simplicidad/estabilidad*
 - [x] **Sincronización Estética de Stock (POS)**:
-    - [x] Cálculo reactivo de stock virtual en la grilla de productos.
-    - [x] Feedback preciso en avisos de "Stock insuficiente" mostrando el disponible virtual.
-    - [x] Sincronización de lógica vs visualización para evitar errores de validación.
+-     [x] Cálculo reactivo de stock virtual en la grilla de productos.
+-     [x] Feedback preciso en avisos de "Stock insuficiente" mostrando el disponible virtual.
+-     [x] Sincronización de lógica vs visualización para evitar errores de validación.
 - [x] **Infraestructura de Planes SaaS**: Implementación de niveles de suscripción (Inicial, Avanzado, Pro) con restricciones de acceso por funcionalidad.
 - [x] **Panel Global de Super Administrador**:
-    - [x] Dashboard centralizado para ver todos los tenants, usuarios reales y estados de planes.
-    - [ ] Gestión global de suscripciones (Upgrade/Downgrade forzado).
-    - [ ] Auditoría de accesos globales.
+-     [x] Dashboard centralizado para ver todos los tenants, usuarios reales y estados de planes.
+-     [x] Gestión global de suscripciones (Upgrade/Downgrade forzado).
+-     [x] Auditoría de accesos globales.
+-     [ ] Onboarding automatizado de nuevos clientes (Registro de Tenants).
+-     [ ] Gestión de usuarios multitenant (Creación/Edición en cualquier local).
 - [x] **Mejoras en Proveedores (Cuenta Bancaria)**:
-    - [x] Extender tabla `proveedores` con campos: Banco, Tipo Cuenta (Selector), Número, RUT Pago, Email.
-    - [x] Implementar componente de "Copiado Bancario" optimizado para apps móviles.
+-     [x] Extender tabla `proveedores` con campos: Banco, Tipo Cuenta (Selector), Número, RUT Pago, Email.
+-     [x] Implementar componente de "Copiado Bancario" optimizado para apps móviles.
 - [ ] **Integración SII (Boleta Electrónica)**: Emisión automatizada sincronizada con el punto de venta.
 - [ ] **Carta QR / Pedido en Mesa**: Portal de visualización para clientes con opción de envío de pedidos a cocina.
 - [ ] **Módulo de Mesas y Comandas (Horeca)**: Sistema de gestión para restaurantes y cafeterías.
