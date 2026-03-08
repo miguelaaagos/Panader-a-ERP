@@ -44,6 +44,14 @@ pnpm exec playwright test
 > No usar redirección `>` en PowerShell pura (`npx supabase ... > file`) ya que produce UTF-16LE 
 > con BOM, lo cual rompe los templates de TypeScript. El script de pnpm ya maneja esto correctamente.
 
+## Checklist Pre-push (OBLIGATORIO)
+
+Antes de cada `git push`, el desarrollador/agente DEBE:
+1.  `pnpm gen:types` — Asegurar que los tipos de la DB estén sincronizados.
+2.  `pnpm typecheck` — Validar que no hay errores de TypeScript.
+3.  `pnpm lint` — Verificar estándares de código.
+4.  Verificar que no hay archivos `.ts` con errores de importación o tipos `any` no permitidos.
+
 ## Deprecados (NUNCA USAR)
 
 | ❌ | ✅ |

@@ -114,7 +114,7 @@ export async function switchTenantContext(tenantId: string | null) {
 
         // Llamar a la función RPC que creamos
         const { error } = await supabase.rpc('switch_tenant_context', {
-            p_target_tenant_id: tenantId
+            p_target_tenant_id: tenantId as any // Cast a any para permitir null según definición SQL
         })
 
         if (error) throw error

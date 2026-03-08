@@ -73,7 +73,7 @@ export function TenantSwitcher() {
         <div className="flex flex-col gap-2 p-4 bg-primary/5 rounded-lg border border-primary/10">
             <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-wider">
                 <Building2 className="h-3 w-3" />
-                Contexto de Negocio
+                Selector de Locales
             </div>
 
             <Popover open={open} onOpenChange={setOpen}>
@@ -137,7 +137,7 @@ export function TenantSwitcher() {
                     onClick={() => onSelect(null)}
                 >
                     <XCircle className="h-3 w-3 mr-1" />
-                    Salir de suplantación
+                    Resetear Local (Volver a Global)
                 </Button>
             )}
         </div>

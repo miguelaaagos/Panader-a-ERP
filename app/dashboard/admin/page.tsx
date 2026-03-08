@@ -92,7 +92,7 @@ export default async function AdminDashboardPage() {
             <Tabs defaultValue="general" className="space-y-6">
                 <TabsList className="bg-background border">
                     <TabsTrigger value="general">Resumen General</TabsTrigger>
-                    <TabsTrigger value="locales">Suplantación / Locales</TabsTrigger>
+                    <TabsTrigger value="locales">Gestión de Locales</TabsTrigger>
                     <TabsTrigger value="auditoria">Auditoría Global</TabsTrigger>
                 </TabsList>
 
@@ -122,7 +122,7 @@ export default async function AdminDashboardPage() {
                         <CardHeader>
                             <CardTitle className="text-lg flex items-center gap-2">
                                 <Globe className="h-5 w-5 text-primary" />
-                                Suplantación de Contexto de Negocio
+                                Cambio de Contexto entre Locales
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="max-w-md">
