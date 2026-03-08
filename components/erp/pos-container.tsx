@@ -164,7 +164,7 @@ export function POSContainer() {
                 descuento_global: 0
             }
 
-            saveOfflineSale(offlineData)
+            await saveOfflineSale(offlineData)
 
             toast.warning("Venta guardada localmente", {
                 description: "No hay conexión. Se sincronizará automáticamente cuando vuelvas."

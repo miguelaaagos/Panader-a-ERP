@@ -5,15 +5,17 @@ import { getRecentSales, anularVenta } from "@/actions/sales"
 import { getSession } from "@/actions/auth"
 import { SalesList } from "@/components/erp/sales-list"
 import { RoleGuard } from "@/components/auth/RoleGuard"
-import { FileText, Search, RefreshCcw, Download } from "lucide-react"
+import { FileText, Search, RefreshCcw, Download, Wifi, WifiOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { SaleDetailsModal } from "@/components/erp/sale-details-modal"
+import { useERPStore } from "@/hooks/use-erp-store"
 
 export default function VentasPage() {
+    const isOnline = useERPStore(state => state.isOnline)
     const [sales, setSales] = useState<any[]>([])
     const [tenantId, setTenantId] = useState<string | null>(null)
     const [loading, setLoading] = useState(true)
@@ -94,7 +96,13 @@ export default function VentasPage() {
         <div className="flex flex-col gap-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Historial de Ventas</h1>
+                    <div className="flex items-center gap-2">
+                        <h1 className="text-3xl font-bold tracking-tight">Historial de Ventas</h1>
+                        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${isOnline ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                            {isOnline ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+                            {isOnline ? 'Online' : 'Offline'}
+                        </div>
+                    </div>
                     <p className="text-muted-foreground italic">Registro de todas las transacciones realizadas en el ERP.</p>
                 </div>
                 <div className="flex gap-2">

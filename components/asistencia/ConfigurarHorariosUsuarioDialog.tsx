@@ -36,7 +36,7 @@ export function ConfigurarHorariosUsuarioDialog() {
     const [usuarios, setUsuarios] = useState<{ id: string, nombre_completo: string }[]>([]);
     const [selectedUser, setSelectedUser] = useState<string>("");
 
-    const [horarios, setHorarios] = useState<Record<number, { entrada: string, salida: string }>>({});
+    const [horarios, setHorarios] = useState<Record<number, { entrada: string, salida: string, active: boolean }>>({});
 
     // Fetch users once when dialog opens
     useEffect(() => {
@@ -60,18 +60,27 @@ export function ConfigurarHorariosUsuarioDialog() {
             const fetchUserSchedules = async () => {
                 setLoadingUsers(true);
                 const { success, data } = await getHorariosUsuario(selectedUser);
-                const newHorarios: Record<number, { entrada: string, salida: string }> = {};
+                const newHorarios: Record<number, { entrada: string, salida: string, active: boolean }> = {};
+
+                // Inicializar todos como inactivos por defecto
+                DIAS_SEMANA.forEach(dia => {
+                    newHorarios[dia.value] = {
+                        entrada: "08:00",
+                        salida: "18:00",
+                        active: dia.value <= 5 // Lun-Vie activos por defecto
+                    };
+                });
 
                 if (success && data && data.length > 0) {
                     data.forEach(h => {
-                        newHorarios[h.dia_semana] = { entrada: h.hora_entrada, salida: h.hora_salida };
-                    });
-                } else {
-                    // Default values if empty
-                    DIAS_SEMANA.forEach(dia => {
-                        newHorarios[dia.value] = { entrada: "08:00", salida: "18:00" };
+                        newHorarios[h.dia_semana] = {
+                            entrada: h.hora_entrada,
+                            salida: h.hora_salida,
+                            active: true
+                        };
                     });
                 }
+
                 setHorarios(newHorarios);
                 setLoadingUsers(false);
             };
@@ -81,9 +90,22 @@ export function ConfigurarHorariosUsuarioDialog() {
         }
     }, [selectedUser]);
 
+    const handleToggleDay = (dia: number) => {
+        setHorarios(prev => {
+            const current = prev[dia] || { entrada: "08:00", salida: "18:00", active: false };
+            return {
+                ...prev,
+                [dia]: {
+                    ...current,
+                    active: !current.active
+                }
+            };
+        });
+    };
+
     const handleTimeChange = (dia: number, field: 'entrada' | 'salida', value: string) => {
         setHorarios(prev => {
-            const current = prev[dia] || { entrada: "08:00", salida: "18:00" };
+            const current = prev[dia] || { entrada: "08:00", salida: "18:00", active: true };
             return {
                 ...prev,
                 [dia]: {
@@ -102,11 +124,14 @@ export function ConfigurarHorariosUsuarioDialog() {
 
         setLoading(true);
         try {
-            const payload = DIAS_SEMANA.map(dia => ({
-                dia_semana: dia.value,
-                hora_entrada: horarios[dia.value]?.entrada || "08:00",
-                hora_salida: horarios[dia.value]?.salida || "18:00"
-            }));
+            // Solo enviar los días marcados como activos
+            const payload = DIAS_SEMANA
+                .filter(dia => horarios[dia.value]?.active)
+                .map(dia => ({
+                    dia_semana: dia.value,
+                    hora_entrada: horarios[dia.value]?.entrada || "08:00",
+                    hora_salida: horarios[dia.value]?.salida || "18:00"
+                }));
 
             const res = await upsertHorariosUsuario(selectedUser, payload);
 
@@ -132,7 +157,7 @@ export function ConfigurarHorariosUsuarioDialog() {
                     Horarios Especiales
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>Horarios por Empleado</DialogTitle>
                     <DialogDescription>
@@ -140,11 +165,11 @@ export function ConfigurarHorariosUsuarioDialog() {
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="grid gap-4 py-4">
+                <div className="grid gap-6 py-4">
                     <div className="flex flex-col gap-2">
-                        <Label>Seleccionar Empleado</Label>
+                        <Label className="text-sm font-semibold">Seleccionar Empleado</Label>
                         <Select value={selectedUser} onValueChange={setSelectedUser} disabled={loadingUsers}>
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-background/50 border-primary/20">
                                 <SelectValue placeholder={loadingUsers ? "Cargando..." : "Seleccione un empleado"} />
                             </SelectTrigger>
                             <SelectContent>
@@ -158,38 +183,78 @@ export function ConfigurarHorariosUsuarioDialog() {
                     </div>
 
                     {selectedUser && (
-                        <div className="space-y-3 mt-2 max-h-[40vh] overflow-y-auto pr-2">
-                            {DIAS_SEMANA.map((dia) => {
-                                const data = horarios[dia.value] || { entrada: "08:00", salida: "18:00" };
-                                return (
-                                    <div key={dia.value} className="grid grid-cols-[100px_1fr_1fr] items-center gap-4 border-b pb-3 last:border-0 last:pb-0">
-                                        <Label className="text-right capitalize font-bold">{dia.label}</Label>
-                                        <div className="flex flex-col gap-1">
-                                            <Label className="text-[10px] text-muted-foreground uppercase hidden sm:block">Entrada</Label>
-                                            <Input
-                                                type="time"
-                                                value={data.entrada}
-                                                onChange={(e) => handleTimeChange(dia.value, 'entrada', e.target.value)}
-                                                className="text-sm"
-                                            />
+                        <div className="space-y-6">
+                            <div className="flex flex-col gap-3">
+                                <Label className="text-sm font-semibold">Días Laborales</Label>
+                                <div className="grid grid-cols-7 gap-2">
+                                    {DIAS_SEMANA.map((dia) => {
+                                        const isActive = horarios[dia.value]?.active;
+                                        return (
+                                            <button
+                                                key={dia.value}
+                                                type="button"
+                                                onClick={() => handleToggleDay(dia.value)}
+                                                className={`
+                                                    flex flex-col items-center justify-center p-2 rounded-lg border transition-all duration-200
+                                                    ${isActive
+                                                        ? 'bg-emerald-500/10 border-emerald-500 text-emerald-600 dark:text-emerald-400 font-bold shadow-sm shadow-emerald-500/20'
+                                                        : 'bg-rose-500/5 border-rose-200 dark:border-rose-900/30 text-rose-400 dark:text-rose-800 opacity-60'
+                                                    }
+                                                `}
+                                            >
+                                                <span className="text-[10px] uppercase">{dia.label.substring(0, 3)}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            <div className="space-y-4 max-h-[35vh] overflow-y-auto px-1">
+                                {DIAS_SEMANA.filter(dia => horarios[dia.value]?.active).map((dia) => {
+                                    const data = horarios[dia.value] || { entrada: "08:00", salida: "18:00" };
+                                    return (
+                                        <div
+                                            key={dia.value}
+                                            className="grid grid-cols-[100px_1fr_1fr] items-center gap-4 p-3 rounded-xl bg-muted/30 border border-muted animate-in fade-in slide-in-from-top-2 duration-300"
+                                        >
+                                            <Label className="capitalize font-bold text-sm">{dia.label}</Label>
+                                            <div className="flex flex-col gap-1.5">
+                                                <Label className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider pl-1">Entrada</Label>
+                                                <Input
+                                                    type="time"
+                                                    value={data.entrada}
+                                                    onChange={(e) => handleTimeChange(dia.value, 'entrada', e.target.value)}
+                                                    className="h-9 text-sm bg-background border-primary/10 focus:border-primary/40"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col gap-1.5">
+                                                <Label className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider pl-1">Salida</Label>
+                                                <Input
+                                                    type="time"
+                                                    value={data.salida}
+                                                    onChange={(e) => handleTimeChange(dia.value, 'salida', e.target.value)}
+                                                    className="h-9 text-sm bg-background border-primary/10 focus:border-primary/40"
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="flex flex-col gap-1">
-                                            <Label className="text-[10px] text-muted-foreground uppercase hidden sm:block">Salida</Label>
-                                            <Input
-                                                type="time"
-                                                value={data.salida}
-                                                onChange={(e) => handleTimeChange(dia.value, 'salida', e.target.value)}
-                                                className="text-sm"
-                                            />
-                                        </div>
+                                    );
+                                })}
+                                {DIAS_SEMANA.filter(dia => horarios[dia.value]?.active).length === 0 && (
+                                    <div className="text-center py-6 text-muted-foreground border-2 border-dashed rounded-xl">
+                                        <p className="text-sm italic">Seleccione días arriba para configurar horarios.</p>
                                     </div>
-                                );
-                            })}
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
-                <DialogFooter>
-                    <Button type="button" onClick={handleSave} disabled={loading || !selectedUser}>
+                <DialogFooter className="bg-muted/30 -mx-6 -mb-6 p-6 rounded-b-lg border-t mt-2">
+                    <Button
+                        type="button"
+                        onClick={handleSave}
+                        disabled={loading || !selectedUser}
+                        className="w-full sm:w-auto px-8"
+                    >
                         {loading && <Loader2 className="animate-spin mr-2 h-4 w-4" />}
                         Guardar cambios
                     </Button>

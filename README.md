@@ -62,6 +62,6 @@ pnpm dev
 pnpm typecheck
 ```
 
-**Version**: 1.4.0 (Business Intelligence Edition)  
-**Estado**: Producción / Escalable  
-**Última actualización**: 8 de marzo de 2026 — Implementación de Proyección Financiera Estratégica y Refinamiento Estético Premium.
+**Version**: 1.5.1 (Attendance & Offline Edition)  
+**Estado**: Producción / Resiliente  
+**Última actualización**: 8 de marzo de 2026 — Implementación de Vista General de Horarios Especiales, corrección de persistencia de horarios por usuario y sincronización de tipos Supabase.

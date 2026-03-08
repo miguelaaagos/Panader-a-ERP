@@ -120,7 +120,7 @@ export default function ReporteFinancieroPage() {
         {
             name: "Margen",
             Total: reporte?.utilidad.neta || 0,
-            fill: "hsl(var(--emerald-500))"
+            fill: "hsl(142.1 76.2% 36.3%)" // Emerald-600 vibrante para legibilidad
         }
     ]
 
@@ -171,7 +171,7 @@ export default function ReporteFinancieroPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Ventas Totales</CardTitle>
-                        <TrendingUp className="h-4 w-4 text-emerald-500" />
+                        <TrendingUp className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{formatter.format(reporte.ventas.bruto)}</div>
@@ -181,7 +181,7 @@ export default function ReporteFinancieroPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Gastos Variables</CardTitle>
-                        <Wallet className="h-4 w-4 text-rose-500" />
+                        <Wallet className="h-4 w-4 text-rose-500 dark:text-rose-400" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{formatter.format(reporte.gastos.variables_bruto)}</div>
@@ -191,7 +191,7 @@ export default function ReporteFinancieroPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Costos Fijos (Bruto)</CardTitle>
-                        <Landmark className="h-4 w-4 text-rose-600" />
+                        <Landmark className="h-4 w-4 text-rose-600 dark:text-rose-400" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{formatter.format(reporte.gastos.fijos_bruto)}</div>
@@ -215,7 +215,7 @@ export default function ReporteFinancieroPage() {
                         <Calculator className="h-4 w-4 text-blue-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className={`text-2xl font-bold ${reporte.utilidad.neta >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        <div className={`text-2xl font-bold ${reporte.utilidad.neta >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
                             {formatter.format(reporte.utilidad.neta)}
                         </div>
                         <p className="text-xs text-muted-foreground">Después de todos los gastos.</p>
@@ -224,7 +224,7 @@ export default function ReporteFinancieroPage() {
                 <Card className={reporte.impuestos.iva_a_pagar > 0 ? 'border-amber-500/50 bg-amber-500/10' : 'border-emerald-500/50 bg-emerald-500/10'}>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">{reporte.impuestos.iva_a_pagar > 0 ? 'IVA a Pagar (SII)' : 'Remanente IVA (A Favor)'}</CardTitle>
-                        <Landmark className={`h-4 w-4 ${reporte.impuestos.iva_a_pagar > 0 ? 'text-amber-600' : 'text-emerald-600'}`} />
+                        <Landmark className={`h-4 w-4 ${reporte.impuestos.iva_a_pagar > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}`} />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
@@ -240,7 +240,7 @@ export default function ReporteFinancieroPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
                 <Card className="col-span-4 transition-all duration-300">
                     <CardHeader>
-                        <CardTitle className="flex justify-between items-center">
+                        <CardTitle className="flex justify-between items-center text-foreground">
                             <span>Proyección de Inventario</span>
                             <Calculator className="h-5 w-5 text-primary" />
                         </CardTitle>
@@ -252,7 +252,7 @@ export default function ReporteFinancieroPage() {
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                             <div className="space-y-1">
                                 <p className="text-xs text-muted-foreground font-medium tracking-wider">Inversión Actual</p>
-                                <p className="text-xl font-bold">{proyeccion ? formatter.format(proyeccion.total_inversion) : '...'}</p>
+                                <p className="text-xl font-bold text-foreground">{proyeccion ? formatter.format(proyeccion.total_inversion) : '...'}</p>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-xs text-muted-foreground font-medium tracking-wider">Venta Proyectada</p>
@@ -261,17 +261,17 @@ export default function ReporteFinancieroPage() {
                             </div>
                             <div className="space-y-1">
                                 <p className="text-xs text-muted-foreground font-medium tracking-wider">Neto Proyectado</p>
-                                <p className="text-xl font-bold">{proyeccion ? formatter.format(proyeccion.total_neto_potencial) : '...'}</p>
+                                <p className="text-xl font-bold text-foreground">{proyeccion ? formatter.format(proyeccion.total_neto_potencial) : '...'}</p>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-xs text-muted-foreground font-medium tracking-wider">Utilidad Potencial</p>
-                                <p className="text-xl font-bold text-emerald-600">{proyeccion ? formatter.format(proyeccion.total_utilidad_potencial) : '...'}</p>
+                                <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{proyeccion ? formatter.format(proyeccion.total_utilidad_potencial) : '...'}</p>
                             </div>
                         </div>
                         <div className="h-[250px] w-full mt-4">
                             {proyeccion && (
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart layout="vertical" data={proyeccionChartData} margin={{ left: 40, right: 40 }}>
+                                    <BarChart layout="vertical" data={proyeccionChartData} margin={{ left: 40, right: 60 }}>
                                         <XAxis type="number" hide />
                                         <YAxis
                                             dataKey="name"
@@ -282,9 +282,14 @@ export default function ReporteFinancieroPage() {
                                             tickLine={false}
                                         />
                                         <Tooltip
-                                            cursor={{ fill: 'transparent' }}
+                                            cursor={{ fill: 'hsl(var(--muted))', opacity: 0.2 }}
                                             formatter={(value: number | string | undefined) => [formatter.format(Number(value || 0)), "Monto"]}
-                                            contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px', color: 'hsl(var(--foreground))' }}
+                                            contentStyle={{
+                                                backgroundColor: 'hsl(var(--card))',
+                                                borderColor: 'hsl(var(--border))',
+                                                borderRadius: '8px',
+                                                color: 'hsl(var(--foreground))'
+                                            }}
                                             itemStyle={{ color: 'hsl(var(--foreground))' }}
                                             labelStyle={{ color: 'hsl(var(--foreground))' }}
                                         />
@@ -296,7 +301,7 @@ export default function ReporteFinancieroPage() {
                                                 dataKey="Monto"
                                                 position="right"
                                                 formatter={(val: any) => formatter.format(Number(val))}
-                                                className="fill-foreground text-[10px] sm:text-[11px]"
+                                                className="fill-foreground font-medium text-[10px] sm:text-[11px]"
                                                 offset={10}
                                             />
                                         </Bar>
@@ -309,14 +314,22 @@ export default function ReporteFinancieroPage() {
 
                 <Card className="col-span-3">
                     <CardHeader>
-                        <CardTitle>Flujo de Caja - Resumen</CardTitle>
+                        <CardTitle className="text-foreground">Flujo de Caja - Resumen</CardTitle>
                     </CardHeader>
                     <CardContent className="pl-2">
                         <div className="h-[350px] min-h-[350px]">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={chartData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }} barSize={50}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
-                                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} tickMargin={10} />
+                                    <XAxis
+                                        dataKey="name"
+                                        stroke="hsl(var(--muted-foreground))"
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tickMargin={10}
+                                        tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                                    />
                                     <YAxis
                                         stroke="hsl(var(--muted-foreground))"
                                         fontSize={10}
@@ -324,16 +337,31 @@ export default function ReporteFinancieroPage() {
                                         axisLine={false}
                                         tickFormatter={(value) => `$${value.toLocaleString('es-CL')}`}
                                         width={60}
+                                        tick={{ fill: 'hsl(var(--muted-foreground))' }}
                                     />
                                     <Tooltip
-                                        cursor={{ fill: 'hsl(var(--muted))', opacity: 0.4 }}
+                                        cursor={{ fill: 'hsl(var(--muted))', opacity: 0.2 }}
                                         formatter={(value: any) => [formatter.format(Number(value)), "Total"]}
-                                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
+                                        contentStyle={{
+                                            backgroundColor: 'hsl(var(--card))',
+                                            borderColor: 'hsl(var(--border))',
+                                            borderRadius: '8px',
+                                            color: 'hsl(var(--foreground))'
+                                        }}
+                                        itemStyle={{ color: 'hsl(var(--foreground))' }}
+                                        labelStyle={{ color: 'hsl(var(--foreground))' }}
                                     />
                                     <Bar dataKey="Total" radius={[4, 4, 0, 0]}>
                                         {chartData.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={entry.fill} />
                                         ))}
+                                        <LabelList
+                                            dataKey="Total"
+                                            position="top"
+                                            formatter={(val: any) => formatter.format(Number(val))}
+                                            className="fill-foreground font-medium text-[10px]"
+                                            offset={10}
+                                        />
                                     </Bar>
                                 </BarChart>
                             </ResponsiveContainer>
@@ -341,6 +369,7 @@ export default function ReporteFinancieroPage() {
                     </CardContent>
                 </Card>
             </div>
+
 
             <Card className="mt-4">
                 <CardHeader>

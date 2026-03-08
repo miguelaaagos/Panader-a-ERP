@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { toast } from 'sonner'
+import { db } from '@/lib/db/offline-db'
 
 export interface CartItem {
     id: string
@@ -16,21 +17,26 @@ interface ERPState {
     items: CartItem[]
     isScannerActive: boolean
     isCameraScannerOpen: boolean
+    isOnline: boolean
     addItem: (product: any, quantity?: number) => void
     removeItem: (id: string) => void
     updateQuantity: (id: string, quantity: number) => void
     clearCart: () => void
     setScannerActive: (active: boolean) => void
     setCameraScannerOpen: (open: boolean) => void
+    setOnline: (online: boolean) => void
     getTotals: () => { subtotal: number; iva: number; total: number }
+    syncCatalog: (products: any[]) => Promise<void>
+    saveSaleOffline: (saleData: any) => Promise<void>
 }
 
 export const useERPStore = create<ERPState>((set, get) => ({
     items: [],
     isScannerActive: true,
     isCameraScannerOpen: false,
+    isOnline: true,
 
-    addItem: (product, quantity = 1) => {
+    addItem: (product: any, quantity: number = 1) => {
         const { items } = get()
         const existingItem = items.find((item) => item.id === product.id)
 
@@ -82,15 +88,15 @@ export const useERPStore = create<ERPState>((set, get) => ({
         }
     },
 
-    removeItem: (id) => {
+    removeItem: (id: string) => {
         set({
-            items: get().items.filter((item) => item.id !== id),
+            items: get().items.filter((item: CartItem) => item.id !== id),
         })
     },
 
-    updateQuantity: (id, quantity) => {
+    updateQuantity: (id: string, quantity: number) => {
         const { items } = get()
-        const item = items.find((i) => i.id === id)
+        const item = items.find((i: CartItem) => i.id === id)
 
         if (!item) return
 
@@ -105,13 +111,13 @@ export const useERPStore = create<ERPState>((set, get) => ({
         // Si la cantidad es 0 o negativa, remover el item
         if (quantity <= 0) {
             set({
-                items: items.filter((i) => i.id !== id)
+                items: items.filter((i: CartItem) => i.id !== id)
             })
             return
         }
 
         set({
-            items: items.map((item) =>
+            items: items.map((item: CartItem) =>
                 item.id === id
                     ? { ...item, cantidad: quantity, subtotal: Math.round(quantity * item.precio_venta) }
                     : item
@@ -121,16 +127,41 @@ export const useERPStore = create<ERPState>((set, get) => ({
 
     clearCart: () => set({ items: [] }),
 
-    setScannerActive: (active) => set({ isScannerActive: active }),
-    setCameraScannerOpen: (open) => set({ isCameraScannerOpen: open }),
+    setScannerActive: (active: boolean) => set({ isScannerActive: active }),
+    setCameraScannerOpen: (open: boolean) => set({ isCameraScannerOpen: open }),
+    setOnline: (online: boolean) => set({ isOnline: online }),
 
     getTotals: () => {
         const { items } = get()
-        const subtotal = items.reduce((acc, item) => acc + item.subtotal, 0)
+        const subtotal = items.reduce((acc: number, item: CartItem) => acc + item.subtotal, 0)
         return {
             subtotal: subtotal / 1.19, // Neto
             iva: subtotal - (subtotal / 1.19), // El IVA contenido
             total: subtotal,
         }
     },
+
+    syncCatalog: async (products: any[]) => {
+        try {
+            await db.productos.clear()
+            await db.productos.bulkAdd(products)
+            console.log('Catálogo sincronizado con IndexedDB')
+        } catch (error) {
+            console.error('Error sincronizando catálogo:', error)
+        }
+    },
+
+    saveSaleOffline: async (saleData) => {
+        try {
+            await db.ventas_pendientes.add({
+                ...saleData,
+                synced: 0,
+                fecha: new Date().toISOString()
+            })
+            toast.success('Venta guardada localmente (Modo Offline)')
+        } catch (error) {
+            console.error('Error guardando venta offline:', error)
+            toast.error('Error al guardar venta localmente')
+        }
+    }
 }))

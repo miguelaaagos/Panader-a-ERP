@@ -1,9 +1,9 @@
 # TODO: Sincronización de Desarrollo (Calama - Antofagasta)
 
 ## Estado Actual: Producción Lista (Inventario Real)
-- **Version**: 1.3.0 (Virtual Stock Sync & Toasts)
-- **Estado**: Estable / Producción
-- **Última actualización**: 7 de marzo de 2026 — Sincronización visual de stock en tiempo real corregida. Los avisos (Toasts) y la grilla de productos ahora reflejan el "inventario virtual" restante (total - carrito) de forma precisa y reactiva.
+- **Versión**: 1.5.1 (Attendance & Offline Edition)
+- **Estado**: Estable / En Desarrollo
+- **Última actualización**: 8 de marzo de 2026 — Implementación de Vista General de Horarios Especiales, corrección de persistencia de horarios por usuario (sincronización bidireccional) y saneamiento de tipos Supabase.
 
 ## Tareas Completadas [x]
 - [x] Establecer y documentar estándares UI/UX (Notificaciones, Gráficos PowerBI style, Tablas móviles, Dark mode) en GEMINI.md y skills.
@@ -22,7 +22,7 @@
 - [x] Corregir error `AuthApiError: Refresh Token Not Found` en `proxy.ts`.
 - [x] **Saneamiento de RLS**: Eliminación de recursividad infinita en políticas de `usuarios` y `ventas` mediante el uso de funciones `SECURITY DEFINER`.
 - [x] **Puesta en Marcha Real**: Reseteo total de base de datos de prueba, reinicio de correlativos de ventas y carga masiva de 180 productos reales desde Excel con stock inicial verificado.
-- [ ] **Integración de Lector de Códigos de Barras**: Funcionalidad de búsqueda y agregado automático de productos al carrito mediante escáner HID.
+- [x] **Integración de Lector de Códigos de Barras**: Funcionalidad de búsqueda y agregado automático de productos al carrito mediante escáner HID.
 - [x] **Infraestructura de Testing**: Integración completa de Playwright (E2E y Component testing) con auth global.
 - [x] **Módulo de Gastos Operativos**: UI y Backend (Supabase + Actions) para registro de tickets de gastos.
 - [x] **Reportes Financieros (SII)**: Dashboard integrado con Recharts para IVA Débito, Crédito, Ventas y Gastos.
@@ -35,6 +35,8 @@
 - [x] **Mejoras UI Modal Recetas**: Agregado Quick Create de insumos, rediseño con variante Dark Mode, margen sugerido funcional.
 - [x] Corregir permisos de rol Cajero para permitir el registro de Ingresos de inventario y Ajuste de Stock.
 - [x] Garantizar visibilidad de "Mi Perfil" en la Sidebar para todos los roles.
+- [x] Implementar soporte 100% Offline con IndexedDB para carga de catálogo y sincronización resiliente de ventas.
+- [x] **Reporte Financiero**: Agregar gráfico de Proyección de Ventas basado en valor de inventario actual.
 - [x] Reemplazar mensaje de error en texto plano por un Modal de Diálogo elegante (shadcn) en el Login.
 - [x] **Módulo Financiero**: Añadir gestión de "Gastos" del local con modal de creación rápida de categorías.
 - [x] Refactorización de workflow `/sync-docs` para forzar `pnpm typecheck`, `lint`, `vitest` y `playwright` pre-push.
@@ -49,15 +51,12 @@
 - [x] **Mejoras en Compras**: Edición in-situ de proveedores en "Nueva Compra" y vista de "Detalle Histórico" de transacciones.
 - [x] **Arreglar error de build en Vercel** tras merge de refactorización Compras.
 - [x] **Auditoría de Compras**: Lógica de anulación con reversión automática de stock y anulación de gastos vinculados.
-- [x] **Gestión de Gastos**: CRUD de edición y **Version**: 1.2.6 (Type Stabilization & Cost Bugfix)  
-**Estado**: Estable / En Desarrollo  
-**Última actualización**: 7 de marzo de 2026 — Corrección del bug crítico de cálculo de costos en el modal de recetas (conversión kg↔g integrada en tiempo real). Estabilización masiva de tipos `unknown` en Dashboard, Gastos y Configuración. Sincronización completada en la rama `desarrollo`.
+- [x] **Gestión de Gastos**: CRUD de edición y visualización.
 - [x] **Estabilización de Tipos (Saneamiento)**: Resolución del 100% de los errores de `unknown` en `Stats.tsx`, `gastos-client.tsx`, `config-form.tsx`, `assistance-client.tsx`, `ProductFormDialog.tsx`, y más. **Resultado: 0 errores en typecheck**.
 - [x] **Sincronización de Infraestructura**: Push de migraciones acumuladas (`horarios_roles`, `proveedores`) y fix de `supabase gen types` usando el Project ID correcto.
 - [x] **Saneamiento de Server Actions**: Manejo robusto de errores `unknown` en `recipes.ts`, `inventory.ts` y `asistencia.ts`.
 - [x] **Consolidación de Reportes**: Parches de tipos en gráficos de Recharts y validación de interfaces financieras.
 - [x] Integración de Gastos Fijos (sueldos, luz, agua) al Dashboard Financiero.
-- [ ] Implementar soporte 100% Offline (PWA) con IndexedDB para carga total de catálogo y sincronización en segundo plano.
 - [x] **Módulo de Asistencia Avanzado**: Horarios de entrada y salida personalizables por día y por empleado.
 - [x] **Deuda Técnica (Performance)**: Eliminar `"use client"` de todas las páginas (ej. `/inventario`, `/gastos`) convirtiéndolas a Server Components nativos para mejorar el TTFB (Time to First Byte). Solo usar `"use client"` en sub-componentes interactivos menores.
 - [x] Solucionar error de configuración de `eslint-plugin-react` con ESLint Flat Config, y sanear los warnings/anys del repositorio para lograr build de 0 errores.
@@ -68,6 +67,8 @@
     - [x] Búsqueda automática de productos por código y agregado al carrito (`addItem`).
     - [x] Optimización de la experiencia de usuario (UI Premium, Toaster feedback, Vibración móvil).
     - [x] Soporte para cámaras con fallback dinámico y escalado automático.
+- [x] Soporte Offline para Ventas (IndexedDB/Dexie) — *Implementado*
+- [ ] PWA Avanzado (Instalación/Service Worker) — *Descartado por simplicidad/estabilidad*
 - [x] **Sincronización Estética de Stock (POS)**:
     - [x] Cálculo reactivo de stock virtual en la grilla de productos.
     - [x] Feedback preciso en avisos de "Stock insuficiente" mostrando el disponible virtual.

@@ -47,7 +47,8 @@ Trigger this skill when the user asks to:
 7. **TypeScript strict mode** with noUncheckedIndexedAccess
 8. **Server Components by default**, "use client" only when needed
 9. **PKCE flow** for Supabase authentication
-10. **Publishable/Secret keys** (new Supabase format)
+10. **Offline Resilience**: Implement `Dexie.js` for local persistence of critical transactions and sync queues.
+11. **Publishable/Secret keys** (new Supabase format)
 
 ## Instructions
 

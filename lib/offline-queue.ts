@@ -1,47 +1,34 @@
-import { SaleFormData } from "@/actions/sales"
+import { db, type OfflineSale } from "@/lib/db/offline-db"
 
-export interface OfflineSale {
-    id: string
-    data: SaleFormData
-    timestamp: number
-    synced: boolean
+export interface OfflineSaleData {
+    id?: number
+    data: any
+    timestamp: string
+    synced: number
     error?: string
 }
 
-const STORAGE_KEY = 'pos_offline_sales'
-
-export function getOfflineSales(): OfflineSale[] {
-    if (typeof window === 'undefined') return []
-    const stored = localStorage.getItem(STORAGE_KEY)
-    return stored ? JSON.parse(stored) : []
+export async function getOfflineSales() {
+    return await db.ventas_pendientes.toArray()
 }
 
-export function saveOfflineSale(data: SaleFormData) {
-    const sales = getOfflineSales()
-    const newSale: OfflineSale = {
-        id: crypto.randomUUID(),
+export async function saveOfflineSale(data: any) {
+    return await db.ventas_pendientes.add({
         data,
-        timestamp: Date.now(),
-        synced: false
-    }
-    sales.push(newSale)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sales))
-    return newSale
+        fecha: new Date().toISOString(),
+        synced: 0,
+        tenant_id: data.tenant_id
+    })
 }
 
-export function removeOfflineSale(id: string) {
-    const sales = getOfflineSales().filter(s => s.id !== id)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sales))
+export async function removeOfflineSale(id: number) {
+    await db.ventas_pendientes.delete(id)
 }
 
-export function updateOfflineSale(id: string, updates: Partial<OfflineSale>) {
-    const sales = getOfflineSales().map(s =>
-        s.id === id ? { ...s, ...updates } : s
-    )
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sales))
+export async function updateOfflineSale(id: number, updates: Partial<any>) {
+    await db.ventas_pendientes.update(id, updates)
 }
 
-export function clearSyncedSales() {
-    const sales = getOfflineSales().filter(s => !s.synced)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sales))
+export async function clearSyncedSales() {
+    await db.ventas_pendientes.where('synced').equals(1).delete()
 }

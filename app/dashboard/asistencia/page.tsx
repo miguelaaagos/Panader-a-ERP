@@ -4,7 +4,7 @@ import { redirect } from "next/navigation"
 import { CashierAttendanceView } from "@/components/asistencia/CashierAttendanceView"
 import { AdminAttendanceView } from "@/components/asistencia/AdminAttendanceView"
 import { getEstadoAsistencia, getAsistenciasRecientes } from "@/server/actions/attendance"
-import { getHorariosRoles } from "@/server/actions/horarios"
+import { getHorariosRoles, getAllHorariosUsuarios } from "@/server/actions/horarios"
 
 export const metadata: Metadata = {
     title: "Asistencia | Panadería ERP",
@@ -40,6 +40,11 @@ export default async function AsistenciaPage(props: AsistenciaPageProps) {
 
     const { data: horarios } = await getHorariosRoles();
 
+    // Solo para admin, obtenemos todos los horarios personalizados
+    const { data: todosLosHorariosUsuarios } = profile.rol === "admin"
+        ? await getAllHorariosUsuarios()
+        : { data: [] };
+
     return (
         <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
             <div className="flex items-center justify-between space-y-2">
@@ -52,6 +57,7 @@ export default async function AsistenciaPage(props: AsistenciaPageProps) {
                     currentMonth={month}
                     currentYear={year}
                     horariosActuales={horarios || []}
+                    todosLosHorariosUsuarios={todosLosHorariosUsuarios || []}
                 />
             ) : (
                 <CashierAttendanceView

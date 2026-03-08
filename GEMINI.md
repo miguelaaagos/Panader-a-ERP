@@ -60,6 +60,7 @@ pnpm exec playwright test
 ## Estándares del Negocio
 
 - **Tenant isolation**: todas las tablas tienen `tenant_id`; RLS habilitado con políticas por operación (SELECT/INSERT/UPDATE/DELETE)
+- **Offline First**: Uso de `Dexie.js` para persistencia en navegador; las ventas sincronizadas se eliminan localmente tras el éxito en la nube.
 - **Correlativo**: ventas/facturas usan correlativo secuencial por tenant, generado en DB con función `SECURITY DEFINER`
 - **Toaster**: toda mutación de datos debe tener feedback visual (`sonner`)
 - **Móvil primero**: sidebar → Sheet hamburguesa; grillas `grid-cols-1` → `md:grid-cols-2/3`
