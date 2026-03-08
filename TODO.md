@@ -75,6 +75,9 @@
     - [x] Feedback preciso en avisos de "Stock insuficiente" mostrando el disponible virtual.
     - [x] Sincronización de lógica vs visualización para evitar errores de validación.
 - [ ] **Integración Transbank (Webpay Plus)**:
+- [ ] **Multi-sucursal Estratégica**: Implementación de `sucursal_id` y aislamiento lógico para gestión de cadenas.
+- [ ] **Módulo de Mesas y Comandas (Horeca)**: Sistema de gestión para restaurantes y cafeterías (Plan Avanzado).
+- [ ] **Data API (Read-only)**: Acceso externo a datos para inteligencia de negocios externa (Plan Avanzado).
 
 ## Notas para el Agente
 - Leer este archivo AL INICIO de cada sesión.
