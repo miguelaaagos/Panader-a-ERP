@@ -30,6 +30,7 @@ Activa esta skill cuando necesites:
 2. Usar métodos individuales de cookies
 3. Usar paquetes deprecados de auth-helpers
 4. Confiar en middleware.ts (usa proxy.ts)
+5. Retornar objetos de error complejos (como `AuthApiError` de Supabase) directamente desde el `AuthProvider` en Next.js 16. Siempre sanitizar a un objeto plano `{ message, name }` para evitar crashes en el bridge de Next.js.
 
 ## Patrón 1: Browser Client
 
@@ -272,6 +273,31 @@ export async function login(email: string, password: string) {
   
   redirect('/dashboard')
 }
+```
+
+## Patrón 5: Error Handling en Refine (Client Side)
+
+En Refine, los hooks de autenticación (`useLogin`, `useRegister`, etc.) siempre resuelven la promesa. Los errores de validación (como credenciales incorrectas) deben manejarse en `onSuccess`.
+
+**Uso correcto con Toast y State:**
+```typescript
+const { mutate: login } = useLogin();
+
+const handleLogin = (values) => {
+  login(values, {
+    onSuccess: (data) => {
+      if (!data.success) {
+        // Manejar error aquí, no en onError
+        const message = data.error?.message || "Error de autenticación";
+        setError(message); // Para diálogos
+        toast.error("Error", { description: message }); // Feedback rápido
+        return;
+      }
+      // El éxito suele manejarse por redirección automática
+    }
+  });
+};
+```
 ```
 
 **OAuth con PKCE:**

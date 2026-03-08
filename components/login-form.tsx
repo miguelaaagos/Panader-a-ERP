@@ -46,17 +46,19 @@ export function LoginForm({
     e.preventDefault();
     setError(null);
     login({ email, password }, {
-      onError: (err: any) => {
-        // Refine wrappers the error differently sometimes
-        const message = err?.message || err?.error?.message || "Error de autenticación";
-        setError(message);
+      onSuccess: (data: any) => {
+        if (!data.success) {
+          console.error("[LoginForm] Login failed:", data.error);
+          const message = data.error?.message || "Error de autenticación";
+          setError(message);
 
-        // Secondary feedback with Toast
-        toast.error("Error de Acceso", {
-          description: message === "Invalid login credentials"
-            ? "Credenciales incorrectas"
-            : message
-        });
+          toast.error("Error de Acceso", {
+            description: message === "Invalid login credentials"
+              ? "Credenciales incorrectas"
+              : message
+          });
+          return;
+        }
       },
     });
   };

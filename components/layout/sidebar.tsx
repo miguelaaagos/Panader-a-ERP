@@ -24,6 +24,7 @@ import {
 import { useLogout } from "@refinedev/core";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Permission } from "@/lib/roles";
+import Image from "next/image";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> { }
 
@@ -138,9 +139,26 @@ export function Sidebar({ className }: SidebarProps) {
         <div className={cn("pb-12 w-64 border-r bg-background h-screen fixed left-0 top-0 overflow-y-auto hidden md:block", className)}>
             <div className="space-y-4 py-4">
                 <div className="px-3 py-2">
-                    <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight text-primary font-serif">
-                        Panadería ERP
-                    </h2>
+                    <div className="flex flex-col items-center mb-6 px-4 gap-3">
+                        <div className="relative h-20 w-20 overflow-hidden group">
+                            <Image
+                                src="/brand/logo-lamiga.jpg"
+                                alt="Lamiga Logo"
+                                width={80}
+                                height={80}
+                                className="object-cover rounded-full group-hover:scale-105 transition-transform duration-500"
+                                priority
+                            />
+                        </div>
+                        <div className="text-center space-y-0.5">
+                            <h2 className="text-2xl font-bold tracking-tight text-primary font-serif leading-none">
+                                Lamiga
+                            </h2>
+                            <p className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground/50 font-semibold">
+                                Panadería & Pastelería
+                            </p>
+                        </div>
+                    </div>
                     <div className="space-y-1">
                         {visibleRoutes.map((route) => (
                             <Button

@@ -522,6 +522,44 @@ export default async function BlogPost({
 }
 ```
 
+## Patterns de Frontend y Estabilidad
+
+### 1. Safe Hydration Guard
+
+Esencial cuando se usan componentes que manejan estado complejo o props que dependen del navegador (como Refine o localStorage) para evitar errores de hidratación de React.
+
+```tsx
+'use client'
+import { useState, useEffect } from "react";
+
+export function ClientComponent({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // Retornar null o un skeleton que coincida exactamente con el render del servidor
+    return null; 
+  }
+
+  return <>{children}</>;
+}
+```
+
+### 2. Autenticación: Hard Redirect vs router.push
+
+Para asegurar que las cookies de sesión de Supabase se sincronicen correctamente con el servidor antes de la próxima navegación, se recomienda el uso de redirecciones nativas del navegador en lugar del router de Next.js tras el login/logout.
+
+```typescript
+// ❌ RIESGOSO: Puede causar que el servidor no vea la cookie en el primer render
+router.push('/dashboard')
+
+// ✅ RECOMENDADO: Fuerza la recarga y refresca las cookies para el servidor
+window.location.assign('/dashboard')
+```
+
 ## Performance Tips
 
 1. **Server Components por defecto** - maximiza performance
@@ -530,3 +568,4 @@ export default async function BlogPost({
 4. **next/image** - optimización automática de imágenes
 5. **Dynamic imports** - code splitting para componentes pesados
 6. **Route prefetching** - Next.js prefetch links automáticamente
+7. **Hydration Guards** - evita flickering y errores de concordancia server/client

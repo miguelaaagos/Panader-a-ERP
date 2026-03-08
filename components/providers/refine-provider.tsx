@@ -45,12 +45,12 @@ export function RefineProvider({ children }: { children: React.ReactNode }) {
                     password,
                 });
                 if (error) {
-                    console.error("[AuthProvider] Login Error:", error);
+                    console.error("[AuthProvider] Login Error:", error.message);
                     return {
                         success: false,
                         error: {
                             message: error.message,
-                            name: "AuthError"
+                            name: error.name
                         }
                     };
                 }

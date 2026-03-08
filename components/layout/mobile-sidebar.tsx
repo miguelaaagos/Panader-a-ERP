@@ -123,7 +123,8 @@ export function MobileSidebar() {
             </SheetTrigger>
             <SheetContent side="left" className="w-[80vw] sm:w-[350px] p-0 flex flex-col">
                 <SheetHeader className="p-6 border-b text-left">
-                    <SheetTitle className="font-serif text-xl tracking-tight text-primary">Panadería ERP</SheetTitle>
+                    <SheetTitle className="font-serif text-xl tracking-tight text-primary">Lamiga</SheetTitle>
+                    <p className="text-[10px] uppercase tracking-widest text-muted-foreground/60">Panadería & Pastelería</p>
                 </SheetHeader>
                 <div className="flex-1 overflow-y-auto py-4">
                     <div className="px-3 space-y-1">
