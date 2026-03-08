@@ -1,12 +1,14 @@
 "use client";
 
-import { signOutAction } from "@/server/actions/auth";
+import { useLogout } from "@refinedev/core";
 import { Button } from "@/components/ui/button";
 
 export function LogoutButton() {
+  const { mutate: logout } = useLogout();
+
   return (
     <Button
-      onClick={async () => await signOutAction()}
+      onClick={() => logout()}
       variant="outline"
       size="sm"
     >
