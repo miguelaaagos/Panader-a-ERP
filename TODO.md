@@ -3,7 +3,7 @@
 ## Estado Actual: Producción Lista (Inventario Real)
 - **Versión**: 1.6.0 (Global Admin & Banking Edition)
 - **Estado**: Estable / En Desarrollo
-- **Última actualización**: 8 de marzo de 2026 — Implementación de Panel Global Super Admin, gestión multi-tenant y módulo avanzado de proveedores con información bancaria y copiado rápido.
+- **Última actualización**: 8 de marzo de 2026 — Implementación de Panel Global Super Admin, gestión multi-tenant, módulo de proveedores con información bancaria, y refactorización semántica de Landing Page con soporte completo para Temas (Claro/Oscuro) y Scroll Spy.
 
 ## Tareas Completadas [x]
 - [x] **Integración Recetas en Producción**: Mover módulo a `/produccion/recetas`, anidar visualmente en Sidebar y configurar redirecciones en `proxy.ts`.
@@ -80,6 +80,8 @@
 -     [x] Dashboard centralizado para ver todos los tenants, usuarios reales y estados de planes.
 -     [x] Gestión global de suscripciones (Upgrade/Downgrade forzado).
 -     [x] Auditoría de accesos globales.
+- [x] **Refactorización Semántica de Landing Page**: Migración completa de colores fijos (`text-white`, `bg-black`) a variables CSS (`bg-background`, `text-foreground`, `border-border`) para soporte 100% de Temas (Claro/Oscuro).
+- [x] **Navegación Inteligente (Scroll Spy)**: Creación de `components/landing/Navbar.tsx` con resaltado dinámico de sección activa y reubicación de `ThemeSwitcher`.
 -     [ ] Onboarding automatizado de nuevos clientes (Registro de Tenants).
 -     [ ] Gestión de usuarios multitenant (Creación/Edición en cualquier local).
 - [x] **Mejoras en Proveedores (Cuenta Bancaria)**:

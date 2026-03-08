@@ -954,14 +954,14 @@ export type Database = {
           name: string
           rut: string | null
           slogan: string | null
-          stripe_customer_id: string | null
-          stripe_subscription_id: string | null
           subscription_status: string | null
           subscription_tier:
             | Database["public"]["Enums"]["subscription_tier"]
             | null
           telefono: string | null
           updated_at: string
+          ventipay_customer_id: string | null
+          ventipay_subscription_id: string | null
         }
         Insert: {
           created_at?: string
@@ -972,14 +972,14 @@ export type Database = {
           name: string
           rut?: string | null
           slogan?: string | null
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
           subscription_status?: string | null
           subscription_tier?:
             | Database["public"]["Enums"]["subscription_tier"]
             | null
           telefono?: string | null
           updated_at?: string
+          ventipay_customer_id?: string | null
+          ventipay_subscription_id?: string | null
         }
         Update: {
           created_at?: string
@@ -990,14 +990,14 @@ export type Database = {
           name?: string
           rut?: string | null
           slogan?: string | null
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
           subscription_status?: string | null
           subscription_tier?:
             | Database["public"]["Enums"]["subscription_tier"]
             | null
           telefono?: string | null
           updated_at?: string
+          ventipay_customer_id?: string | null
+          ventipay_subscription_id?: string | null
         }
         Relationships: []
       }

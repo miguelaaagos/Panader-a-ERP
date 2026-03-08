@@ -13,12 +13,12 @@ export function HeroSection() {
             </div>
 
             <div className="container px-6 mx-auto text-center relative z-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/80 text-sm mb-8 animate-in fade-in slide-in-from-top-4 duration-1000">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted border border-border text-muted-foreground text-sm mb-8 animate-in fade-in slide-in-from-top-4 duration-1000">
                     <span className="flex h-2 w-2 rounded-full bg-primary animate-ping" />
                     Nueva versión 2.0 disponible
                 </div>
 
-                <h1 className="text-5xl md:text-8xl font-serif text-white mb-8 tracking-tight leading-[1.1] animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                <h1 className="text-5xl md:text-8xl font-serif text-foreground mb-8 tracking-tight leading-[1.1] animate-in fade-in slide-in-from-bottom-4 duration-1000">
                     Artesanía en cada <br />
                     <span className="text-primary italic relative">
                         detalle.
@@ -28,7 +28,7 @@ export function HeroSection() {
                     </span>
                 </h1>
 
-                <p className="text-xl md:text-2xl text-white/70 max-w-3xl mx-auto mb-12 font-light leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+                <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 font-light leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
                     La plataforma integral diseñada para el negocio gastronómico moderno.
                     Gestiona inventario, producción y ventas con elegancia y precisión.
                 </p>
@@ -43,25 +43,39 @@ export function HeroSection() {
                     </Link>
                     <Link
                         href="#pricing"
-                        className="px-8 py-4 bg-white/5 text-white border border-white/10 rounded-full text-xl font-medium hover:bg-white/10 transition-all backdrop-blur-md"
+                        className="px-8 py-4 bg-muted text-foreground border border-border rounded-full text-xl font-medium hover:bg-muted/80 transition-all backdrop-blur-md"
                     >
                         Ver planes
                     </Link>
                 </div>
 
-                <div className="mt-20 relative max-w-5xl mx-auto p-2 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500 shadow-2xl">
-                    <div className="aspect-video bg-zinc-900 rounded-xl overflow-hidden border border-white/5 flex items-center justify-center relative group">
-                        {/* Placeholder for Product Screenshot */}
-                        <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent opacity-50" />
-                        <div className="text-white/20 font-serif text-4xl">Dashboard Preview</div>
+                <div className="mt-20 relative max-w-5xl mx-auto p-2 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500 shadow-2xl group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-orange-500/20 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
+                    <div className="relative aspect-video bg-zinc-900 rounded-xl overflow-hidden border border-white/5 shadow-2xl whitespace-nowrap">
+                        <img
+                            src="/dashboard-landing.png"
+                            alt="Simple ERP Dashboard"
+                            className="w-full h-full object-cover transform scale-[1.01] group-hover:scale-105 transition-transform duration-[2000ms]"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
 
-                        {/* Floating UI Elements Mockup */}
-                        <div className="absolute top-10 right-10 p-4 bg-black/60 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl animate-bounce duration-[3000ms]">
+                        {/* Floating UI Elements Mockup over real image */}
+                        <div className="absolute top-10 right-10 p-4 bg-black/60 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl animate-bounce duration-[4000ms] hidden md:block">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-500">📈</div>
-                                <div>
-                                    <div className="text-xs text-white/50">Ventas Hoy</div>
-                                    <div className="text-lg font-bold text-white">$245.000</div>
+                                <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-500 text-lg">📈</div>
+                                <div className="text-left">
+                                    <div className="text-[10px] text-white/40 uppercase tracking-tighter font-bold">Ventas de hoy</div>
+                                    <div className="text-lg font-bold text-white leading-none">$245.000</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="absolute bottom-10 left-10 p-4 bg-primary/10 backdrop-blur-xl border border-primary/20 rounded-lg shadow-2xl hidden md:block scale-90 origin-bottom-left">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary text-lg">🍞</div>
+                                <div className="text-left">
+                                    <div className="text-[10px] text-white/40 uppercase tracking-tighter font-bold">Producción Activa</div>
+                                    <div className="text-lg font-bold text-white leading-none">12 Lotes</div>
                                 </div>
                             </div>
                         </div>

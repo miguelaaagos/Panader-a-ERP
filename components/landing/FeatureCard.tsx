@@ -15,7 +15,7 @@ export function FeatureCard({ icon, title, description, className, style }: Feat
     return (
         <div
             className={cn(
-                "p-8 rounded-3xl bg-white/5 border border-white/10 hover:border-white/20 transition-all group",
+                "p-8 rounded-3xl bg-card border border-border hover:border-primary/50 transition-all group",
                 className
             )}
             style={style} // Added style prop to div
@@ -23,8 +23,8 @@ export function FeatureCard({ icon, title, description, className, style }: Feat
             <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500">
                 {icon} {/* Updated icon usage */}
             </div>
-            <h3 className="text-xl font-serif text-white mb-3">{title}</h3>
-            <p className="text-white/50 text-sm leading-relaxed">
+            <h3 className="text-xl font-serif text-foreground mb-3">{title}</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed font-light">
                 {description}
             </p>
         </div>

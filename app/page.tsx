@@ -1,6 +1,6 @@
-import { HeroSection, PricingTable, FeatureCard } from "@/components/landing";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { AuthButton } from "@/components/auth-button";
+import { HeroSection, BenefitsSection, PricingTable, ContactForm, FeatureCard } from "@/components/landing";
+import { Navbar } from "@/components/landing/Navbar";
 import { ShoppingBag, Users, Zap, BarChart3, ShieldCheck, Clock } from "lucide-react";
 import { Suspense } from "react";
 
@@ -39,37 +39,21 @@ const features = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#070708] text-foreground selection:bg-primary/30">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-black/20 backdrop-blur-xl">
-        <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex gap-2 items-center font-serif text-2xl text-white font-bold tracking-tight">
-            <span className="text-3xl">📊</span> Simple ERP
-          </div>
-          <div className="flex items-center gap-6">
-            <div className="hidden md:flex gap-8 text-sm font-medium text-white/60">
-              <a href="#features" className="hover:text-primary transition-colors">Características</a>
-              <a href="#pricing" className="hover:text-primary transition-colors">Precios</a>
-              <a href="/docs" className="hover:text-primary transition-colors">Documentación</a>
-            </div>
-            <div className="h-6 w-px bg-white/10 hidden md:block" />
-            <Suspense>
-              <AuthButton />
-            </Suspense>
-          </div>
-        </div>
-      </nav>
+    <main className="min-h-screen bg-background text-foreground selection:bg-primary/30 scroll-smooth">
+      <Navbar>
+        <AuthButton />
+      </Navbar>
 
       {/* Hero Section */}
       <HeroSection />
 
       {/* Features Section */}
-      <section id="features" className="py-24 relative overflow-hidden">
+      <section id="features" className="py-24 relative overflow-hidden bg-background">
         <div className="container px-6 mx-auto">
           <div className="max-w-3xl mb-16">
             <h2 className="text-primary font-bold tracking-widest uppercase text-sm mb-4">Potencia tu negocio</h2>
-            <h3 className="text-4xl md:text-6xl font-serif text-white mb-6">Todo lo que necesitas para tu negocio gastronómico.</h3>
-            <p className="text-xl text-white/50 font-light">
+            <h3 className="text-4xl md:text-6xl font-serif text-foreground mb-6">Todo lo que necesitas para tu negocio gastronómico.</h3>
+            <p className="text-xl text-muted-foreground font-light">
               Desde el control de insumos hasta el cierre de caja, hemos pensado en cada detalle de tu operación.
             </p>
           </div>
@@ -87,49 +71,55 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Benefits Section */}
+      <BenefitsSection />
+
       {/* Pricing Section */}
       <PricingTable />
 
+      {/* Contact Form Section */}
+      <ContactForm />
+
       {/* Footer */}
-      <footer className="py-20 border-t border-white/5 bg-black/40">
+      <footer className="py-20 border-t border-border bg-muted/40">
         <div className="container px-6 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
             <div className="col-span-1 md:col-span-2">
-              <div className="flex gap-2 items-center font-serif text-2xl text-white font-bold mb-6">
+              <div className="flex gap-2 items-center font-serif text-2xl font-bold mb-6 text-foreground">
                 <span>📊</span> Simple ERP
               </div>
-              <p className="text-white/50 max-w-sm mb-8">
+              <p className="text-muted-foreground max-w-sm mb-8">
                 Llevamos la gestión de los negocios gastronómicos al siguiente nivel con tecnología de vanguardia.
               </p>
-              <div className="flex gap-4">
-                <ThemeSwitcher />
+              <div className="flex gap-4 text-muted-foreground">
+                {/* ThemeSwitcher moved to Nav */}
               </div>
             </div>
             <div>
-              <h4 className="text-white font-bold mb-6 italic">Producto</h4>
-              <ul className="space-y-4 text-white/40 text-sm">
-                <li><a href="#" className="hover:text-primary">Funcionalidades</a></li>
-                <li><a href="#" className="hover:text-primary">Integraciones</a></li>
-                <li><a href="#" className="hover:text-primary">Actualizaciones</a></li>
-                <li><a href="#" className="hover:text-primary">Seguridad</a></li>
+              <h4 className="font-bold mb-6 italic text-foreground text-sm uppercase tracking-wider">Producto</h4>
+              <ul className="space-y-4 text-muted-foreground text-sm font-medium">
+                <li><a href="#" className="hover:text-primary transition-colors">Funcionalidades</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Integraciones</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Actualizaciones</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Seguridad</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-bold mb-6 italic">Compañía</h4>
-              <ul className="space-y-4 text-white/40 text-sm">
-                <li><a href="#" className="hover:text-primary">Sobre nosotros</a></li>
-                <li><a href="#" className="hover:text-primary">Contacto</a></li>
-                <li><a href="#" className="hover:text-primary">Privacidad</a></li>
-                <li><a href="#" className="hover:text-primary">Términos</a></li>
+              <h4 className="font-bold mb-6 italic text-foreground text-sm uppercase tracking-wider">Compañía</h4>
+              <ul className="space-y-4 text-muted-foreground text-sm font-medium">
+                <li><a href="#" className="hover:text-primary transition-colors">Sobre nosotros</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Contacto</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Privacidad</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">Términos</a></li>
               </ul>
             </div>
           </div>
-          <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-white/30 text-xs">
+          <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-muted-foreground text-xs">
             <p>© 2026 Simple ERP. Gestión inteligente para tu negocio.</p>
             <div className="flex gap-6">
-              <a href="#" className="hover:text-white transition-colors">Twitter</a>
-              <a href="#" className="hover:text-white transition-colors">LinkedIn</a>
-              <a href="#" className="hover:text-white transition-colors">GitHub</a>
+              <a href="#" className="hover:text-foreground transition-colors font-medium">Twitter</a>
+              <a href="#" className="hover:text-foreground transition-colors font-medium">LinkedIn</a>
+              <a href="#" className="hover:text-foreground transition-colors font-medium">GitHub</a>
             </div>
           </div>
         </div>
