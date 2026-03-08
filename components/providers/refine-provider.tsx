@@ -46,7 +46,13 @@ export function RefineProvider({ children }: { children: React.ReactNode }) {
                 });
                 if (error) {
                     console.error("[AuthProvider] Login Error:", error);
-                    return { success: false, error };
+                    return {
+                        success: false,
+                        error: {
+                            message: error.message,
+                            name: "AuthError"
+                        }
+                    };
                 }
 
                 // Ensure cookies are synchronized by using a hard redirect

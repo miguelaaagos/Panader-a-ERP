@@ -26,6 +26,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 
 export function LoginForm({
   className,
@@ -45,9 +46,17 @@ export function LoginForm({
     e.preventDefault();
     setError(null);
     login({ email, password }, {
-      onError: (err: unknown) => {
-        const message = err instanceof Error ? err.message : "Error de autenticación";
+      onError: (err: any) => {
+        // Refine wrappers the error differently sometimes
+        const message = err?.message || err?.error?.message || "Error de autenticación";
         setError(message);
+
+        // Secondary feedback with Toast
+        toast.error("Error de Acceso", {
+          description: message === "Invalid login credentials"
+            ? "Credenciales incorrectas"
+            : message
+        });
       },
     });
   };
