@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 export interface CartItem {
     id: string
     nombre: string
-    codigo_barras: string | null
+    codigo: string | null
     precio_venta: number
     cantidad: number
     es_pesable: boolean
@@ -15,17 +15,20 @@ export interface CartItem {
 interface ERPState {
     items: CartItem[]
     isScannerActive: boolean
+    isCameraScannerOpen: boolean
     addItem: (product: any, quantity?: number) => void
     removeItem: (id: string) => void
     updateQuantity: (id: string, quantity: number) => void
     clearCart: () => void
     setScannerActive: (active: boolean) => void
+    setCameraScannerOpen: (open: boolean) => void
     getTotals: () => { subtotal: number; iva: number; total: number }
 }
 
 export const useERPStore = create<ERPState>((set, get) => ({
     items: [],
     isScannerActive: true,
+    isCameraScannerOpen: false,
 
     addItem: (product, quantity = 1) => {
         const { items } = get()
@@ -35,17 +38,17 @@ export const useERPStore = create<ERPState>((set, get) => ({
         const currentCartQuantity = existingItem ? existingItem.cantidad : 0
         const newTotalQuantity = currentCartQuantity + quantity
 
-        if (!product.es_pesable && newTotalQuantity > product.stock_cantidad) {
+        if (!product.es_pesable && newTotalQuantity > (product.stock_cantidad ?? product.stock_actual)) {
             toast.error(`Stock insuficiente`, {
-                description: `Disponible: ${product.stock_cantidad} unidades`
+                description: `Disponible: ${product.stock_cantidad ?? product.stock_actual} unidades`
             })
             return
         }
 
         // Alerta de stock bajo (menos de 5 unidades)
-        if (!product.es_pesable && product.stock_cantidad < 5 && product.stock_cantidad > 0) {
+        if (!product.es_pesable && (product.stock_cantidad ?? product.stock_actual) < 5 && (product.stock_cantidad ?? product.stock_actual) > 0) {
             toast.warning(`Stock bajo: ${product.nombre}`, {
-                description: `Quedan solo ${product.stock_cantidad} unidades`
+                description: `Quedan solo ${product.stock_cantidad ?? product.stock_actual} unidades`
             })
         }
 
@@ -65,12 +68,12 @@ export const useERPStore = create<ERPState>((set, get) => ({
                     {
                         id: product.id,
                         nombre: product.nombre,
-                        codigo_barras: product.codigo_barras,
+                        codigo: product.codigo ?? product.codigo_barras,
                         precio_venta: product.precio_venta,
                         cantidad: quantity,
                         es_pesable: product.es_pesable,
                         subtotal: quantity * product.precio_venta,
-                        stock_cantidad: product.stock_cantidad,
+                        stock_cantidad: product.stock_cantidad ?? product.stock_actual,
                     },
                 ],
             })
@@ -117,6 +120,7 @@ export const useERPStore = create<ERPState>((set, get) => ({
     clearCart: () => set({ items: [] }),
 
     setScannerActive: (active) => set({ isScannerActive: active }),
+    setCameraScannerOpen: (open) => set({ isCameraScannerOpen: open }),
 
     getTotals: () => {
         const { items } = get()

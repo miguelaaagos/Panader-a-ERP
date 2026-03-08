@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { convertToDisplayUnit, calculateBaseCost, AppUnit } from '../lib/utils/inventory-units';
+import { convertToDisplayUnit, calculateBaseCost } from '../lib/utils/inventory-units';
 
 describe('Inventory Units Math', () => {
 

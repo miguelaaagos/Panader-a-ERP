@@ -2,7 +2,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import { Suspense } from "react"
 import Link from "next/link"
-import { ShoppingCart, Package, ChefHat, FileText } from "lucide-react"
+import { ShoppingCart } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 

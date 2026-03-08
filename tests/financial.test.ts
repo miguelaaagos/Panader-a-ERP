@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 describe('Financial Math - Costos Fijos vs Variables', () => {
 
     // Función pura simulada de nuestro backend (actions/reportes.ts)
-    const calcularReporteFinanciero = (ventas: any[], gastos: any[]) => {
+    const calcularReporteFinanciero = (ventas: { total: number; iva: number }[], gastos: { monto_neto: number; monto_iva: number; monto_total: number; tipo_gasto: string }[]) => {
         let totalVentas = 0;
         let totalIvaDebito = 0;
 

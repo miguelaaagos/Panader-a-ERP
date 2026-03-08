@@ -1,9 +1,9 @@
 # TODO: Sincronización de Desarrollo (Calama - Antofagasta)
 
-## Estado Actual: Saneamiento Integral de Tipos y Estabilidad (Marzo 2026)
-- **Fecha**: 2026-03-07
-- **Ubicación**: Antofagasta
-- **Hito**: Saneamiento total de tipos (0 errores en `typecheck`) en los módulos de Asistencia, Recetas, Inventario, Gastos y Reportes. Estabilización de la arquitectura Core y eliminación de recursividad en políticas RLS.
+## Estado Actual: Producción Lista (Inventario Real)
+- **Version**: 1.2.9 (Scanner & HID Integration)
+- **Estado**: Estable / Producción
+- **Última actualización**: 7 de marzo de 2026 — Integración exitosa del sistema de escaneo de productos. Soporte híbrido para cámaras y lectura global HID (Pistolas USB). UI/UX pulida con feedback visual.
 
 ## Tareas Completadas [x]
 - [x] Establecer y documentar estándares UI/UX (Notificaciones, Gráficos PowerBI style, Tablas móviles, Dark mode) en GEMINI.md y skills.
@@ -21,6 +21,8 @@
 - [x] Ejecutar auditoría `react-doctor` (92/100) y aplicar optimizaciones de performance.
 - [x] Corregir error `AuthApiError: Refresh Token Not Found` en `proxy.ts`.
 - [x] **Saneamiento de RLS**: Eliminación de recursividad infinita en políticas de `usuarios` y `ventas` mediante el uso de funciones `SECURITY DEFINER`.
+- [x] **Puesta en Marcha Real**: Reseteo total de base de datos de prueba, reinicio de correlativos de ventas y carga masiva de 180 productos reales desde Excel con stock inicial verificado.
+- [ ] **Integración de Lector de Códigos de Barras**: Funcionalidad de búsqueda y agregado automático de productos al carrito mediante escáner HID.
 - [x] **Infraestructura de Testing**: Integración completa de Playwright (E2E y Component testing) con auth global.
 - [x] **Módulo de Gastos Operativos**: UI y Backend (Supabase + Actions) para registro de tickets de gastos.
 - [x] **Reportes Financieros (SII)**: Dashboard integrado con Recharts para IVA Débito, Crédito, Ventas y Gastos.
@@ -61,10 +63,12 @@
 - [x] Solucionar error de configuración de `eslint-plugin-react` con ESLint Flat Config, y sanear los warnings/anys del repositorio para lograr build de 0 errores.
 - [x] Ejecución de pruebas iniciales con Playwright (Salud del sistema)
 - [x] Configuración de Global Auth Setup para tests rápidos
+- [x] **Integración de Lector de Códigos de Barras**:
+    - [x] Escucha de eventos de teclado global en el POS para captura de secuencias de escáner.
+    - [x] Búsqueda automática de productos por código y agregado al carrito (`addItem`).
+    - [x] Optimización de la experiencia de usuario (UI Premium, Toaster feedback, Vibración móvil).
+    - [x] Soporte para cámaras con fallback dinámico y escalado automático.
 - [ ] **Integración Transbank (Webpay Plus)**:
-    - [ ] Configurar ambiente de Integration (Sandbox) y llaves en `.env`.
-    - [ ] Implementar flujo de pago: `create` (Server Action) -> Redirección -> `commit` (API Route/Action).
-    - [ ] Integrar con el flujo de cierre de venta en el ERP.
 
 ## Notas para el Agente
 - Leer este archivo AL INICIO de cada sesión.

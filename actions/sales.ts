@@ -3,7 +3,7 @@
 import { validateRequest } from "@/lib/server/auth"
 import { hasPermission } from "@/lib/roles"
 import { revalidatePath, revalidateTag } from "next/cache"
-import { cacheTag, cacheLife } from "next/cache"
+
 import { z } from "zod"
 
 const saleItemSchema = z.object({
@@ -63,16 +63,15 @@ export async function createSale(data: SaleFormData) {
 
         // 1. Llamada atómica al RPC
         // Esto maneja: Validar stock, Decrementar stock, Insertar Venta e Insertar Detalles en UNA sola transacción.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: saleId, error: rpcError } = await (supabase.rpc as any)('create_sale_v1', {
+        const { data: saleId, error: rpcError } = await supabase.rpc('create_sale_v1', {
             p_tenant_id: tenant_id,
             p_usuario_id: user_id,
-            p_cliente_nombre: validated.cliente_nombre ?? null,
-            p_cliente_rut: validated.cliente_rut ?? null,
+            p_cliente_nombre: validated.cliente_nombre ?? "",
+            p_cliente_rut: validated.cliente_rut ?? "",
             p_metodo_pago: validated.metodo_pago,
-            p_notas: validated.notas ?? null,
+            p_notas: validated.notas ?? "",
             p_descuento_global: validated.descuento_global ?? 0,
-            p_arqueo_id: validated.arqueo_id ?? null,
+            p_arqueo_id: validated.arqueo_id ?? "",
             p_items: validated.items.map(item => ({
                 producto_id: item.producto_id,
                 cantidad: item.cantidad,

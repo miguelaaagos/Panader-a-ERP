@@ -41,8 +41,8 @@ pnpm exec playwright test
 ```
 
 > **CRÍTICO**: `pnpm gen:types` es el ÚNICO comando permitido para regenerar tipos.
-> `npx supabase gen types > archivo` en PowerShell produce UTF-16LE y rompe
-> toda la inferencia de tipos de Supabase en TypeScript.
+> No usar redirección `>` en PowerShell pura (`npx supabase ... > file`) ya que produce UTF-16LE 
+> con BOM, lo cual rompe los templates de TypeScript. El script de pnpm ya maneja esto correctamente.
 
 ## Deprecados (NUNCA USAR)
 

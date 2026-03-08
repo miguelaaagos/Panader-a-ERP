@@ -15,9 +15,10 @@ import { CashierTab } from "./cashier-tab"
 import { getCurrentCashSession } from "@/actions/cash"
 import { WeighItemDialog } from "./weigh-item-dialog"
 import { Button } from "@/components/ui/button"
+import { ScannerHandler } from "./scanner-handler"
 
 import { toast } from "sonner"
-import { PackageSearch, ShoppingCart, AlertCircle, ArrowRight, ChevronDown, ChevronUp } from "lucide-react"
+import { PackageSearch, ShoppingCart, AlertCircle, ArrowRight, ChevronDown, ChevronUp, Barcode } from "lucide-react"
 import { saveOfflineSale } from "@/lib/offline-queue"
 import { OfflineSync } from "./offline-sync"
 import { format } from "date-fns"
@@ -53,7 +54,7 @@ export function POSContainer() {
     const [isMobileProductsOpen, setIsMobileProductsOpen] = useState(true)
 
     // Store Centralizado
-    const { items, addItem, updateQuantity, removeItem, clearCart, getTotals } = useERPStore()
+    const { items, addItem, updateQuantity, removeItem, clearCart, getTotals, setCameraScannerOpen } = useERPStore()
     const { total } = getTotals()
 
     useEffect(() => {
@@ -255,10 +256,21 @@ export function POSContainer() {
                                     {isMobileProductsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                                 </Button>
                             </div>
-                            <div onClick={(e) => e.stopPropagation()}>
+                            <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 gap-2 bg-background border-primary/20 hover:border-primary/50 text-primary"
+                                    onClick={() => setCameraScannerOpen(true)}
+                                >
+                                    <Barcode className="h-4 w-4" />
+                                    <span className="hidden sm:inline">Escanear</span>
+                                </Button>
                                 <OfflineSync />
                             </div>
                         </div>
+
+                        <ScannerHandler />
 
                         <div className={cn("flex-1 overflow-hidden transition-opacity", !isMobileProductsOpen ? "opacity-0 lg:opacity-100 hidden lg:flex" : "opacity-100 flex flex-col")}>
                             <ProductGrid

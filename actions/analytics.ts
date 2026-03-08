@@ -1,7 +1,7 @@
 "use server"
 
 import { validateRequest } from "@/lib/server/auth"
-import { startOfDay, subDays, startOfMonth, format, parseISO, endOfMonth, endOfDay, getDate, addDays } from "date-fns"
+import { startOfDay, subDays, startOfMonth, format, parseISO, endOfMonth, getDate, addDays } from "date-fns"
 import { es } from "date-fns/locale"
 import { connection } from "next/server"
 
@@ -59,7 +59,7 @@ export async function getDashboardStats(month?: number, year?: number) {
                 .lte("created_at", endOfTarget.toISOString())
                 .neq("estado", "anulada")
 
-            const totalPeriod = salesPeriod?.reduce((sum: number, v: { total: number }) => sum + v.total, 0) || 0
+            const totalPeriod = salesPeriod?.reduce((sum: number, v) => sum + v.total, 0) || 0
             const countPeriod = salesPeriod?.length || 0
             const ivaPeriod = totalPeriod - (totalPeriod / 1.19)
 
@@ -152,10 +152,6 @@ export async function getCriticalStockItems() {
 
         if (error) throw error
 
-        interface ProductBase {
-            stock_actual: number
-            stock_minimo: number
-        }
 
         const criticalItems = (data || []).filter((p) =>
             (p.stock_actual !== null && p.stock_minimo !== null) &&
@@ -223,7 +219,7 @@ export async function getSalesTrendData(month?: number, year?: number) {
             return { date: label, fullDate, total: 0 }
         })
 
-        sales?.forEach((sale: { created_at: string; total: number }) => {
+        sales?.forEach((sale) => {
             const formatStr = (isHistorical && month === undefined) ? "yyyy-MM" : "yyyy-MM-dd"
             const dayStr = format(parseISO(sale.created_at), formatStr)
             const match = dataGroup.find(d => d.fullDate === dayStr)
@@ -282,8 +278,8 @@ export async function getTopProductsData(month?: number, year?: number) {
             producto: { nombre: string } | null
         }
 
-        (data as unknown as SaleDetailItem[])?.forEach((item) => {
-            const nombre = item.producto?.nombre || "Desconocido"
+        data?.forEach((item) => {
+            const nombre = (item.producto as any)?.nombre || "Desconocido"
             if (!productMap[nombre]) {
                 productMap[nombre] = { nombre, cantidad: 0, total: 0 }
             }

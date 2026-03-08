@@ -60,6 +60,7 @@ El sistema ha sido diseñado priorizando la integridad de los datos y la segurid
 -   **Recargo Automático**: Cálculo automático del 19% IVA para pagos con tarjeta.
 -   **Control de Caja**: Gestión de turnos con apertura, cierre y arqueo de efectivo.
 -   **Productos Pesables**: Soporte nativo para venta a granel (Pan, Pasteles) con cálculo de precio por peso.
+-   **Lector de Códigos de Barras**: Integración híbrida con soporte para cámaras (vía `html5-qrcode`) y escáneres físicos USB/Bluetooth (Modo HID) con captura global y búsqueda automatizada.
 -   **Modo Offline**: Capacidad de seguir vendiendo sin internet (Sincronización automática).
 
 ### 📦 Gestión de Inventario Avanzada
@@ -115,6 +116,6 @@ pnpm typecheck
 
 ---
 
-**Version**: 1.2.7 (Type Sanitation & Core Stability)  
+**Version**: 1.2.9 (Scanner & HID Integration)  
 **Estado**: Estable / Producción  
-**Última actualización**: 7 de marzo de 2026 — Saneamiento integral de tipos TypeScript (0 errores en pnpm typecheck) en los módulos de Asistencia, Recetas, Inventario, Gastos y Reportes Financieros. Mejora de la estabilidad del sistema mediante el saneamiento de Server Actions y eliminación de accesos a propiedades desconocidas.
+**Última actualización**: 7 de marzo de 2026 — Integración completa del sistema de escaneo de productos. Soporte para cámaras con UI Premium y escucha global para lectores de código de barras USB/HID. Sistema validado para operación real.
