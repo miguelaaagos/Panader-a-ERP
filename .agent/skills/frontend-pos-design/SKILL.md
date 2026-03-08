@@ -22,9 +22,10 @@ Cuando desarrolles nuevas interfaces o componentes para el proyecto, DEBES segui
 
 ## 4. Gráficos y Visualización de Datos (Recharts)
 - **Regla:** Los gráficos deben ser fáciles de leer a simple vista (como PowerBI).
-- **Etiquetas:** Usa `<LabelList>` en los componentes `<Bar>` o `<Line>` para mostrar los valores directamente sobre o junto a los elementos. No dependas exclusivamente del `Tooltip` (hover), ya que en táctil es incómodo.
+- **Etiquetas:** Usa `<LabelList>` en los componentes `<Bar>` o `<Line>` para mostrar los valores directamente sobre o junto a los elementos. No dependas exclusivamente del `Tooltip` (hover).
+- **Adaptabilidad:** Las etiquetas deben ser visibles en ambos temas. Usa `className="fill-foreground"` o `fill="currentColor"` en `<LabelList>` o `<Text>` en lugar de colores fijos como el negro por defecto.
 - **Responsividad:** Envuelve siempre los gráficos en `<ResponsiveContainer width="100%" height={300}>`.
-- **Colores:** Mantén coherencia de colores. Si muestras un Top 5, usa degradados del color primario (más opaco al más transparente) de forma consistente en todos los gráficos relacionados.
+- **Estética:** Mantén el fondo de las secciones de gráficos coherente con el resto del sistema (usa el fondo de `Card` estándar). Solo usa fondos sutiles (ej. `bg-primary/5`) si quieres resaltar una sección experimental o de proyecciones, pero verificando el contraste.
 
 ## 5. Tema Oscuro (Dark Mode)
 - **Regla:** El contraste debe ser perfecto tanto en Light como en Dark mode.

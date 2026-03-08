@@ -223,7 +223,7 @@ export function POSContainer() {
                                 <AlertCircle className="h-5 w-5 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-3xl font-bold">Venta ERP</h1>
+                                <h1 className="text-3xl font-bold">Ventas</h1>
                                 <p className="text-sm text-orange-700/80">Debe abrir el turno antes de procesar ventas.</p>
                             </div>
                         </div>
