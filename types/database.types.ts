@@ -365,7 +365,15 @@ export type Database = {
           old_data?: Json | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "global_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       horarios_roles: {
         Row: {
@@ -996,6 +1004,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          impersonated_tenant_id: string | null
           nombre_completo: string | null
           rol: string
           tenant_id: string | null
@@ -1006,6 +1015,7 @@ export type Database = {
           created_at?: string
           email: string
           id: string
+          impersonated_tenant_id?: string | null
           nombre_completo?: string | null
           rol?: string
           tenant_id?: string | null
@@ -1016,12 +1026,20 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          impersonated_tenant_id?: string | null
           nombre_completo?: string | null
           rol?: string
           tenant_id?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "usuarios_impersonated_tenant_id_fkey"
+            columns: ["impersonated_tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "usuarios_tenant_id_fkey"
             columns: ["tenant_id"]
@@ -1246,6 +1264,10 @@ export type Database = {
             }
             Returns: Json
           }
+      switch_tenant_context: {
+        Args: { p_target_tenant_id: string }
+        Returns: undefined
+      }
       update_tenant_subscription_tier: {
         Args: {
           p_admin_id: string

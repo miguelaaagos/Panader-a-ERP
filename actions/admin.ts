@@ -89,3 +89,67 @@ export async function getGlobalAuditLogs() {
         }
     }
 }
+
+export async function getTenantsList() {
+    try {
+        const { supabase } = await ensureSuperAdmin()
+
+        const { data, error } = await supabase
+            .from("tenants")
+            .select("id, name, subscription_tier")
+            .order("name", { ascending: true })
+
+        if (error) throw error
+
+        return { success: true, data }
+    } catch (error: unknown) {
+        console.error("Error fetching tenants list:", error)
+        return { success: false, error: "No se pudo cargar la lista de locales" }
+    }
+}
+
+export async function switchTenantContext(tenantId: string | null) {
+    try {
+        const { supabase } = await ensureSuperAdmin()
+
+        // Llamar a la función RPC que creamos
+        const { error } = await supabase.rpc('switch_tenant_context', {
+            p_target_tenant_id: tenantId
+        })
+
+        if (error) throw error
+
+        // Revalidamos todo para que el cambio de contexto se note en todo el dashboard
+        revalidatePath("/", "layout")
+
+        return { success: true }
+    } catch (error: unknown) {
+        console.error("Error switching tenant context:", error)
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "Error al cambiar de contexto"
+        }
+    }
+}
+
+export async function getMyImpersonation() {
+    try {
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return { success: false }
+
+        const { data: profile } = await supabase
+            .from("usuarios")
+            .select("impersonated_tenant_id, tenants(name)")
+            .eq("id", user.id)
+            .single()
+
+        return {
+            success: true,
+            impersonatedId: profile?.impersonated_tenant_id,
+            tenantName: (profile?.tenants as any)?.name
+        }
+    } catch {
+        return { success: false }
+    }
+}

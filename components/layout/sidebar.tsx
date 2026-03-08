@@ -29,6 +29,7 @@ import { Permission } from "@/lib/roles";
 import Image from "next/image";
 import { SubscriptionTier, Feature, hasFeatureAccess } from "@/lib/subscription";
 import { Lock } from "lucide-react";
+import { TenantSwitcher } from "@/components/admin/TenantSwitcher";
 
 interface Route {
     label: string;
@@ -274,6 +275,11 @@ export function Sidebar({ className, tier }: SidebarProps) {
                                 <p className="text-[10px] uppercase font-bold text-muted-foreground/50 mb-2 px-4 tracking-widest">
                                     ADMIN GLOBAL
                                 </p>
+
+                                <div className="px-4 mb-4">
+                                    <TenantSwitcher />
+                                </div>
+
                                 {adminRoutes.map((route) => (
                                     <Button
                                         key={route.href}
