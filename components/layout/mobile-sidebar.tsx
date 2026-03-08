@@ -10,6 +10,8 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { Permission } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { SubscriptionTier, Feature, hasFeatureAccess } from "@/lib/subscription";
+import { Lock } from "lucide-react";
 
 interface Route {
     label: string;
@@ -17,10 +19,11 @@ interface Route {
     href: string;
     active: boolean;
     permission?: Permission;
+    feature?: Feature;
     children?: Route[];
 }
 
-export function MobileSidebar() {
+export function MobileSidebar({ tier }: { tier: SubscriptionTier }) {
     const [open, setOpen] = useState(false);
     const pathname = usePathname();
     const { mutate: logout } = useLogout();
@@ -47,6 +50,7 @@ export function MobileSidebar() {
             href: "/dashboard/inventario",
             active: pathname === "/dashboard/inventario",
             permission: "inventory.view" as Permission,
+            feature: "inventory" as Feature,
         },
         {
             label: "Ingresos",
@@ -68,6 +72,7 @@ export function MobileSidebar() {
             href: "/dashboard/gastos",
             active: pathname.startsWith("/dashboard/gastos"),
             permission: "sales.view_all" as Permission,
+            feature: "expenses" as Feature,
         },
         {
             label: "Producción",
@@ -75,6 +80,7 @@ export function MobileSidebar() {
             href: "/dashboard/produccion",
             active: pathname.startsWith("/dashboard/produccion"),
             permission: "production.view" as Permission,
+            feature: "production" as Feature,
             children: [
                 {
                     label: "Recetas",
@@ -82,6 +88,7 @@ export function MobileSidebar() {
                     href: "/dashboard/produccion/recetas",
                     active: pathname.startsWith("/dashboard/produccion/recetas"),
                     permission: "recipes.view" as Permission,
+                    feature: "recipes" as Feature,
                 },
             ]
         },
@@ -98,6 +105,7 @@ export function MobileSidebar() {
             href: "/dashboard/reportes/financiero",
             active: pathname.startsWith("/dashboard/reportes/financiero"),
             permission: "analytics.view_full" as Permission,
+            feature: "advanced_reports" as Feature,
         },
         {
             label: "Asistencia",
@@ -139,49 +147,77 @@ export function MobileSidebar() {
                 </SheetHeader>
                 <div className="flex-1 overflow-y-auto py-4">
                     <div className="px-3 space-y-1">
-                        {visibleRoutes.map((route) => (
-                            <div key={route.href} className="space-y-1">
-                                <Button
-                                    variant={route.active ? "secondary" : "ghost"}
-                                    className={cn(
-                                        "w-full justify-start",
-                                        route.active && "bg-primary/10 text-primary hover:bg-primary/20",
-                                        route.children && "font-semibold"
+                        {visibleRoutes.map((route) => {
+                            const isLocked = route.feature && !hasFeatureAccess(tier, route.feature);
+
+                            return (
+                                <div key={route.href} className="space-y-1">
+                                    <Button
+                                        variant={route.active ? "secondary" : "ghost"}
+                                        className={cn(
+                                            "w-full justify-start",
+                                            route.active && "bg-primary/10 text-primary hover:bg-primary/20",
+                                            route.children && "font-semibold",
+                                            isLocked && "opacity-50 grayscale cursor-not-allowed"
+                                        )}
+                                        onClick={() => !route.children && !isLocked && setOpen(false)}
+                                        asChild={!isLocked}
+                                        disabled={isLocked}
+                                    >
+                                        {isLocked ? (
+                                            <div className="flex items-center w-full">
+                                                <route.icon className="mr-2 h-4 w-4" />
+                                                {route.label}
+                                                <Lock className="ml-auto h-3.5 w-3.5" />
+                                            </div>
+                                        ) : (
+                                            <Link href={route.href}>
+                                                <route.icon className="mr-2 h-4 w-4" />
+                                                {route.label}
+                                            </Link>
+                                        )}
+                                    </Button>
+                                    {route.children && (
+                                        <div className="ml-4 pl-2 border-l space-y-1 mt-1">
+                                            {route.children
+                                                .filter(child => !child.permission || can(child.permission))
+                                                .map((child) => {
+                                                    const isChildLocked = child.feature && !hasFeatureAccess(tier, child.feature);
+
+                                                    return (
+                                                        <Button
+                                                            key={child.href}
+                                                            variant={child.active ? "secondary" : "ghost"}
+                                                            size="sm"
+                                                            className={cn(
+                                                                "w-full justify-start h-9 text-sm",
+                                                                child.active && "bg-primary/10 text-primary hover:bg-primary/20",
+                                                                isChildLocked && "opacity-50 grayscale cursor-not-allowed"
+                                                            )}
+                                                            onClick={() => !isChildLocked && setOpen(false)}
+                                                            asChild={!isChildLocked}
+                                                            disabled={isChildLocked}
+                                                        >
+                                                            {isChildLocked ? (
+                                                                <div className="flex items-center w-full">
+                                                                    <child.icon className="mr-2 h-4 w-4" />
+                                                                    {child.label}
+                                                                    <Lock className="ml-auto h-3.5 w-3.5" />
+                                                                </div>
+                                                            ) : (
+                                                                <Link href={child.href}>
+                                                                    <child.icon className="mr-2 h-4 w-4" />
+                                                                    {child.label}
+                                                                </Link>
+                                                            )}
+                                                        </Button>
+                                                    );
+                                                })}
+                                        </div>
                                     )}
-                                    onClick={() => !route.children && setOpen(false)}
-                                    asChild
-                                >
-                                    <Link href={route.href}>
-                                        <route.icon className="mr-2 h-4 w-4" />
-                                        {route.label}
-                                    </Link>
-                                </Button>
-                                {route.children && (
-                                    <div className="ml-4 pl-2 border-l space-y-1 mt-1">
-                                        {route.children
-                                            .filter(child => !child.permission || can(child.permission))
-                                            .map((child) => (
-                                                <Button
-                                                    key={child.href}
-                                                    variant={child.active ? "secondary" : "ghost"}
-                                                    size="sm"
-                                                    className={cn(
-                                                        "w-full justify-start h-9 text-sm",
-                                                        child.active && "bg-primary/10 text-primary hover:bg-primary/20"
-                                                    )}
-                                                    onClick={() => setOpen(false)}
-                                                    asChild
-                                                >
-                                                    <Link href={child.href}>
-                                                        <child.icon className="mr-2 h-4 w-4" />
-                                                        {child.label}
-                                                    </Link>
-                                                </Button>
-                                            ))}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
                 <div className="p-4 border-t mt-auto">

@@ -62,6 +62,6 @@ pnpm dev
 pnpm typecheck
 ```
 
-**Version**: 1.5.1 (Attendance & Offline Edition)  
+**Version**: 1.6.0 (Global Admin & Banking Edition)  
 **Estado**: Producción / Resiliente  
-**Última actualización**: 8 de marzo de 2026 — Integración del módulo de Recetas dentro de Producción, anidación visual en Sidebar, corrección de redirecciones 404 y saneamiento de procesos de desarrollo.
+**Última actualización**: 8 de marzo de 2026 — Implementación de Panel Global Super Admin, gestión multi-tenant y módulo avanzado de proveedores con información bancaria y copiado rápido.

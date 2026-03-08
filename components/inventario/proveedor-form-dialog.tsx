@@ -11,6 +11,14 @@ import { Label } from "@/components/ui/label"
 import { crearProveedor, updateProveedor, type Proveedor } from "@/actions/proveedores"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
+import { Controller } from "react-hook-form"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 const formSchema = z.object({
     nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
@@ -18,6 +26,11 @@ const formSchema = z.object({
     email: z.string().email("Debe ser un email válido").optional().or(z.literal("")),
     telefono: z.string().optional(),
     direccion: z.string().optional(),
+    banco: z.string().optional(),
+    tipo_cuenta: z.string().optional(),
+    numero_cuenta: z.string().optional(),
+    rut_pago: z.string().optional(),
+    email_pago: z.string().email("Email de pago inválido").optional().or(z.literal("")),
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -44,7 +57,12 @@ export function ProveedorFormDialog({
             rut: "",
             email: "",
             telefono: "",
-            direccion: ""
+            direccion: "",
+            banco: "",
+            tipo_cuenta: "",
+            numero_cuenta: "",
+            rut_pago: "",
+            email_pago: ""
         }
     })
 
@@ -57,6 +75,11 @@ export function ProveedorFormDialog({
                     email: proveedorSelected.email || "",
                     telefono: proveedorSelected.telefono || "",
                     direccion: proveedorSelected.direccion || "",
+                    banco: proveedorSelected.banco || "",
+                    tipo_cuenta: proveedorSelected.tipo_cuenta || "",
+                    numero_cuenta: proveedorSelected.numero_cuenta || "",
+                    rut_pago: proveedorSelected.rut_pago || "",
+                    email_pago: proveedorSelected.email_pago || "",
                 })
             } else {
                 form.reset({
@@ -64,7 +87,12 @@ export function ProveedorFormDialog({
                     rut: "",
                     email: "",
                     telefono: "",
-                    direccion: ""
+                    direccion: "",
+                    banco: "",
+                    tipo_cuenta: "",
+                    numero_cuenta: "",
+                    rut_pago: "",
+                    email_pago: ""
                 })
             }
         }
@@ -83,7 +111,12 @@ export function ProveedorFormDialog({
                     data.telefono,
                     data.email,
                     data.rut,
-                    data.direccion
+                    data.direccion,
+                    data.banco,
+                    data.tipo_cuenta,
+                    data.numero_cuenta,
+                    data.rut_pago,
+                    data.email_pago
                 )
             }
 
@@ -104,7 +137,7 @@ export function ProveedorFormDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <DialogHeader>
                         <DialogTitle>{proveedorSelected ? "Editar Proveedor" : "Nuevo Proveedor"}</DialogTitle>
@@ -167,6 +200,76 @@ export function ProveedorFormDialog({
                                 placeholder="Ingresa la dirección completa"
                                 {...form.register("direccion")}
                             />
+                        </div>
+
+                        {/* Información Bancaria */}
+                        <div className="pt-4 border-t">
+                            <h4 className="text-sm font-semibold mb-4 text-primary uppercase tracking-wider">Información Bancaria (Para Pagos)</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="banco">Banco</Label>
+                                    <Input
+                                        id="banco"
+                                        placeholder="Ej: Banco Estado"
+                                        {...form.register("banco")}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="tipo_cuenta">Tipo de Cuenta</Label>
+                                    <Controller
+                                        name="tipo_cuenta"
+                                        control={form.control}
+                                        render={({ field }) => (
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                                value={field.value}
+                                            >
+                                                <SelectTrigger id="tipo_cuenta">
+                                                    <SelectValue placeholder="Selecciona tipo..." />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="Cuenta Corriente">Cuenta Corriente</SelectItem>
+                                                    <SelectItem value="Cuenta Vista / RUT">Cuenta Vista / RUT</SelectItem>
+                                                    <SelectItem value="Cuenta de Ahorro">Cuenta de Ahorro</SelectItem>
+                                                    <SelectItem value="Chequera Electrónica">Chequera Electrónica</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-4 mt-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="numero_cuenta">Número de Cuenta</Label>
+                                    <Input
+                                        id="numero_cuenta"
+                                        placeholder="0000000000"
+                                        {...form.register("numero_cuenta")}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 mt-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="rut_pago">RUT para Transferencia</Label>
+                                    <Input
+                                        id="rut_pago"
+                                        placeholder="Mismo que RUT empresa?"
+                                        {...form.register("rut_pago")}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="email_pago">Email para Comprobante</Label>
+                                    <Input
+                                        id="email_pago"
+                                        type="email"
+                                        placeholder="pagos@empresa.cl"
+                                        {...form.register("email_pago")}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
 

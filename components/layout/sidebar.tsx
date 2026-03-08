@@ -19,12 +19,16 @@ import {
     TrendingUp,
     User,
     Clock,
-    Truck
+    Truck,
+    Globe,
+    Building2
 } from "lucide-react";
 import { useLogout } from "@refinedev/core";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Permission } from "@/lib/roles";
 import Image from "next/image";
+import { SubscriptionTier, Feature, hasFeatureAccess } from "@/lib/subscription";
+import { Lock } from "lucide-react";
 
 interface Route {
     label: string;
@@ -32,12 +36,15 @@ interface Route {
     href: string;
     active: boolean;
     permission?: Permission;
+    feature?: Feature;
     children?: Route[];
 }
 
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
+    tier: SubscriptionTier;
+}
 
-export function Sidebar({ className }: SidebarProps) {
+export function Sidebar({ className, tier }: SidebarProps) {
     const pathname = usePathname();
     const { mutate: logout } = useLogout();
     const { can } = useUserRole();
@@ -63,6 +70,7 @@ export function Sidebar({ className }: SidebarProps) {
             href: "/dashboard/inventario",
             active: pathname === "/dashboard/inventario",
             permission: "inventory.view" as Permission,
+            feature: "inventory" as Feature,
         },
         {
             label: "Compras",
@@ -84,6 +92,7 @@ export function Sidebar({ className }: SidebarProps) {
             href: "/dashboard/gastos",
             active: pathname.startsWith("/dashboard/gastos"),
             permission: "sales.view_all" as Permission,
+            feature: "expenses" as Feature,
         },
         {
             label: "Producción",
@@ -91,6 +100,7 @@ export function Sidebar({ className }: SidebarProps) {
             href: "/dashboard/produccion",
             active: pathname.startsWith("/dashboard/produccion"),
             permission: "production.view" as Permission,
+            feature: "production" as Feature,
             children: [
                 {
                     label: "Recetas",
@@ -98,6 +108,7 @@ export function Sidebar({ className }: SidebarProps) {
                     href: "/dashboard/produccion/recetas",
                     active: pathname.startsWith("/dashboard/produccion/recetas"),
                     permission: "recipes.view" as Permission,
+                    feature: "recipes" as Feature,
                 },
             ]
         },
@@ -114,6 +125,7 @@ export function Sidebar({ className }: SidebarProps) {
             href: "/dashboard/reportes/financiero",
             active: pathname.startsWith("/dashboard/reportes/financiero"),
             permission: "analytics.view_full" as Permission,
+            feature: "advanced_reports" as Feature,
         },
         {
             label: "Asistencia",
@@ -144,6 +156,22 @@ export function Sidebar({ className }: SidebarProps) {
         },
     ];
 
+    const adminRoutes = [
+        {
+            label: "Admin Global",
+            icon: Globe,
+            href: "/dashboard/admin",
+            active: pathname === "/dashboard/admin",
+        },
+        {
+            label: "Tenants",
+            icon: Building2,
+            href: "/dashboard/admin/tenants",
+            active: pathname.startsWith("/dashboard/admin/tenants"),
+        },
+    ];
+
+    const { isSuperAdmin } = useUserRole();
     const visibleRoutes = routes.filter(route => !route.permission || can(route.permission));
 
     return (
@@ -171,47 +199,99 @@ export function Sidebar({ className }: SidebarProps) {
                         </div>
                     </div>
                     <div className="space-y-1">
-                        {visibleRoutes.map((route) => (
-                            <div key={route.href} className="space-y-1">
-                                <Button
-                                    variant={route.active ? "secondary" : "ghost"}
-                                    className={cn(
-                                        "w-full justify-start",
-                                        route.active && "bg-primary/10 text-primary hover:bg-primary/20",
-                                        route.children && "font-semibold"
+                        {visibleRoutes.map((route) => {
+                            const isLocked = route.feature && !hasFeatureAccess(tier, route.feature);
+
+                            return (
+                                <div key={route.href} className="space-y-1">
+                                    <Button
+                                        variant={route.active ? "secondary" : "ghost"}
+                                        className={cn(
+                                            "w-full justify-start",
+                                            route.active && "bg-primary/10 text-primary hover:bg-primary/20",
+                                            route.children && "font-semibold",
+                                            isLocked && "opacity-50 grayscale cursor-not-allowed"
+                                        )}
+                                        asChild={!isLocked}
+                                        disabled={isLocked}
+                                    >
+                                        {isLocked ? (
+                                            <div className="flex items-center w-full">
+                                                <route.icon className="mr-2 h-4 w-4" />
+                                                {route.label}
+                                                <Lock className="ml-auto h-3.5 w-3.5" />
+                                            </div>
+                                        ) : (
+                                            <Link href={route.href}>
+                                                <route.icon className="mr-2 h-4 w-4" />
+                                                {route.label}
+                                            </Link>
+                                        )}
+                                    </Button>
+                                    {route.children && (
+                                        <div className="ml-4 pl-2 border-l space-y-1 mt-1">
+                                            {route.children
+                                                .filter(child => !child.permission || can(child.permission))
+                                                .map((child) => {
+                                                    const isChildLocked = child.feature && !hasFeatureAccess(tier, child.feature);
+
+                                                    return (
+                                                        <Button
+                                                            key={child.href}
+                                                            variant={child.active ? "secondary" : "ghost"}
+                                                            size="sm"
+                                                            className={cn(
+                                                                "w-full justify-start h-8 text-xs",
+                                                                child.active && "bg-primary/10 text-primary hover:bg-primary/20",
+                                                                isChildLocked && "opacity-50 grayscale cursor-not-allowed"
+                                                            )}
+                                                            asChild={!isChildLocked}
+                                                            disabled={isChildLocked}
+                                                        >
+                                                            {isChildLocked ? (
+                                                                <div className="flex items-center w-full">
+                                                                    <child.icon className="mr-2 h-3.5 w-3.5" />
+                                                                    {child.label}
+                                                                    <Lock className="ml-auto h-3 w-3" />
+                                                                </div>
+                                                            ) : (
+                                                                <Link href={child.href}>
+                                                                    <child.icon className="mr-2 h-3.5 w-3.5" />
+                                                                    {child.label}
+                                                                </Link>
+                                                            )}
+                                                        </Button>
+                                                    );
+                                                })}
+                                        </div>
                                     )}
-                                    asChild
-                                >
-                                    <Link href={route.href}>
-                                        <route.icon className="mr-2 h-4 w-4" />
-                                        {route.label}
-                                    </Link>
-                                </Button>
-                                {route.children && (
-                                    <div className="ml-4 pl-2 border-l space-y-1 mt-1">
-                                        {route.children
-                                            .filter(child => !child.permission || can(child.permission))
-                                            .map((child) => (
-                                                <Button
-                                                    key={child.href}
-                                                    variant={child.active ? "secondary" : "ghost"}
-                                                    size="sm"
-                                                    className={cn(
-                                                        "w-full justify-start h-8 text-xs",
-                                                        child.active && "bg-primary/10 text-primary hover:bg-primary/20"
-                                                    )}
-                                                    asChild
-                                                >
-                                                    <Link href={child.href}>
-                                                        <child.icon className="mr-2 h-3.5 w-3.5" />
-                                                        {child.label}
-                                                    </Link>
-                                                </Button>
-                                            ))}
-                                    </div>
-                                )}
+                                </div>
+                            );
+                        })}
+
+                        {isSuperAdmin && (
+                            <div className="pt-4 mt-4 border-t px-3">
+                                <p className="text-[10px] uppercase font-bold text-muted-foreground/50 mb-2 px-4 tracking-widest">
+                                    ADMIN GLOBAL
+                                </p>
+                                {adminRoutes.map((route) => (
+                                    <Button
+                                        key={route.href}
+                                        variant={route.active ? "secondary" : "ghost"}
+                                        className={cn(
+                                            "w-full justify-start",
+                                            route.active && "bg-primary/10 text-primary hover:bg-primary/20",
+                                        )}
+                                        asChild
+                                    >
+                                        <Link href={route.href}>
+                                            <route.icon className="mr-2 h-4 w-4" />
+                                            {route.label}
+                                        </Link>
+                                    </Button>
+                                ))}
                             </div>
-                        ))}
+                        )}
                     </div>
                 </div>
             </div>

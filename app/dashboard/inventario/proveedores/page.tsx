@@ -13,6 +13,9 @@ import Link from "next/link"
 import { format } from "date-fns"
 import { ProveedorFormDialog } from "@/components/inventario/proveedor-form-dialog"
 import { DeleteProveedorDialog } from "@/components/inventario/delete-proveedor-dialog"
+import { QuickCopyBankInfo } from "@/components/inventario/quick-copy-bank-info"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Landmark } from "lucide-react"
 
 export default function ProveedoresPage() {
     const [proveedores, setProveedores] = useState<Proveedor[]>([])
@@ -121,6 +124,7 @@ export default function ProveedoresPage() {
                                     <TableHead>Contacto</TableHead>
                                     <TableHead className="hidden md:table-cell">RUT</TableHead>
                                     <TableHead className="hidden lg:table-cell">Dirección</TableHead>
+                                    <TableHead>Datos Banco</TableHead>
                                     <TableHead className="text-right">Acciones</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -157,6 +161,23 @@ export default function ProveedoresPage() {
                                             </TableCell>
                                             <TableCell className="hidden lg:table-cell max-w-[200px] truncate" title={proveedor.direccion || ""}>
                                                 {proveedor.direccion || "-"}
+                                            </TableCell>
+                                            <TableCell>
+                                                {(proveedor.banco || proveedor.numero_cuenta) ? (
+                                                    <Popover>
+                                                        <PopoverTrigger asChild>
+                                                            <Button variant="outline" size="sm" className="h-8 gap-2 border-primary/20 bg-primary/5 text-primary hover:bg-primary/10">
+                                                                <Landmark className="h-3.5 w-3.5" />
+                                                                <span className="hidden sm:inline">Pago</span>
+                                                            </Button>
+                                                        </PopoverTrigger>
+                                                        <PopoverContent className="w-[280px] p-0 border-none shadow-2xl" align="end">
+                                                            <QuickCopyBankInfo proveedor={proveedor} />
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                ) : (
+                                                    <span className="text-muted-foreground/30 text-xs italic">Sin datos</span>
+                                                )}
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">

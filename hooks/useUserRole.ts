@@ -21,7 +21,8 @@ export function useUserRole() {
 
     return {
         role,
-        isAdmin: role === 'admin',
+        isSuperAdmin: role === 'super_admin',
+        isAdmin: role === 'admin' || role === 'super_admin',
         isCajero: role === 'cajero',
         isLoading,
         identity,

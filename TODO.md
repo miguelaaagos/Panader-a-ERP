@@ -1,9 +1,9 @@
 # TODO: Sincronización de Desarrollo (Calama - Antofagasta)
 
 ## Estado Actual: Producción Lista (Inventario Real)
-- **Versión**: 1.5.1 (Attendance & Offline Edition)
+- **Versión**: 1.6.0 (Global Admin & Banking Edition)
 - **Estado**: Estable / En Desarrollo
-- **Última actualización**: 8 de marzo de 2026 — Integración del módulo de Recetas dentro de Producción, anidación visual en Sidebar, corrección de redirecciones 404 y saneamiento de procesos de desarrollo.
+- **Última actualización**: 8 de marzo de 2026 — Implementación de Panel Global Super Admin, gestión multi-tenant y módulo avanzado de proveedores con información bancaria y copiado rápido.
 
 ## Tareas Completadas [x]
 - [x] **Integración Recetas en Producción**: Mover módulo a `/produccion/recetas`, anidar visualmente en Sidebar y configurar redirecciones en `proxy.ts`.
@@ -74,10 +74,23 @@
     - [x] Cálculo reactivo de stock virtual en la grilla de productos.
     - [x] Feedback preciso en avisos de "Stock insuficiente" mostrando el disponible virtual.
     - [x] Sincronización de lógica vs visualización para evitar errores de validación.
-- [ ] **Integración Transbank (Webpay Plus)**:
-- [ ] **Multi-sucursal Estratégica**: Implementación de `sucursal_id` y aislamiento lógico para gestión de cadenas.
-- [ ] **Módulo de Mesas y Comandas (Horeca)**: Sistema de gestión para restaurantes y cafeterías (Plan Avanzado).
-- [ ] **Data API (Read-only)**: Acceso externo a datos para inteligencia de negocios externa (Plan Avanzado).
+- [x] **Infraestructura de Planes SaaS**: Implementación de niveles de suscripción (Inicial, Avanzado, Pro) con restricciones de acceso por funcionalidad.
+- [x] **Panel Global de Super Administrador**:
+    - [x] Dashboard centralizado para ver todos los tenants, usuarios reales y estados de planes.
+    - [ ] Gestión global de suscripciones (Upgrade/Downgrade forzado).
+    - [ ] Auditoría de accesos globales.
+- [x] **Mejoras en Proveedores (Cuenta Bancaria)**:
+    - [x] Extender tabla `proveedores` con campos: Banco, Tipo Cuenta (Selector), Número, RUT Pago, Email.
+    - [x] Implementar componente de "Copiado Bancario" optimizado para apps móviles.
+- [ ] **Integración SII (Boleta Electrónica)**: Emisión automatizada sincronizada con el punto de venta.
+- [ ] **Carta QR / Pedido en Mesa**: Portal de visualización para clientes con opción de envío de pedidos a cocina.
+- [ ] **Módulo de Mesas y Comandas (Horeca)**: Sistema de gestión para restaurantes y cafeterías.
+- [ ] **Cuentas Corrientes (Cli/Prov)**: Gestión de créditos y deudas con columna de copiado rápido (tipo banco).
+- [ ] **Control de Mermas**: Registro y descuento de inventario por desperdicio o robo.
+- [ ] **Integración Delivery**: Centralización de pedidos de UberEats/Rappi/PedidosYa.
+- [ ] **Estado de Resultados**: Reporte financiero detallado de pérdidas y ganancias.
+- [ ] **Control de Vencimientos**: Alertas para gastos y documentos por expirar.
+- [ ] **Multi-caja Estricto**: Refactorización de cierres de caja para soportar múltiples terminales físicos concurrentes.
 
 ## Notas para el Agente
 - Leer este archivo AL INICIO de cada sesión.

@@ -10,6 +10,11 @@ export interface Proveedor {
     email: string | null
     rut: string | null
     direccion: string | null
+    banco: string | null
+    tipo_cuenta: string | null
+    numero_cuenta: string | null
+    rut_pago: string | null
+    email_pago: string | null
     created_at: string
 }
 
@@ -29,7 +34,7 @@ export async function getProveedores(): Promise<{ success: boolean; data?: Prove
 
         const { data, error } = await supabase
             .from("proveedores")
-            .select("id, nombre, telefono, email, rut, direccion, created_at")
+            .select("id, nombre, telefono, email, rut, direccion, banco, tipo_cuenta, numero_cuenta, rut_pago, email_pago, created_at")
             .eq("tenant_id", profile.tenant_id)
             .order("nombre")
 
@@ -50,7 +55,12 @@ export async function crearProveedor(
     telefono?: string,
     email?: string,
     rut?: string,
-    direccion?: string
+    direccion?: string,
+    banco?: string,
+    tipo_cuenta?: string,
+    numero_cuenta?: string,
+    rut_pago?: string,
+    email_pago?: string
 ): Promise<{ success: boolean; data?: Proveedor; error?: string }> {
     try {
         const { supabase, profile } = await validateRequest('inventory.edit')
@@ -68,8 +78,13 @@ export async function crearProveedor(
                 email: email?.trim() || null,
                 rut: rut?.trim() || null,
                 direccion: direccion?.trim() || null,
+                banco: banco?.trim() || null,
+                tipo_cuenta: tipo_cuenta?.trim() || null,
+                numero_cuenta: numero_cuenta?.trim() || null,
+                rut_pago: rut_pago?.trim() || null,
+                email_pago: email_pago?.trim() || null,
             })
-            .select("id, nombre, telefono, email, rut, direccion, created_at")
+            .select("id, nombre, telefono, email, rut, direccion, banco, tipo_cuenta, numero_cuenta, rut_pago, email_pago, created_at")
             .single()
 
         if (error) throw error
@@ -147,7 +162,12 @@ export async function updateProveedor(
         telefono?: string,
         email?: string,
         rut?: string,
-        direccion?: string
+        direccion?: string,
+        banco?: string,
+        tipo_cuenta?: string,
+        numero_cuenta?: string,
+        rut_pago?: string,
+        email_pago?: string
     }
 ): Promise<{ success: boolean; data?: Proveedor; error?: string }> {
     try {
@@ -165,10 +185,15 @@ export async function updateProveedor(
                 email: data.email?.trim() || null,
                 rut: data.rut?.trim() || null,
                 direccion: data.direccion?.trim() || null,
+                banco: data.banco?.trim() || null,
+                tipo_cuenta: data.tipo_cuenta?.trim() || null,
+                numero_cuenta: data.numero_cuenta?.trim() || null,
+                rut_pago: data.rut_pago?.trim() || null,
+                email_pago: data.email_pago?.trim() || null,
             })
             .eq("id", id)
             .eq("tenant_id", profile.tenant_id)
-            .select("id, nombre, telefono, email, rut, direccion, created_at")
+            .select("id, nombre, telefono, email, rut, direccion, banco, tipo_cuenta, numero_cuenta, rut_pago, email_pago, created_at")
             .single()
 
         if (error) throw error
