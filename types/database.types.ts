@@ -953,6 +953,7 @@ export type Database = {
           logo_url: string | null
           name: string
           rut: string | null
+          slogan: string | null
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
           subscription_status: string | null
@@ -970,6 +971,7 @@ export type Database = {
           logo_url?: string | null
           name: string
           rut?: string | null
+          slogan?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           subscription_status?: string | null
@@ -987,6 +989,7 @@ export type Database = {
           logo_url?: string | null
           name?: string
           rut?: string | null
+          slogan?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           subscription_status?: string | null

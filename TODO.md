@@ -22,7 +22,8 @@
 - [x] Ejecutar auditoría `react-doctor` (92/100) y aplicar optimizaciones de performance.
 - [x] Corregir error `AuthApiError: Refresh Token Not Found` en `proxy.ts`.
 - [x] **Saneamiento de RLS**: Eliminación de recursividad infinita en políticas de `usuarios` y `ventas` mediante el uso de funciones `SECURITY DEFINER`.
-- [x] **Puesta en Marcha Real**: Reseteo total de base de datos de prueba, reinicio de correlativos de ventas y carga masiva de 180 productos reales desde Excel con stock inicial verificado.
+- [x] **Identidad Dinámica (Multi-tenant)**: Branding por negocio inyectado en Dashboard.
+- [ ] **Almacenamiento de Marca**: Mejorar el almacenamiento de logos (actualmente local/placeholder); evaluar migración a AWS S3 o Supabase Storage.
 - [x] **Integración de Lector de Códigos de Barras**: Funcionalidad de búsqueda y agregado automático de productos al carrito mediante escáner HID.
 - [x] **Infraestructura de Testing**: Integración completa de Playwright (E2E y Component testing) con auth global.
 - [x] **Módulo de Gastos Operativos**: UI y Backend (Supabase + Actions) para registro de tickets de gastos.

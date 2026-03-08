@@ -1,5 +1,5 @@
 import { LoadingState } from "@/components/ui/loading-state";
 
 export default function Loading() {
-    return <LoadingState message="Preparando tu panadería..." />;
+    return <LoadingState message="Preparando tu negocio..." />;
 }

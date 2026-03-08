@@ -12,8 +12,11 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Lamiga | Panadería & Pastelería Artesanal",
-  description: "Sistema de gestión premium para Lamiga Panadería & Pastelería",
+  title: {
+    default: "Simple ERP | Gestión Gastronómica",
+    template: "%s | Simple ERP",
+  },
+  description: "Sistema de gestión integral para negocios gastronómicos (POS, Inventario, Producción)",
 };
 
 const geistSans = Geist({

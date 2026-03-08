@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { SubscriptionTier, Feature, hasFeatureAccess } from "@/lib/subscription";
 import { Lock } from "lucide-react";
+import { type TenantBranding } from "@/lib/server/subscription";
 
 interface Route {
     label: string;
@@ -23,7 +24,8 @@ interface Route {
     children?: Route[];
 }
 
-export function MobileSidebar({ tier }: { tier: SubscriptionTier }) {
+export function MobileSidebar({ branding }: { branding: TenantBranding }) {
+    const { tier, name } = branding;
     const [open, setOpen] = useState(false);
     const pathname = usePathname();
     const { mutate: logout } = useLogout();
@@ -142,8 +144,11 @@ export function MobileSidebar({ tier }: { tier: SubscriptionTier }) {
             </SheetTrigger>
             <SheetContent side="left" className="w-[80vw] sm:w-[350px] p-0 flex flex-col">
                 <SheetHeader className="p-6 border-b text-left">
-                    <SheetTitle className="font-serif text-xl tracking-tight text-primary">Lamiga</SheetTitle>
-                    <p className="text-[10px] uppercase tracking-widest text-muted-foreground/60">Panadería & Pastelería</p>
+                    <SheetTitle className="font-serif text-xl tracking-tight text-primary">{name}</SheetTitle>
+                    {branding.slogan && (
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground/60">{branding.slogan}</p>
+                    )}
+                    <p className="text-[8px] uppercase tracking-widest text-muted-foreground/40">{tier === 'pro' ? 'Premium Enterprise' : 'Simple Plan'}</p>
                 </SheetHeader>
                 <div className="flex-1 overflow-y-auto py-4">
                     <div className="px-3 space-y-1">

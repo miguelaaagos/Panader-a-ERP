@@ -6,14 +6,16 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 import { MobileSidebar } from "./mobile-sidebar";
 import Link from "next/link";
 import { SubscriptionTier } from "@/lib/subscription";
+import { type TenantBranding } from "@/lib/server/subscription";
 
-export function Topbar({ tier }: { tier: SubscriptionTier }) {
+export function Topbar({ branding }: { branding: TenantBranding }) {
+    const { tier } = branding;
     const { data: user } = useGetIdentity<{ name: string; email: string; avatar_url?: string }>();
 
     return (
         <header className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10 w-full flex items-center justify-between px-6 gap-4">
             <div className="flex items-center gap-2">
-                <MobileSidebar tier={tier} />
+                <MobileSidebar branding={branding} />
             </div>
 
             <div className="flex items-center gap-4">

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import {
     LayoutDashboard,
     ShoppingCart,
@@ -26,9 +27,9 @@ import {
 import { useLogout } from "@refinedev/core";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Permission } from "@/lib/roles";
-import Image from "next/image";
 import { SubscriptionTier, Feature, hasFeatureAccess } from "@/lib/subscription";
-import { Lock } from "lucide-react";
+import { Lock, Store } from "lucide-react";
+import { type TenantBranding } from "@/lib/server/subscription";
 
 interface Route {
     label: string;
@@ -41,10 +42,11 @@ interface Route {
 }
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-    tier: SubscriptionTier;
+    branding: TenantBranding;
 }
 
-export function Sidebar({ className, tier }: SidebarProps) {
+export function Sidebar({ className, branding }: SidebarProps) {
+    const { tier, name, logo_url, slogan } = branding;
     const pathname = usePathname();
     const { mutate: logout } = useLogout();
     const { can } = useUserRole();
@@ -179,22 +181,34 @@ export function Sidebar({ className, tier }: SidebarProps) {
             <div className="space-y-4 py-4">
                 <div className="px-3 py-2">
                     <div className="flex flex-col items-center mb-6 px-4 gap-3">
-                        <div className="relative h-20 w-20 overflow-hidden group">
-                            <Image
-                                src="/brand/logo-lamiga.jpg"
-                                alt="Lamiga Logo"
-                                width={80}
-                                height={80}
-                                className="object-cover rounded-full group-hover:scale-105 transition-transform duration-500"
-                                priority
-                            />
+                        <div className="relative h-20 w-20 overflow-hidden group border rounded-full bg-muted/20 flex items-center justify-center">
+                            {logo_url ? (
+                                <Image
+                                    src={logo_url}
+                                    alt={`${name} Logo`}
+                                    width={80}
+                                    height={80}
+                                    className="object-cover rounded-full group-hover:scale-105 transition-transform duration-500"
+                                    priority
+                                />
+                            ) : (
+                                <div className="flex flex-col items-center justify-center text-primary">
+                                    <Store className="h-8 w-8 mb-1" />
+                                    <span className="text-[10px] font-bold uppercase">{name.substring(0, 3)}</span>
+                                </div>
+                            )}
                         </div>
                         <div className="text-center space-y-0.5">
-                            <h2 className="text-2xl font-bold tracking-tight text-primary font-serif leading-none">
-                                Lamiga
+                            <h2 className="text-xl font-bold tracking-tight text-primary font-serif leading-none truncate max-w-[200px]">
+                                {name}
                             </h2>
-                            <p className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground/50 font-semibold">
-                                Panadería & Pastelería
+                            {slogan && (
+                                <p className="text-[10px] uppercase tracking-widest text-muted-foreground/60 font-semibold">
+                                    {slogan}
+                                </p>
+                            )}
+                            <p className="text-[8px] uppercase tracking-[0.2em] text-muted-foreground/50 font-semibold italic">
+                                {tier === 'pro' ? 'Premium Enterprise' : tier === 'advanced' ? 'Business Suite' : 'Simple Plan'}
                             </p>
                         </div>
                     </div>

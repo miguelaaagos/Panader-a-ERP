@@ -1,4 +1,4 @@
-import { Croissant, Loader2 } from "lucide-react";
+import { Store, Loader2 } from "lucide-react";
 
 interface LoadingStateProps {
     message?: string;
@@ -14,7 +14,7 @@ export function LoadingState({ message = "Cargando..." }: LoadingStateProps) {
                 {/* Ícono central con latido suave */}
                 <div className="relative flex items-center justify-center animate-pulse duration-2000">
                     <div className="absolute h-16 w-16 rounded-full bg-primary/10 blur-xl"></div>
-                    <Croissant className="relative h-10 w-10 text-primary drop-shadow-sm" />
+                    <Store className="relative h-10 w-10 text-primary drop-shadow-sm" />
                 </div>
             </div>
 
@@ -23,7 +23,7 @@ export function LoadingState({ message = "Cargando..." }: LoadingStateProps) {
                     {message}
                 </h3>
                 <p className="text-sm text-muted-foreground max-w-[250px] mx-auto">
-                    Preparando los datos con la misma frescura que nuestro pan.
+                    Preparando los datos con la mayor frescura para tu gestión.
                 </p>
             </div>
         </div>
@@ -31,5 +31,5 @@ export function LoadingState({ message = "Cargando..." }: LoadingStateProps) {
 }
 
 export function DashboardLoadingState() {
-    return <LoadingState message="Cargando tu panadería..." />;
+    return <LoadingState message="Cargando tu negocio..." />;
 }

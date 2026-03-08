@@ -36,7 +36,7 @@ async function WelcomeMessage({ month, year }: { month?: number, year?: number }
     ? `Visualizando métricas de ${format(new Date(year, month - 1), "MMMM yyyy", { locale: es })}.`
     : year
       ? `Visualizando métricas del año ${year}.`
-      : "Resumen de actividad para tu panadería hoy."
+      : "Resumen de actividad para tu negocio hoy."
 
   return (
     <div className="flex flex-col gap-1">
