@@ -5,11 +5,14 @@ import {
     Building2,
     CreditCard,
     TrendingUp,
-    ShieldCheck
+    ShieldCheck,
+    Globe
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getGlobalAuditLogs } from "@/actions/admin";
 import { AuditLogTable } from "@/components/admin/AuditLogTable";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TenantSwitcher } from "@/components/admin/TenantSwitcher";
 
 export default async function AdminDashboardPage() {
     const supabase = await createClient();
@@ -86,38 +89,66 @@ export default async function AdminDashboardPage() {
                 </p>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {stats.map((stat) => (
-                    <Card key={stat.title} className="hover:shadow-md transition-shadow">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">
-                                {stat.title}
+            <Tabs defaultValue="general" className="space-y-6">
+                <TabsList className="bg-background border">
+                    <TabsTrigger value="general">Resumen General</TabsTrigger>
+                    <TabsTrigger value="locales">Suplantación / Locales</TabsTrigger>
+                    <TabsTrigger value="auditoria">Auditoría Global</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="general" className="space-y-6">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                        {stats.map((stat) => (
+                            <Card key={stat.title} className="hover:shadow-md transition-shadow">
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                    <CardTitle className="text-sm font-medium">
+                                        {stat.title}
+                                    </CardTitle>
+                                    <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-2xl font-bold">{stat.value}</div>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        {stat.description}
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="locales">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                                <Globe className="h-5 w-5 text-primary" />
+                                Suplantación de Contexto de Negocio
                             </CardTitle>
-                            <stat.icon className={`h-4 w-4 ${stat.color}`} />
                         </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stat.value}</div>
-                            <p className="text-xs text-muted-foreground mt-1">
-                                {stat.description}
+                        <CardContent className="max-w-md">
+                            <p className="text-sm text-muted-foreground mb-6">
+                                Selecciona un local para ver el ERP como si fueras un administrador de dicha empresa.
+                                Podrás revisar ventas, inventario y reportes específicos del negocio elegido.
                             </p>
+                            <TenantSwitcher />
                         </CardContent>
                     </Card>
-                ))}
-            </div>
+                </TabsContent>
 
-            <div className="grid gap-6">
-                <Card className="lg:col-span-2">
-                    <CardHeader>
-                        <CardTitle className="text-lg flex items-center gap-2">
-                            <ShieldCheck className="h-5 w-5 text-primary" />
-                            Auditoría de Acciones Globales
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <AuditLogTable logs={auditLogs as any || []} />
-                    </CardContent>
-                </Card>
-            </div>
+                <TabsContent value="auditoria">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                                <ShieldCheck className="h-5 w-5 text-primary" />
+                                Auditoría de Acciones Globales
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <AuditLogTable logs={auditLogs as any || []} />
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }
