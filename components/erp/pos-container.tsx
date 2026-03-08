@@ -178,13 +178,17 @@ export function POSContainer() {
     }
 
     const handleAddToCart = (product: Product) => {
-        if (product.es_pesable) {
-            setWeighingProduct(product)
+        // Buscar el producto original (con stock completo) para la lógica
+        const originalProduct = products.find(p => p.id === product.id)
+        if (!originalProduct) return
+
+        if (originalProduct.es_pesable) {
+            setWeighingProduct(originalProduct)
         } else {
             addItem({
-                ...product,
-                stock_cantidad: product.stock_actual,
-                precio_venta: product.precio_venta,
+                ...originalProduct,
+                stock_cantidad: originalProduct.stock_actual,
+                precio_venta: originalProduct.precio_venta,
             })
         }
     }
@@ -274,7 +278,13 @@ export function POSContainer() {
 
                         <div className={cn("flex-1 overflow-hidden transition-opacity", !isMobileProductsOpen ? "opacity-0 lg:opacity-100 hidden lg:flex" : "opacity-100 flex flex-col")}>
                             <ProductGrid
-                                products={products}
+                                products={products.map(p => {
+                                    const cartItem = items.find(item => item.id === p.id)
+                                    return {
+                                        ...p,
+                                        stock_actual: p.stock_actual - (cartItem?.cantidad || 0)
+                                    }
+                                })}
                                 categories={categories}
                                 loading={loading}
                                 onAddToCart={(product) => {

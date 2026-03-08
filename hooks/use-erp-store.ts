@@ -37,18 +37,20 @@ export const useERPStore = create<ERPState>((set, get) => ({
         // Validar stock disponible (solo para productos no pesables)
         const currentCartQuantity = existingItem ? existingItem.cantidad : 0
         const newTotalQuantity = currentCartQuantity + quantity
+        const totalStock = product.stock_cantidad ?? product.stock_actual
+        const virtualStockRestante = totalStock - currentCartQuantity
 
-        if (!product.es_pesable && newTotalQuantity > (product.stock_cantidad ?? product.stock_actual)) {
+        if (!product.es_pesable && newTotalQuantity > totalStock) {
             toast.error(`Stock insuficiente`, {
-                description: `Disponible: ${product.stock_cantidad ?? product.stock_actual} unidades`
+                description: `Disponible: ${virtualStockRestante} unidades`
             })
             return
         }
 
-        // Alerta de stock bajo (menos de 5 unidades)
-        if (!product.es_pesable && (product.stock_cantidad ?? product.stock_actual) < 5 && (product.stock_cantidad ?? product.stock_actual) > 0) {
+        // Alerta de stock bajo (menos de 5 unidades virtuales)
+        if (!product.es_pesable && virtualStockRestante < 5 && virtualStockRestante > 0) {
             toast.warning(`Stock bajo: ${product.nombre}`, {
-                description: `Quedan solo ${product.stock_cantidad ?? product.stock_actual} unidades`
+                description: `Quedan solo ${virtualStockRestante} unidades`
             })
         }
 

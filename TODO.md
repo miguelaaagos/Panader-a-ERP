@@ -1,9 +1,9 @@
 # TODO: Sincronización de Desarrollo (Calama - Antofagasta)
 
 ## Estado Actual: Producción Lista (Inventario Real)
-- **Version**: 1.2.9 (Scanner & HID Integration)
+- **Version**: 1.3.0 (Virtual Stock Sync & Toasts)
 - **Estado**: Estable / Producción
-- **Última actualización**: 7 de marzo de 2026 — Integración exitosa del sistema de escaneo de productos. Soporte híbrido para cámaras y lectura global HID (Pistolas USB). UI/UX pulida con feedback visual.
+- **Última actualización**: 7 de marzo de 2026 — Sincronización visual de stock en tiempo real corregida. Los avisos (Toasts) y la grilla de productos ahora reflejan el "inventario virtual" restante (total - carrito) de forma precisa y reactiva.
 
 ## Tareas Completadas [x]
 - [x] Establecer y documentar estándares UI/UX (Notificaciones, Gráficos PowerBI style, Tablas móviles, Dark mode) en GEMINI.md y skills.
@@ -68,6 +68,10 @@
     - [x] Búsqueda automática de productos por código y agregado al carrito (`addItem`).
     - [x] Optimización de la experiencia de usuario (UI Premium, Toaster feedback, Vibración móvil).
     - [x] Soporte para cámaras con fallback dinámico y escalado automático.
+- [x] **Sincronización Estética de Stock (POS)**:
+    - [x] Cálculo reactivo de stock virtual en la grilla de productos.
+    - [x] Feedback preciso en avisos de "Stock insuficiente" mostrando el disponible virtual.
+    - [x] Sincronización de lógica vs visualización para evitar errores de validación.
 - [ ] **Integración Transbank (Webpay Plus)**:
 
 ## Notas para el Agente

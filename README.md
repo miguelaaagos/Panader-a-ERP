@@ -116,6 +116,6 @@ pnpm typecheck
 
 ---
 
-**Version**: 1.2.9 (Scanner & HID Integration)  
+**Version**: 1.3.0 (Virtual Stock Sync & Toasts)  
 **Estado**: Estable / Producción  
-**Última actualización**: 7 de marzo de 2026 — Integración completa del sistema de escaneo de productos. Soporte para cámaras con UI Premium y escucha global para lectores de código de barras USB/HID. Sistema validado para operación real.
+**Última actualización**: 7 de marzo de 2026 — Sincronización visual de stock en tiempo real en el POS. Implementación de cálculo de "stock virtual" tanto en la grilla de productos como en el feedback de los avisos (Toasts), asegurando una experiencia de usuario coherente y precisa al armar carritos con stock limitado.
